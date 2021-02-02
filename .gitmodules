@@ -13,3 +13,12 @@
 [submodule "ext/magnum-integration"]
 	path = ext/magnum-integration
 	url = https://github.com/mosra/magnum-integration.git
+[submodule "ext/magnum-examples"]
+	path = ext/magnum-examples
+	url = https://github.com/mosra/magnum-examples.git
+[submodule "ext/ImGuizmo"]
+	path = ext/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "ext/magnum-plugins"]
+	path = ext/magnum-plugins
+	url = https://github.com/mosra/magnum-plugins
