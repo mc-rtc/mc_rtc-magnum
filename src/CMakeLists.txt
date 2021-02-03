@@ -6,9 +6,47 @@ set(arcball_SRC ${arcball_DIR}/ArcBall.cpp ${arcball_DIR}/ArcBallCamera.h ${arcb
 set(ImGuizmo_DIR ${PROJECT_SOURCE_DIR}/ext/ImGuizmo)
 set(ImGuizmo_SRC ${ImGuizmo_DIR}/ImGuizmo.h ${ImGuizmo_DIR}/ImGuizmo.cpp)
 
-add_executable(${PROJECT_NAME} main.cpp ${arcball_SRC} ${ImGuizmo_SRC})
+set(project_SRC
+  McRtcGui.h
+  McRtcGui.cpp
+  Camera.h
+  Category.h
+  Category.cpp
+  Client.h
+  Client.cpp
+  Widget.h
+  widgets/ArrayInput.h
+  widgets/ArrayLabel.h
+  widgets/Button.h
+  widgets/Checkbox.h
+  widgets/ComboInput.h
+  widgets/DataComboInput.h
+  widgets/Form.h
+  widgets/IntegerInput.h
+  widgets/Label.h
+  widgets/NumberInput.h
+  widgets/NumberSlider.h
+  widgets/Schema.cpp
+  widgets/Schema.h
+  widgets/StringInput.h
+  widgets/Table.h
+  widgets/Trajectory.h
+  widgets/utils.h
+  widgets/Widget.h
+  widgets/details/SingleInput.h
+  widgets/details/TransformBase.h
+  widgets/form/schema.cpp
+  widgets/form/schema.h
+  widgets/form/widgets.cpp
+  widgets/form/widgets.h
+)
+
+add_executable(${PROJECT_NAME} ${project_SRC} ${arcball_SRC} ${ImGuizmo_SRC})
+
 target_include_directories(${PROJECT_NAME} PRIVATE SYSTEM ${arcball_DIR} ${ImGuizmo_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE
+    mc_rtc::mc_control
+    mc_rtc::mc_control_client
     Magnum::Application
     Magnum::GL
     Magnum::Magnum

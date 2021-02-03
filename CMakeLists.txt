@@ -38,4 +38,7 @@ else()
     find_package(Magnum REQUIRED GlfwApplication)
 endif()
 
+# mc_rtc
+find_package(mc_rtc REQUIRED)
+
 add_subdirectory(src)

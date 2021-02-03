@@ -1,49 +1,7 @@
-#include <Corrade/Containers/Optional.h>
-#include <Corrade/PluginManager/Manager.h>
-#include <Magnum/GL/DefaultFramebuffer.h>
-#include <Magnum/GL/Mesh.h>
-#include <Magnum/GL/Renderer.h>
-#include <Magnum/GL/TextureFormat.h>
-#include <Magnum/ImageView.h>
-#include <Magnum/ImGuiIntegration/Context.hpp>
-#include <Magnum/Math/Color.h>
-#include <Magnum/MeshTools/Compile.h>
-#include <Magnum/PixelFormat.h>
-#include <Magnum/Primitives/Axis.h>
-#include <Magnum/Primitives/Cube.h>
-#include <Magnum/Primitives/Grid.h>
-#include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Shaders/Phong.h>
-#include <Magnum/Shaders/VertexColor.h>
-#include <Magnum/Trade/AbstractImporter.h>
-#include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData.h>
-#include <Magnum/Trade/MeshObjectData3D.h>
-#include <Magnum/Trade/PhongMaterialData.h>
-#include <Magnum/Trade/SceneData.h>
-#include <Magnum/Trade/TextureData.h>
+#include "McRtcGui.h"
 
-#ifdef CORRADE_TARGET_ANDROID
-#  include <Magnum/Platform/AndroidApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#  include <Magnum/Platform/EmscriptenApplication.h>
-#else
-#  include <Magnum/Platform/GlfwApplication.h>
-#endif
-
-#include "ArcBallCamera.h"
-#include "ImGuizmo.h"
-
-using namespace Magnum;
-using namespace Math::Literals;
-
-using Object3D = SceneGraph::Object<SceneGraph::MatrixTransformation3D>;
-using Scene3D = SceneGraph::Scene<SceneGraph::MatrixTransformation3D>;
+#include <Magnum/Primitives/Icosphere.h>
+#include <Magnum/Primitives/Line.h>
 
 class ColoredDrawable : public SceneGraph::Drawable3D
 {
@@ -61,7 +19,6 @@ private:
   void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override
   {
     shader_.setDiffuseColor(color_)
-        .setLightPositions({{camera.cameraMatrix().transformPoint({10.0f, 10.0f, 10.0f}), 0.0f}})
         .setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())
@@ -88,8 +45,7 @@ public:
 private:
   void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override
   {
-    shader_.setLightPositions({{camera.cameraMatrix().transformPoint({10.0f, 10.0f, 10.0f}), 0.0f}})
-        .setTransformationMatrix(transformationMatrix)
+    shader_.setTransformationMatrix(transformationMatrix)
         .setNormalMatrix(transformationMatrix.normalMatrix())
         .setProjectionMatrix(camera.projectionMatrix())
         .bindDiffuseTexture(texture_)
@@ -99,50 +55,6 @@ private:
   Shaders::Phong & shader_;
   GL::Mesh & mesh_;
   GL::Texture2D & texture_;
-};
-
-class McRtcGui : public Platform::Application
-{
-public:
-  explicit McRtcGui(const Arguments & arguments);
-
-  void drawEvent() override;
-
-  void viewportEvent(ViewportEvent & event) override;
-
-  void keyPressEvent(KeyEvent & event) override;
-  void keyReleaseEvent(KeyEvent & event) override;
-
-  void mousePressEvent(MouseEvent & event) override;
-  void mouseReleaseEvent(MouseEvent & event) override;
-  void mouseMoveEvent(MouseMoveEvent & event) override;
-  void mouseScrollEvent(MouseScrollEvent & event) override;
-  void textInputEvent(TextInputEvent & event) override;
-
-  bool loadMesh(const std::string & path);
-
-  void addObject(Trade::AbstractImporter & importer,
-                 Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials,
-                 Object3D & parent,
-                 UnsignedInt i);
-
-private:
-  ImGuiIntegration::Context imgui_{NoCreate};
-
-  Scene3D scene_;
-  SceneGraph::DrawableGroup3D drawables_;
-  Containers::Optional<Examples::ArcBallCamera> camera_;
-
-  PluginManager::Manager<Trade::AbstractImporter> manager_;
-  Containers::Pointer<Trade::AbstractImporter> importer_;
-  Shaders::Phong colorShader_;
-  Shaders::Phong textureShader_{Shaders::Phong::Flag::DiffuseTexture};
-  Containers::Array<Containers::Optional<GL::Mesh>> meshes_;
-  Containers::Array<Containers::Optional<GL::Texture2D>> textures_;
-  Object3D root_;
-
-  ImGuizmo::OPERATION guizmoOperation_ = ImGuizmo::TRANSLATE;
-  ImGuizmo::MODE guizmoMode_ = ImGuizmo::LOCAL;
 };
 
 struct Grid : public SceneGraph::Drawable3D
@@ -164,27 +76,11 @@ private:
   GL::Mesh mesh_;
 };
 
-struct AxisMarker : public SceneGraph::Drawable3D
-{
-  AxisMarker(Object3D & object, SceneGraph::DrawableGroup3D & drawables) : SceneGraph::Drawable3D(object, &drawables)
-  {
-    mesh_ = MeshTools::compile(Primitives::axis3D());
-  }
-
-  void draw(const Matrix4 & transformation, SceneGraph::Camera3D & camera) override
-  {
-    shader_.setTransformationProjectionMatrix(camera.projectionMatrix() * transformation).draw(mesh_);
-  }
-
-private:
-  Shaders::VertexColor3D shader_;
-  GL::Mesh mesh_;
-};
-
 McRtcGui::McRtcGui(const Arguments & arguments)
-: Platform::Application{
-      arguments,
-      Configuration{}.setTitle("mc_rtc - Magnum based GUI").setWindowFlags(Configuration::WindowFlag::Resizable)}
+: Platform::Application{arguments, Configuration{}
+                                       .setTitle("mc_rtc - Magnum based GUI")
+                                       .setWindowFlags(Configuration::WindowFlag::Resizable)},
+  client_(*this)
 {
   imgui_ = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(), windowSize(), framebufferSize());
 
@@ -210,6 +106,9 @@ McRtcGui::McRtcGui(const Arguments & arguments)
     camera_.emplace(scene_, eye, center, up, 60.0_degf, windowSize(), framebufferSize());
   }
 
+  client_.connect("ipc:///tmp/mc_rtc_pub.ipc", "ipc:///tmp/mc_rtc_rep.ipc");
+  client_.timeout(1.0);
+
   root_.setParent(&scene_);
 
   /** Grid */
@@ -217,10 +116,9 @@ McRtcGui::McRtcGui(const Arguments & arguments)
     new Grid{*new Object3D{&scene_}, drawables_};
   }
 
-  /** Axis marker */
-  {
-    new AxisMarker{*new Object3D{&scene_}, drawables_};
-  }
+  axisMesh_ = MeshTools::compile(Primitives::axis3D());
+  cubeMesh_ = MeshTools::compile(Primitives::cubeSolid());
+  sphereMesh_ = MeshTools::compile(Primitives::icosphereSolid(2));
 }
 
 bool McRtcGui::loadMesh(const std::string & path)
@@ -375,8 +273,13 @@ void McRtcGui::drawEvent()
   GL::defaultFramebuffer.clear(GL::FramebufferClear::Color | GL::FramebufferClear::Depth);
   GL::Renderer::enable(GL::Renderer::Feature::Blending);
 
+  client_.update();
+
   camera_->update();
   camera_->draw(drawables_);
+  drawFrame({}, 1.0);
+
+  client_.draw3D(*camera_);
 
   imgui_.newFrame();
   ImGuizmo::BeginFrame();
@@ -391,7 +294,7 @@ void McRtcGui::drawEvent()
     stopTextInput();
   }
 
-  ImGui::ShowDemoWindow();
+  client_.draw2D();
 
   ImGuiIO & io = ImGui::GetIO();
   ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
@@ -535,6 +438,44 @@ void McRtcGui::mouseScrollEvent(MouseScrollEvent & event)
 void McRtcGui::textInputEvent(TextInputEvent & event)
 {
   if(imgui_.handleTextInputEvent(event)) return;
+}
+
+void McRtcGui::drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
+{
+  draw(cubeMesh_, color, Matrix4::from(ori * Matrix3::fromDiagonal(size / 2.0), center));
+}
+
+void McRtcGui::drawSphere(Vector3 center, float radius, Color4 color)
+{
+  draw(sphereMesh_, color, Matrix4::from(Matrix3{Math::IdentityInit, radius}, center));
+}
+
+void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickness*/)
+{
+  // FIXME Write a shader to handle nice line drawing
+  auto lineMesh = MeshTools::compile(Primitives::line3D(start, end));
+  draw(lineMesh, color);
+}
+
+void McRtcGui::drawFrame(Matrix4 pos, float scale)
+{
+  auto & camera = camera_->camera();
+  vertexShader_
+      .setTransformationProjectionMatrix(camera.projectionMatrix() * camera.cameraMatrix() * pos
+                                         * Matrix4::scaling(Vector3{scale}))
+      .draw(axisMesh_);
+}
+
+void McRtcGui::draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & worldTransform)
+{
+  auto & camera = camera_->camera();
+  Matrix4 transform = camera.cameraMatrix() * worldTransform;
+  shader_.setDiffuseColor(color)
+      .setAmbientColor(Color3::fromHsv({color.hue(), 1.0f, 0.3f}))
+      .setTransformationMatrix(transform)
+      .setNormalMatrix(transform.normalMatrix())
+      .setProjectionMatrix(camera.projectionMatrix())
+      .draw(mesh);
 }
 
 MAGNUM_APPLICATION_MAIN(McRtcGui)
