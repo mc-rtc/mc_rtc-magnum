@@ -2,7 +2,7 @@
 
 #include "../Widget.h"
 
-#include "../../InteractiveMarker.h"
+#include "ControlAxis.h"
 
 template<ControlAxis ctl>
 struct TransformBase : public Widget
