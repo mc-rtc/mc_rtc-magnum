@@ -26,7 +26,8 @@ struct Arrow : public Widget
     const auto & end = endMarker_.pose().translation();
     client.gui().drawArrow(translation(start), translation(end), config_.shaft_diam, config_.head_diam,
                            config_.head_len, convert(config_.color));
-    if(startMarker_.draw(client.gui().camera()) || endMarker_.draw(client.gui().camera()))
+    bool changed = startMarker_.draw(client.gui().camera());
+    if(endMarker_.draw(client.gui().camera()) || changed)
     {
       Eigen::Vector6d data;
       data << start, end;

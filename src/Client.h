@@ -102,12 +102,12 @@ private:
   //  polygon(id, points, mc_rtc::gui::LineConfig(color));
   //}
 
-  // void force(const ElementId & id,
-  //           const ElementId & requestId,
-  //           const sva::ForceVecd & force,
-  //           const sva::PTransformd & pos,
-  //           const mc_rtc::gui::ForceConfig & forceConfig,
-  //           bool /* ro */) override;
+  void force(const ElementId & id,
+             const ElementId & requestId,
+             const sva::ForceVecd & force,
+             const sva::PTransformd & pos,
+             const mc_rtc::gui::ForceConfig & forceConfig,
+             bool /* ro */) override;
 
   void arrow(const ElementId & id,
              const ElementId & requestId,

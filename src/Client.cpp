@@ -9,7 +9,7 @@
 #include "widgets/Checkbox.h"
 #include "widgets/ComboInput.h"
 #include "widgets/DataComboInput.h"
-//#include "widgets/Force.h"
+#include "widgets/Force.h"
 #include "widgets/Form.h"
 #include "widgets/IntegerInput.h"
 #include "widgets/Label.h"
@@ -166,16 +166,16 @@ void Client::trajectory(const ElementId & id, const sva::PTransformd & point, co
 //{
 //  widget<Polygon>(id).data(points, config);
 //}
-//
-// void Client::force(const ElementId & id,
-//                   const ElementId & requestId,
-//                   const sva::ForceVecd & force,
-//                   const sva::PTransformd & pos,
-//                   const mc_rtc::gui::ForceConfig & forceConfig,
-//                   bool /* ro */)
-//{
-//  widget<Force>(id, requestId).data(force, pos, forceConfig);
-//}
+
+void Client::force(const ElementId & id,
+                   const ElementId & requestId,
+                   const sva::ForceVecd & force,
+                   const sva::PTransformd & pos,
+                   const mc_rtc::gui::ForceConfig & forceConfig,
+                   bool /* ro */)
+{
+  widget<Force>(id, requestId).data(force, pos, forceConfig);
+}
 
 void Client::arrow(const ElementId & id,
                    const ElementId & requestId,
