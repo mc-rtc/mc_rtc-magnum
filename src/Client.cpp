@@ -23,7 +23,7 @@
 #include "widgets/StringInput.h"
 #include "widgets/Table.h"
 #include "widgets/Trajectory.h"
-//#include "widgets/Transform.h"
+#include "widgets/Transform.h"
 //#include "widgets/XYTheta.h"
 
 void Client::update()
@@ -192,11 +192,11 @@ void Client::rotation(const ElementId & id, const ElementId & requestId, bool ro
   widget<Rotation>(id, requestId).data(ro, pos);
 }
 
-// void Client::transform(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos)
-//{
-//  widget<TransformWidget>(id, requestId).data(ro, pos);
-//}
-//
+void Client::transform(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos)
+{
+  widget<TransformWidget>(id, requestId).data(ro, pos);
+}
+
 // void Client::xytheta(const ElementId & id,
 //                     const ElementId & requestId,
 //                     bool ro,

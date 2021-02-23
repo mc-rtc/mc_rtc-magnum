@@ -118,7 +118,7 @@ private:
 
   void rotation(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos) override;
 
-  // void transform(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos) override;
+  void transform(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos) override;
 
   // void xytheta(const ElementId & id,
   //             const ElementId & requestId,

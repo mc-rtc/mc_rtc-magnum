@@ -283,7 +283,7 @@ void McRtcGui::drawEvent()
 
   camera_->update();
   camera_->draw(drawables_);
-  drawFrame({}, 1.0);
+  drawFrame({}, 0.1);
 
   imgui_.newFrame();
   ImGuizmo::BeginFrame();
