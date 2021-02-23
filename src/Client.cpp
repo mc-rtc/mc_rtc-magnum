@@ -18,7 +18,7 @@
 #include "widgets/Point3D.h"
 //#include "widgets/Polygon.h"
 //#include "widgets/Robot.h"
-//#include "widgets/Rotation.h"
+#include "widgets/Rotation.h"
 #include "widgets/Schema.h"
 #include "widgets/StringInput.h"
 #include "widgets/Table.h"
@@ -187,11 +187,11 @@ void Client::arrow(const ElementId & id,
   widget<Arrow>(id, requestId).data(start, end, config, ro);
 }
 
-// void Client::rotation(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos)
-//{
-//  widget<Rotation>(id, requestId).data(ro, pos);
-//}
-//
+void Client::rotation(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos)
+{
+  widget<Rotation>(id, requestId).data(ro, pos);
+}
+
 // void Client::transform(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos)
 //{
 //  widget<TransformWidget>(id, requestId).data(ro, pos);
