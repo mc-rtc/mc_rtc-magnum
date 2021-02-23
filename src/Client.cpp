@@ -16,7 +16,7 @@
 #include "widgets/NumberInput.h"
 #include "widgets/NumberSlider.h"
 #include "widgets/Point3D.h"
-//#include "widgets/Polygon.h"
+#include "widgets/Polygon.h"
 //#include "widgets/Robot.h"
 #include "widgets/Rotation.h"
 #include "widgets/Schema.h"
@@ -160,12 +160,12 @@ void Client::trajectory(const ElementId & id, const sva::PTransformd & point, co
   widget<Trajectory<sva::PTransformd>>(id).data(point, config);
 }
 
-// void Client::polygon(const ElementId & id,
-//                     const std::vector<std::vector<Eigen::Vector3d>> & points,
-//                     const mc_rtc::gui::LineConfig & config)
-//{
-//  widget<Polygon>(id).data(points, config);
-//}
+void Client::polygon(const ElementId & id,
+                     const std::vector<std::vector<Eigen::Vector3d>> & points,
+                     const mc_rtc::gui::LineConfig & config)
+{
+  widget<Polygon>(id).data(points, config);
+}
 
 void Client::force(const ElementId & id,
                    const ElementId & requestId,
