@@ -26,6 +26,8 @@ set(project_SRC
   widgets/Label.h
   widgets/NumberInput.h
   widgets/NumberSlider.h
+  widgets/Point3D.cpp
+  widgets/Point3D.h
   widgets/Schema.cpp
   widgets/Schema.h
   widgets/StringInput.h
@@ -33,6 +35,8 @@ set(project_SRC
   widgets/Trajectory.h
   widgets/utils.h
   widgets/Widget.h
+  widgets/details/InteractiveMarker.cpp
+  widgets/details/InteractiveMarker.h
   widgets/details/SingleInput.h
   widgets/details/TransformBase.h
   widgets/form/schema.cpp

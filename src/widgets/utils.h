@@ -37,3 +37,12 @@ inline Magnum::Matrix4 convert(const Eigen::Vector3d & t)
 {
   return Magnum::Matrix4::translation(translation(t));
 }
+
+inline sva::PTransformd convert(const Magnum::Matrix4 & m)
+{
+  auto t = m.translation();
+  Eigen::Vector3f t_map = Eigen::Map<Eigen::Vector3f>(t.data());
+  auto r = m.rotation().transposed();
+  Eigen::Matrix3f r_map = Eigen::Map<Eigen::Matrix3f>(r.data());
+  return {r_map.cast<double>(), t_map.cast<double>()};
+}

@@ -1,7 +1,10 @@
 #pragma once
 
+#include <type_traits>
+
 enum class ControlAxis
 {
+  NONE = 0,
   TX = (1u << 0),
   TY = (1u << 1),
   TZ = (1u << 2),
@@ -14,3 +17,15 @@ enum class ControlAxis
   XYZTHETA = TX | TY | TZ | RZ,
   ALL = TRANSLATION | ROTATION
 };
+
+inline ControlAxis operator|(ControlAxis lhs, ControlAxis rhs)
+{
+  using enum_t = std::underlying_type_t<ControlAxis>;
+  return static_cast<ControlAxis>(static_cast<enum_t>(lhs) | static_cast<enum_t>(rhs));
+}
+
+inline ControlAxis operator&(ControlAxis lhs, ControlAxis rhs)
+{
+  using enum_t = std::underlying_type_t<ControlAxis>;
+  return static_cast<ControlAxis>(static_cast<enum_t>(lhs) & static_cast<enum_t>(rhs));
+}

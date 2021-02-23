@@ -71,11 +71,11 @@ private:
 
   void data_combo_input(const ElementId & id, const std::vector<std::string> & ref, const std::string & data) override;
 
-  // void point3d(const ElementId & id,
-  //             const ElementId & requestId,
-  //             bool ro,
-  //             const Eigen::Vector3d & pos,
-  //             const mc_rtc::gui::PointConfig & config) override;
+  void point3d(const ElementId & id,
+               const ElementId & requestId,
+               bool ro,
+               const Eigen::Vector3d & pos,
+               const mc_rtc::gui::PointConfig & config) override;
 
   void trajectory(const ElementId & id,
                   const std::vector<Eigen::Vector3d> & points,

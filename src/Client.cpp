@@ -15,7 +15,7 @@
 #include "widgets/Label.h"
 #include "widgets/NumberInput.h"
 #include "widgets/NumberSlider.h"
-//#include "widgets/Point3D.h"
+#include "widgets/Point3D.h"
 //#include "widgets/Polygon.h"
 //#include "widgets/Robot.h"
 //#include "widgets/Rotation.h"
@@ -127,14 +127,14 @@ void Client::data_combo_input(const ElementId & id, const std::vector<std::strin
   widget<DataComboInput>(id).data(values, data);
 }
 
-// void Client::point3d(const ElementId & id,
-//                     const ElementId & requestId,
-//                     bool ro,
-//                     const Eigen::Vector3d & pos,
-//                     const mc_rtc::gui::PointConfig & config)
-//{
-//  widget<Point3D>(id, requestId).data(ro, pos, config);
-//}
+void Client::point3d(const ElementId & id,
+                     const ElementId & requestId,
+                     bool ro,
+                     const Eigen::Vector3d & pos,
+                     const mc_rtc::gui::PointConfig & config)
+{
+  widget<Point3D>(id, requestId).data(ro, pos, config);
+}
 
 void Client::trajectory(const ElementId & id,
                         const std::vector<Eigen::Vector3d> & points,
