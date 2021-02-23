@@ -63,12 +63,7 @@ struct McRtcGui : public Platform::Application
   void mouseScrollEvent(MouseScrollEvent & event) override;
   void textInputEvent(TextInputEvent & event) override;
 
-  bool loadMesh(const std::string & path);
-
-  void addObject(Trade::AbstractImporter & importer,
-                 Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials,
-                 Object3D & parent,
-                 UnsignedInt i);
+  std::unique_ptr<Object3D> loadMesh(const std::string & path);
 
   void drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
 
@@ -92,16 +87,27 @@ private:
   SceneGraph::DrawableGroup3D drawables_;
   Containers::Optional<Camera> camera_;
 
+  std::unique_ptr<Object3D> root_;
+  std::unique_ptr<Object3D> root2_;
+
   PluginManager::Manager<Trade::AbstractImporter> manager_;
   Containers::Pointer<Trade::AbstractImporter> importer_;
   Shaders::Phong colorShader_;
   Shaders::Phong textureShader_{Shaders::Phong::Flag::DiffuseTexture};
-  Containers::Array<Containers::Optional<GL::Mesh>> meshes_;
-  Containers::Array<Containers::Optional<GL::Texture2D>> textures_;
-  Object3D root_;
 
-  ImGuizmo::OPERATION guizmoOperation_ = ImGuizmo::TRANSLATE;
-  ImGuizmo::MODE guizmoMode_ = ImGuizmo::LOCAL;
+  struct ImportedMesh
+  {
+    Containers::Array<Containers::Optional<GL::Mesh>> meshes_;
+    Containers::Array<Containers::Optional<Trade::PhongMaterialData>> materials_;
+    Containers::Array<Containers::Optional<GL::Texture2D>> textures_;
+    Containers::Optional<Trade::SceneData> scene_;
+    Containers::Array<Containers::Pointer<Trade::ObjectData3D>> objects_;
+  };
+  std::unordered_map<std::string, ImportedMesh> importedData_;
+
+  ImportedMesh & importData(const std::string & mesh);
+
+  void addObject(ImportedMesh & data, Object3D & parent, UnsignedInt i);
 
   GL::Mesh cubeMesh_;
   GL::Mesh sphereMesh_;

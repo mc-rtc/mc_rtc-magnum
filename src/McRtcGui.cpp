@@ -85,7 +85,8 @@ private:
 McRtcGui::McRtcGui(const Arguments & arguments)
 : Platform::Application{arguments, Configuration{}
                                        .setTitle("mc_rtc - Magnum based GUI")
-                                       .setWindowFlags(Configuration::WindowFlag::Resizable)},
+                                       .setWindowFlags(Configuration::WindowFlag::Resizable
+                                                       | Configuration::WindowFlag::Maximized)},
   client_(*this)
 {
   imgui_ = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(), windowSize(), framebufferSize());
@@ -102,7 +103,21 @@ McRtcGui::McRtcGui(const Arguments & arguments)
 
   /** Plugin */
   importer_ = manager_.loadAndInstantiate("AnySceneImporter");
-  loadMesh("/home/gergondet/devel/src/catkin_data_ws/src/mc_rtc_data/jvrc_description/meshes/NECK_P_S.dae");
+  using clock = typename std::conditional<std::chrono::high_resolution_clock::is_steady,
+                                          std::chrono::high_resolution_clock, std::chrono::steady_clock>::type;
+  using duration_us = std::chrono::duration<double, std::micro>;
+  auto start_t = clock::now();
+  root_ = loadMesh("/home/gergondet/devel/src/catkin_data_ws/src/mc_rtc_data/jvrc_description/meshes/NECK_P_S.dae");
+  root_->setTransformation(Matrix4::translation({0, 0, 1}) * Matrix4::rotationX(90.0_degf));
+  duration_us dt_1 = clock::now() - start_t;
+
+  start_t = clock::now();
+  root2_ = loadMesh("/home/gergondet/devel/src/catkin_data_ws/src/mc_rtc_data/jvrc_description/meshes/NECK_P_S.dae");
+  root2_->setTransformation(Matrix4::rotationX(90.0_degf));
+  duration_us dt_2 = clock::now() - start_t;
+
+  std::cout << "Time to load 1: " << dt_1.count() << "us\n";
+  std::cout << "Time to load 2: " << dt_2.count() << "us\n";
 
   /** Camera setup */
   {
@@ -115,8 +130,6 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   client_.connect("ipc:///tmp/mc_rtc_pub.ipc", "ipc:///tmp/mc_rtc_rep.ipc");
   client_.timeout(1.0);
 
-  root_.setParent(&scene_);
-
   /** Grid */
   {
     new Grid{*new Object3D{&scene_}, drawables_};
@@ -127,13 +140,20 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   sphereMesh_ = MeshTools::compile(Primitives::icosphereSolid(2));
 }
 
-bool McRtcGui::loadMesh(const std::string & path)
+auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
 {
+  auto it = importedData_.find(path);
+  // FIXME Check the file hash to detect online changes
+  if(it != importedData_.end())
+  {
+    return it->second;
+  }
+  auto & out = importedData_[path];
   if(!importer_->openFile(path))
   {
-    return false;
+    return out;
   }
-  textures_ = Containers::Array<Containers::Optional<GL::Texture2D>>{importer_->textureCount()};
+  out.textures_ = Containers::Array<Containers::Optional<GL::Texture2D>>{importer_->textureCount()};
   for(UnsignedInt i = 0; i < importer_->textureCount(); ++i)
   {
     Containers::Optional<Trade::TextureData> textureData = importer_->texture(i);
@@ -164,12 +184,12 @@ bool McRtcGui::loadMesh(const std::string & path)
         .setSubImage(0, {}, *imageData)
         .generateMipmap();
 
-    textures_[i] = std::move(texture);
+    out.textures_[i] = std::move(texture);
   }
   /* Load all materials. Materials that fail to load will be NullOpt. The
    data will be stored directly in objects later, so save them only
    temporarily. */
-  Containers::Array<Containers::Optional<Trade::PhongMaterialData>> materials{importer_->materialCount()};
+  out.materials_ = Containers::Array<Containers::Optional<Trade::PhongMaterialData>>{importer_->materialCount()};
   for(UnsignedInt i = 0; i != importer_->materialCount(); ++i)
   {
     Containers::Optional<Trade::MaterialData> materialData = importer_->material(i);
@@ -179,10 +199,10 @@ bool McRtcGui::loadMesh(const std::string & path)
       continue;
     }
 
-    materials[i] = std::move(static_cast<Trade::PhongMaterialData &>(*materialData));
+    out.materials_[i] = std::move(static_cast<Trade::PhongMaterialData &>(*materialData));
   }
   /* Load all meshes. Meshes that fail to load will be NullOpt. */
-  meshes_ = Containers::Array<Containers::Optional<GL::Mesh>>{importer_->meshCount()};
+  out.meshes_ = Containers::Array<Containers::Optional<GL::Mesh>>{importer_->meshCount()};
   for(UnsignedInt i = 0; i != importer_->meshCount(); ++i)
   {
     Containers::Optional<Trade::MeshData> meshData = importer_->mesh(i);
@@ -194,36 +214,48 @@ bool McRtcGui::loadMesh(const std::string & path)
     }
 
     /* Compile the mesh */
-    meshes_[i] = MeshTools::compile(*meshData);
+    out.meshes_[i] = MeshTools::compile(*meshData);
   }
-  /* Load the scene */
   if(importer_->defaultScene() != -1)
   {
-    Containers::Optional<Trade::SceneData> sceneData = importer_->scene(importer_->defaultScene());
-    if(!sceneData)
+    out.scene_ = importer_->scene(importer_->defaultScene());
+    if(!out.scene_)
     {
-      Error{} << "Cannot load scene, exiting";
-      return false;
+      Error{} << "Cannot load scene from " << path.c_str();
     }
-    /* Recursively add all children */
-    for(UnsignedInt objectId : sceneData->children3D())
+    else
     {
-      addObject(*importer_, materials, root_, objectId);
+      out.objects_ = Containers::Array<Containers::Pointer<Trade::ObjectData3D>>{importer_->object3DCount()};
+      for(UnsignedInt i = 0; i != importer_->object3DCount(); ++i)
+      {
+        out.objects_[i] = importer_->object3D(i);
+      }
     }
   }
-  else if(!meshes_.empty() && meshes_[0])
-  {
-    new ColoredDrawable{root_, colorShader_, *meshes_[0], 0xffffff_rgbf, drawables_};
-  }
-  return true;
+  return out;
 }
 
-void McRtcGui::addObject(Trade::AbstractImporter & importer,
-                         Containers::ArrayView<const Containers::Optional<Trade::PhongMaterialData>> materials,
-                         Object3D & parent,
-                         UnsignedInt i)
+std::unique_ptr<Object3D> McRtcGui::loadMesh(const std::string & path)
 {
-  Containers::Pointer<Trade::ObjectData3D> objectData = importer.object3D(i);
+  auto & data = importData(path);
+  auto out = std::make_unique<Object3D>(&scene_);
+  if(data.scene_)
+  {
+    for(UnsignedInt objectId : data.scene_->children3D())
+    {
+      addObject(data, *out, objectId);
+    }
+  }
+  else if(!data.meshes_.empty() && data.meshes_[0])
+  {
+    new ColoredDrawable{*out, colorShader_, *data.meshes_[0], 0xffffff_rgbf, drawables_};
+  }
+  return out;
+}
+
+void McRtcGui::addObject(ImportedMesh & data, Object3D & parent, UnsignedInt i)
+{
+  const Containers::Pointer<Trade::ObjectData3D> & objectData = data.objects_[i];
   if(!objectData)
   {
     Error{} << "Cannot import object, skipping";
@@ -236,41 +268,41 @@ void McRtcGui::addObject(Trade::AbstractImporter & importer,
 
   /* Add a drawable if the object has a mesh and the mesh is loaded */
   if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh && objectData->instance() != -1
-     && meshes_[objectData->instance()])
+     && data.meshes_[objectData->instance()])
   {
-    const Int materialId = static_cast<Trade::MeshObjectData3D *>(objectData.get())->material();
+    const Int materialId = static_cast<const Trade::MeshObjectData3D *>(objectData.get())->material();
 
     /* Material not available / not loaded, use a default material */
-    if(materialId == -1 || !materials[materialId])
+    if(materialId == -1 || !data.materials_[materialId])
     {
-      new ColoredDrawable{*object, colorShader_, *meshes_[objectData->instance()], 0xffffff_rgbf, drawables_};
+      new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, drawables_};
     }
     /* Textured material. If the texture failed to load, again just use a
        default colored material. */
-    else if(materials[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseTexture))
+    else if(data.materials_[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseTexture))
     {
-      Containers::Optional<GL::Texture2D> & texture = textures_[materials[materialId]->diffuseTexture()];
+      Containers::Optional<GL::Texture2D> & texture = data.textures_[data.materials_[materialId]->diffuseTexture()];
       if(texture)
       {
-        new TexturedDrawable{*object, textureShader_, *meshes_[objectData->instance()], *texture, drawables_};
+        new TexturedDrawable{*object, textureShader_, *data.meshes_[objectData->instance()], *texture, drawables_};
       }
       else
       {
-        new ColoredDrawable{*object, colorShader_, *meshes_[objectData->instance()], 0xffffff_rgbf, drawables_};
+        new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, drawables_};
       }
     }
     /* Color-only material */
     else
     {
-      new ColoredDrawable{*object, colorShader_, *meshes_[objectData->instance()],
-                          materials[materialId]->diffuseColor(), drawables_};
+      new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()],
+                          data.materials_[materialId]->diffuseColor(), drawables_};
     }
   }
 
   /* Recursively add children */
   for(std::size_t id : objectData->children())
   {
-    addObject(importer, materials, *object, id);
+    addObject(data, *object, id);
   }
 }
 
@@ -341,30 +373,6 @@ void McRtcGui::keyPressEvent(KeyEvent & event)
   if(imgui_.handleKeyPressEvent(event))
   {
     return;
-  }
-  if(event.key() == KeyEvent::Key::Space)
-  {
-    if(guizmoOperation_ == ImGuizmo::TRANSLATE)
-    {
-      guizmoOperation_ = ImGuizmo::ROTATE;
-    }
-    else
-    {
-      guizmoOperation_ = ImGuizmo::TRANSLATE;
-    }
-    event.setAccepted();
-    return;
-  }
-  if(event.key() == KeyEvent::Key::T)
-  {
-    if(guizmoMode_ == ImGuizmo::LOCAL)
-    {
-      guizmoMode_ = ImGuizmo::WORLD;
-    }
-    else
-    {
-      guizmoMode_ = ImGuizmo::LOCAL;
-    }
   }
 }
 
