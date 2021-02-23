@@ -7,7 +7,7 @@
 namespace details
 {
 
-bfs::path current_path()
+inline bfs::path current_path()
 {
   auto cwd = get_current_dir_name();
   bfs::path out(cwd);
@@ -15,7 +15,7 @@ bfs::path current_path()
   return out;
 }
 
-bfs::path canonical(const bfs::path & p)
+inline bfs::path canonical(const bfs::path & p)
 {
 #ifndef __EMSCRIPTEN__
   return bfs::canonical(p);
