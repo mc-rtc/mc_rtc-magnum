@@ -9,7 +9,7 @@
 
 struct InteractiveMarker
 {
-  InteractiveMarker(const sva::PTransformd & pose, ControlAxis mask = ControlAxis::ALL);
+  InteractiveMarker(const sva::PTransformd & pose = sva::PTransformd::Identity(), ControlAxis mask = ControlAxis::NONE);
 
   void mask(ControlAxis mask);
 

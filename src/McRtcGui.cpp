@@ -1,5 +1,11 @@
 #include "McRtcGui.h"
 
+#include <Magnum/MeshTools/Transform.h>
+#include <Magnum/Primitives/Axis.h>
+#include <Magnum/Primitives/Cone.h>
+#include <Magnum/Primitives/Cube.h>
+#include <Magnum/Primitives/Cylinder.h>
+#include <Magnum/Primitives/Grid.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
 
@@ -446,6 +452,48 @@ void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickn
   // FIXME Write a shader to handle nice line drawing
   auto lineMesh = MeshTools::compile(Primitives::line3D(start, end));
   draw(lineMesh, color);
+}
+
+void McRtcGui::drawArrow(Vector3 start, Vector3 end, float shaft_diam, float head_diam, float head_len, Color4 color)
+{
+  Vector3 normal = end - start;
+  float height = normal.length();
+  if(height == 0.0f)
+  {
+    return;
+  }
+  normal /= height;
+  if(head_len >= height)
+  {
+    head_len = height;
+  }
+  float shaft_len = height - head_len;
+  auto theta = angle(normal, {0.0f, 1.0f, 0.0f});
+  auto axis = cross(normal, {0.0f, 1.0f, 0.0f});
+  if(axis.length() == 0.0f)
+  {
+    axis = {1, 0, 0};
+  }
+  axis = axis.normalized();
+  if(shaft_len != 0 && shaft_diam != 0)
+  {
+    float r = shaft_diam / 2;
+    auto shaftMesh =
+        MeshTools::compile(Primitives::cylinderSolid(16, 32, 0.5f * shaft_len / r, Primitives::CylinderFlag::CapEnds));
+    draw(shaftMesh, color,
+         Matrix4::translation(start + 0.5f * shaft_len * normal) * Matrix4::rotation(-theta, axis)
+             * Matrix4::scaling({r, r, r}));
+  }
+  if(head_len != 0 && head_diam != 0)
+  {
+    float r = head_diam / 2;
+    auto headPrimitive = Primitives::coneSolid(64, 128, 0.5f * head_len / r, Primitives::ConeFlag::CapEnd);
+    MeshTools::transformPointsInPlace(Matrix4::scaling({r, r, r}),
+                                      headPrimitive.mutableAttribute<Vector3>(Trade::MeshAttribute::Position));
+    auto headMesh = MeshTools::compile(headPrimitive);
+    draw(headMesh, color,
+         Matrix4::translation(start + (shaft_len + 0.5f * head_len) * normal) * Matrix4::rotation(-theta, axis));
+  }
 }
 
 void McRtcGui::drawFrame(Matrix4 pos, float scale)

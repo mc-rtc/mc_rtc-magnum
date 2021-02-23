@@ -109,12 +109,12 @@ private:
   //           const mc_rtc::gui::ForceConfig & forceConfig,
   //           bool /* ro */) override;
 
-  // void arrow(const ElementId & id,
-  //           const ElementId & requestId,
-  //           const Eigen::Vector3d & start,
-  //           const Eigen::Vector3d & end,
-  //           const mc_rtc::gui::ArrowConfig & config,
-  //           bool ro) override;
+  void arrow(const ElementId & id,
+             const ElementId & requestId,
+             const Eigen::Vector3d & start,
+             const Eigen::Vector3d & end,
+             const mc_rtc::gui::ArrowConfig & config,
+             bool ro) override;
 
   // void rotation(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos) override;
 

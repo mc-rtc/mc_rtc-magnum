@@ -4,7 +4,7 @@
 
 #include "widgets/ArrayInput.h"
 #include "widgets/ArrayLabel.h"
-//#include "widgets/Arrow.h"
+#include "widgets/Arrow.h"
 #include "widgets/Button.h"
 #include "widgets/Checkbox.h"
 #include "widgets/ComboInput.h"
@@ -176,17 +176,17 @@ void Client::trajectory(const ElementId & id, const sva::PTransformd & point, co
 //{
 //  widget<Force>(id, requestId).data(force, pos, forceConfig);
 //}
-//
-// void Client::arrow(const ElementId & id,
-//                   const ElementId & requestId,
-//                   const Eigen::Vector3d & start,
-//                   const Eigen::Vector3d & end,
-//                   const mc_rtc::gui::ArrowConfig & config,
-//                   bool ro)
-//{
-//  widget<Arrow>(id, requestId).data(start, end, config, ro);
-//}
-//
+
+void Client::arrow(const ElementId & id,
+                   const ElementId & requestId,
+                   const Eigen::Vector3d & start,
+                   const Eigen::Vector3d & end,
+                   const mc_rtc::gui::ArrowConfig & config,
+                   bool ro)
+{
+  widget<Arrow>(id, requestId).data(start, end, config, ro);
+}
+
 // void Client::rotation(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos)
 //{
 //  widget<Rotation>(id, requestId).data(ro, pos);

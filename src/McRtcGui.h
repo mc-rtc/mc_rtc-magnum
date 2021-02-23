@@ -11,9 +11,6 @@
 #include <Magnum/Math/Color.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/Primitives/Axis.h>
-#include <Magnum/Primitives/Cube.h>
-#include <Magnum/Primitives/Grid.h>
 #include <Magnum/SceneGraph/Camera.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
@@ -80,6 +77,8 @@ struct McRtcGui : public Platform::Application
   void drawFrame(Matrix4 pos, float scale = 0.15);
 
   void drawLine(Vector3 start, Vector3 end, Color4 color, float thickness = 1.0);
+
+  void drawArrow(Vector3 start, Vector3 end, float shaft_diam, float head_diam, float head_len, Color4 color);
 
   inline const Camera & camera() const noexcept
   {
