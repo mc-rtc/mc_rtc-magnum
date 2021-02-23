@@ -81,6 +81,11 @@ struct McRtcGui : public Platform::Application
 
   void drawLine(Vector3 start, Vector3 end, Color4 color, float thickness = 1.0);
 
+  inline const Camera & camera() const noexcept
+  {
+    return *camera_;
+  }
+
 private:
   ImGuiIntegration::Context imgui_{NoCreate};
 

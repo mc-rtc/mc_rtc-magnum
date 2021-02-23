@@ -44,15 +44,15 @@ void Category::draw2D()
   }
 }
 
-void Category::draw3D(Camera & camera)
+void Category::draw3D()
 {
   for(auto & w : widgets)
   {
-    w->draw3D(camera);
+    w->draw3D();
   }
   for(auto & cat : categories)
   {
-    cat->draw3D(camera);
+    cat->draw3D();
   }
 }
 

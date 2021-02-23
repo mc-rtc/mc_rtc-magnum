@@ -48,9 +48,9 @@ void Client::draw2D()
   }
 }
 
-void Client::draw3D(Camera & camera)
+void Client::draw3D()
 {
-  root_.draw3D(camera);
+  root_.draw3D();
 }
 
 void Client::started()

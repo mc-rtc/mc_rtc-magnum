@@ -17,7 +17,7 @@ struct Client : public mc_control::ControllerClient
   void draw2D();
 
   /** Draw 3D elements */
-  void draw3D(Camera & camera);
+  void draw3D();
 
   /** Remove all elements */
   void clear();

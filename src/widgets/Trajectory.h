@@ -19,7 +19,7 @@ struct Trajectory : public Widget
     config_ = config;
   }
 
-  void draw3D(Camera & camera) override
+  void draw3D() override
   {
     if(points_.size() < 2)
     {

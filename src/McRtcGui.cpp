@@ -279,10 +279,10 @@ void McRtcGui::drawEvent()
   camera_->draw(drawables_);
   drawFrame({}, 1.0);
 
-  client_.draw3D(*camera_);
-
   imgui_.newFrame();
   ImGuizmo::BeginFrame();
+
+  client_.draw3D();
 
   /* Enable text input, if needed */
   if(ImGui::GetIO().WantTextInput && !isTextInputActive())
@@ -294,22 +294,11 @@ void McRtcGui::drawEvent()
     stopTextInput();
   }
 
-  client_.draw2D();
-
   ImGuiIO & io = ImGui::GetIO();
   ImGuizmo::AllowAxisFlip(false);
   ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
-  auto view = camera_->viewMatrix();
-  auto projection = camera_->camera().projectionMatrix();
-  float m[16];
-  memcpy(&m, root_.transformationMatrix().data(), 16 * sizeof(float));
-  ImGuizmo::SetID(0);
-  using OP = ImGuizmo::OPERATION;
-  if(ImGuizmo::Manipulate(view.data(), projection.data(), OP::SCALE | OP::TRANSLATE | OP::ROTATE, guizmoMode_, m))
-  {
-    Matrix4 m16 = Matrix4::from(m);
-    root_.setTransformation(m16);
-  }
+
+  client_.draw2D();
 
   /* Update application cursor */
   imgui_.updateApplicationCursor(*this);

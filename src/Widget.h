@@ -33,7 +33,7 @@ struct Widget
   virtual void draw2D() {}
 
   /** Draw the 3D elements of the widget */
-  virtual void draw3D(Camera &) {}
+  virtual void draw3D() {}
 
   inline std::string label(std::string_view label, std::string_view extra = "")
   {

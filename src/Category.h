@@ -22,7 +22,7 @@ struct Category
   }
 
   void draw2D();
-  void draw3D(Camera & camera);
+  void draw3D();
   void started();
   void stopped();
 };
