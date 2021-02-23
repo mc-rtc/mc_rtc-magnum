@@ -24,7 +24,7 @@
 #include "widgets/Table.h"
 #include "widgets/Trajectory.h"
 #include "widgets/Transform.h"
-//#include "widgets/XYTheta.h"
+#include "widgets/XYTheta.h"
 
 void Client::update()
 {
@@ -197,14 +197,14 @@ void Client::transform(const ElementId & id, const ElementId & requestId, bool r
   widget<TransformWidget>(id, requestId).data(ro, pos);
 }
 
-// void Client::xytheta(const ElementId & id,
-//                     const ElementId & requestId,
-//                     bool ro,
-//                     const Eigen::Vector3d & xytheta,
-//                     double altitude)
-//{
-//  widget<XYTheta>(id, requestId).data(ro, xytheta, altitude);
-//}
+void Client::xytheta(const ElementId & id,
+                     const ElementId & requestId,
+                     bool ro,
+                     const Eigen::Vector3d & xytheta,
+                     double altitude)
+{
+  widget<XYTheta>(id, requestId).data(ro, xytheta, altitude);
+}
 
 void Client::table_start(const ElementId & id, const std::vector<std::string> & header)
 {

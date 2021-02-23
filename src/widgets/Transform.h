@@ -11,7 +11,4 @@ struct TransformWidget : public TransformBase<ControlAxis::ALL>
     TransformBase::draw3D();
     client.gui().drawFrame(convert(marker_.pose()));
   }
-
-private:
-  ElementId requestId_;
 };

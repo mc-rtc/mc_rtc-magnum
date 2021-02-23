@@ -120,11 +120,11 @@ private:
 
   void transform(const ElementId & id, const ElementId & requestId, bool ro, const sva::PTransformd & pos) override;
 
-  // void xytheta(const ElementId & id,
-  //             const ElementId & requestId,
-  //             bool ro,
-  //             const Eigen::Vector3d & xytheta,
-  //             double altitude) override;
+  void xytheta(const ElementId & id,
+               const ElementId & requestId,
+               bool ro,
+               const Eigen::Vector3d & xytheta,
+               double altitude) override;
 
   void table_start(const ElementId & id, const std::vector<std::string> & header) override;
 
