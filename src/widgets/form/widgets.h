@@ -60,8 +60,8 @@ struct Widget
   }
 
 protected:
-  std::string name_;
   const ::Widget & parent_;
+  std::string name_;
 };
 
 template<typename DataT>

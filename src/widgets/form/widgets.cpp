@@ -17,7 +17,7 @@ ArrayInput::ArrayInput(const ::Widget & parent,
 void ArrayInput::draw()
 {
   ImGui::Columns(2);
-  for(size_t i = 0; i < temp_.size(); ++i)
+  for(size_t i = 0; i < static_cast<size_t>(temp_.size()); ++i)
   {
     if(ImGui::InputDouble(label(fmt::format("{}", i)).c_str(), &temp_(i)))
     {
