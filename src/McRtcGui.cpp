@@ -1,5 +1,6 @@
 #include "McRtcGui.h"
 
+#include <Corrade/Utility/ConfigurationGroup.h>
 #include <Magnum/MeshTools/Transform.h>
 #include <Magnum/Primitives/Axis.h>
 #include <Magnum/Primitives/Cone.h>
@@ -102,22 +103,9 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   textureShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0x111111_rgbf).setShininess(80.0f);
 
   /** Plugin */
-  importer_ = manager_.loadAndInstantiate("AnySceneImporter");
-  using clock = typename std::conditional<std::chrono::high_resolution_clock::is_steady,
-                                          std::chrono::high_resolution_clock, std::chrono::steady_clock>::type;
-  using duration_us = std::chrono::duration<double, std::micro>;
-  auto start_t = clock::now();
-  root_ = loadMesh("/home/gergondet/devel/src/catkin_data_ws/src/mc_rtc_data/jvrc_description/meshes/NECK_P_S.dae");
-  root_->setTransformation(Matrix4::translation({0, 0, 1}) * Matrix4::rotationX(90.0_degf));
-  duration_us dt_1 = clock::now() - start_t;
-
-  start_t = clock::now();
-  root2_ = loadMesh("/home/gergondet/devel/src/catkin_data_ws/src/mc_rtc_data/jvrc_description/meshes/NECK_P_S.dae");
-  root2_->setTransformation(Matrix4::rotationX(90.0_degf));
-  duration_us dt_2 = clock::now() - start_t;
-
-  std::cout << "Time to load 1: " << dt_1.count() << "us\n";
-  std::cout << "Time to load 2: " << dt_2.count() << "us\n";
+  importer_ = manager_.loadAndInstantiate("AssimpImporter");
+  importer_->configuration().setValue("ImportColladaIgnoreUpDirection", true);
+  importer_->configuration().group("postprocess")->setValue("PreTransformVertices", true);
 
   /** Camera setup */
   {
@@ -209,7 +197,7 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
     if(!meshData || !meshData->hasAttribute(Trade::MeshAttribute::Normal)
        || meshData->primitive() != MeshPrimitive::Triangles)
     {
-      Warning{} << "Cannot load the mesh, skipping";
+      Warning{} << "Cannot load the mesh, skipping " << path.c_str();
       continue;
     }
 
@@ -235,25 +223,23 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   return out;
 }
 
-std::unique_ptr<Object3D> McRtcGui::loadMesh(const std::string & path)
+void McRtcGui::loadMesh(const std::string & path, Object3D & parent, SceneGraph::DrawableGroup3D & group)
 {
   auto & data = importData(path);
-  auto out = std::make_unique<Object3D>(&scene_);
   if(data.scene_)
   {
     for(UnsignedInt objectId : data.scene_->children3D())
     {
-      addObject(data, *out, objectId);
+      addObject(data, parent, group, objectId);
     }
   }
   else if(!data.meshes_.empty() && data.meshes_[0])
   {
-    new ColoredDrawable{*out, colorShader_, *data.meshes_[0], 0xffffff_rgbf, drawables_};
+    new ColoredDrawable{parent, colorShader_, *data.meshes_[0], 0xffffff_rgbf, drawables_};
   }
-  return out;
 }
 
-void McRtcGui::addObject(ImportedMesh & data, Object3D & parent, UnsignedInt i)
+void McRtcGui::addObject(ImportedMesh & data, Object3D & parent, SceneGraph::DrawableGroup3D & group, UnsignedInt i)
 {
   const Containers::Pointer<Trade::ObjectData3D> & objectData = data.objects_[i];
   if(!objectData)
@@ -275,7 +261,7 @@ void McRtcGui::addObject(ImportedMesh & data, Object3D & parent, UnsignedInt i)
     /* Material not available / not loaded, use a default material */
     if(materialId == -1 || !data.materials_[materialId])
     {
-      new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, drawables_};
+      new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, group};
     }
     /* Textured material. If the texture failed to load, again just use a
        default colored material. */
@@ -284,25 +270,25 @@ void McRtcGui::addObject(ImportedMesh & data, Object3D & parent, UnsignedInt i)
       Containers::Optional<GL::Texture2D> & texture = data.textures_[data.materials_[materialId]->diffuseTexture()];
       if(texture)
       {
-        new TexturedDrawable{*object, textureShader_, *data.meshes_[objectData->instance()], *texture, drawables_};
+        new TexturedDrawable{*object, textureShader_, *data.meshes_[objectData->instance()], *texture, group};
       }
       else
       {
-        new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, drawables_};
+        new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, group};
       }
     }
     /* Color-only material */
     else
     {
       new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()],
-                          data.materials_[materialId]->diffuseColor(), drawables_};
+                          data.materials_[materialId]->diffuseColor(), group};
     }
   }
 
   /* Recursively add children */
   for(std::size_t id : objectData->children())
   {
-    addObject(data, *object, id);
+    addObject(data, *object, group, id);
   }
 }
 

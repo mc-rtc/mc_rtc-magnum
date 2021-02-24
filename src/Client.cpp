@@ -17,7 +17,7 @@
 #include "widgets/NumberSlider.h"
 #include "widgets/Point3D.h"
 #include "widgets/Polygon.h"
-//#include "widgets/Robot.h"
+#include "widgets/Robot.h"
 #include "widgets/Rotation.h"
 #include "widgets/Schema.h"
 #include "widgets/StringInput.h"
@@ -276,13 +276,13 @@ void Client::form_data_combo_input(const ElementId & id,
   widget<Form>(id).widget<form::DataComboInput>(name, required, ref, send_index);
 }
 
-// void Client::robot(const ElementId & id,
-//                   const std::vector<std::string> & params,
-//                   const std::vector<std::vector<double>> & q,
-//                   const sva::PTransformd & posW)
-//{
-//  widget<Robot>(id, params).data(q, posW);
-//}
+void Client::robot(const ElementId & id,
+                   const std::vector<std::string> & params,
+                   const std::vector<std::vector<double>> & q,
+                   const sva::PTransformd & posW)
+{
+  widget<Robot>(id).data(params, q, posW);
+}
 
 void Client::schema(const ElementId & id, const std::string & schema)
 {

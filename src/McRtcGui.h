@@ -63,7 +63,7 @@ struct McRtcGui : public Platform::Application
   void mouseScrollEvent(MouseScrollEvent & event) override;
   void textInputEvent(TextInputEvent & event) override;
 
-  std::unique_ptr<Object3D> loadMesh(const std::string & path);
+  void loadMesh(const std::string & path, Object3D & parent, SceneGraph::DrawableGroup3D & group);
 
   void drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
 
@@ -80,15 +80,17 @@ struct McRtcGui : public Platform::Application
     return *camera_;
   }
 
+  inline Scene3D & scene() noexcept
+  {
+    return scene_;
+  }
+
 private:
   ImGuiIntegration::Context imgui_{NoCreate};
 
   Scene3D scene_;
   SceneGraph::DrawableGroup3D drawables_;
   Containers::Optional<Camera> camera_;
-
-  std::unique_ptr<Object3D> root_;
-  std::unique_ptr<Object3D> root2_;
 
   PluginManager::Manager<Trade::AbstractImporter> manager_;
   Containers::Pointer<Trade::AbstractImporter> importer_;
@@ -107,7 +109,7 @@ private:
 
   ImportedMesh & importData(const std::string & mesh);
 
-  void addObject(ImportedMesh & data, Object3D & parent, UnsignedInt i);
+  void addObject(ImportedMesh & data, Object3D & parent, SceneGraph::DrawableGroup3D & group, UnsignedInt i);
 
   GL::Mesh cubeMesh_;
   GL::Mesh sphereMesh_;

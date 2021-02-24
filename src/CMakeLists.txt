@@ -17,10 +17,12 @@ set(project_SRC
   Widget.h
   widgets/ArrayInput.h
   widgets/ArrayLabel.h
+  widgets/Arrow.h
   widgets/Button.h
   widgets/Checkbox.h
   widgets/ComboInput.h
   widgets/DataComboInput.h
+  widgets/Force.h
   widgets/Form.h
   widgets/IntegerInput.h
   widgets/Label.h
@@ -28,13 +30,19 @@ set(project_SRC
   widgets/NumberSlider.h
   widgets/Point3D.cpp
   widgets/Point3D.h
+  widgets/Polygon.h
+  widgets/Robot.h
+  widgets/Robot.cpp
+  widgets/Rotation.h
   widgets/Schema.cpp
   widgets/Schema.h
   widgets/StringInput.h
   widgets/Table.h
   widgets/Trajectory.h
+  widgets/Transform.h
   widgets/utils.h
   widgets/Widget.h
+  widgets/XYTheta.h
   widgets/details/InteractiveMarker.cpp
   widgets/details/InteractiveMarker.h
   widgets/details/SingleInput.h
@@ -65,6 +73,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     MagnumPlugins::StbImageImporter
     Magnum::ObjImporter
 )
+
+if(TARGET mc_rtc::mc_rtc_ros)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE MC_RTC_HAS_ROS_SUPPORT)
+  target_link_libraries(${PROJECT_NAME} PRIVATE mc_rtc::mc_rtc_ros)
+endif()
 
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
