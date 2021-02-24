@@ -10,6 +10,8 @@
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
 
+#include "assets/Robot_Regular_ttf.h"
+
 class ColoredDrawable : public SceneGraph::Drawable3D
 {
 public:
@@ -90,7 +92,23 @@ McRtcGui::McRtcGui(const Arguments & arguments)
                                                        | Configuration::WindowFlag::Maximized)},
   client_(*this)
 {
-  imgui_ = ImGuiIntegration::Context(Vector2{windowSize()} / dpiScaling(), windowSize(), framebufferSize());
+  {
+    ImGui::CreateContext();
+
+    ImGuiIO & io = ImGui::GetIO();
+    ImFontConfig fontConfig;
+    fontConfig.FontDataOwnedByAtlas = false;
+    io.FontDefault = io.Fonts->AddFontFromMemoryTTF(Roboto_Regular_ttf, Roboto_Regular_ttf_len, 18.0f, &fontConfig);
+
+    ImGui::StyleColorsLight();
+    auto & style = ImGui::GetStyle();
+    style.FrameRounding = 6.0f;
+    auto & bgColor = style.Colors[ImGuiCol_WindowBg];
+    bgColor.w = 0.5f;
+
+    imgui_ = ImGuiIntegration::Context(*ImGui::GetCurrentContext(), Vector2{windowSize()} / dpiScaling(), windowSize(),
+                                       framebufferSize());
+  }
 
   /* Set up proper blending to be used by ImGui. There's a great chance
      you'll need this exact behavior for the rest of your scene. If not, set
