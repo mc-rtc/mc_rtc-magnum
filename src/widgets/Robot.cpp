@@ -144,8 +144,11 @@ struct RobotImpl
                                       const rbd::parsers::Visual & visual) {
         draws.push_back([this, bIdx, visual]() {
           const auto & cylinder = boost::get<rbd::parsers::Geometry::Cylinder>(visual.geometry.data);
-          const auto & X_0_b = visual.origin * robot().bodyPosW()[bIdx];
-          // FIXME
+          const auto & start = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, -cylinder.length / 2}) * visual.origin
+                               * robot().bodyPosW()[bIdx];
+          const auto & end = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, cylinder.length}) * start;
+          gui().drawArrow(translation(start), translation(end), 2 * cylinder.radius, 0.0f, 0.0f,
+                          color(visual.material));
         });
       };
       auto loadSphereCallback = [&](std::vector<std::function<void()>> & draws, size_t bIdx,
