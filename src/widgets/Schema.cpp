@@ -9,9 +9,15 @@ namespace details
 
 inline bfs::path current_path()
 {
-  auto cwd = get_current_dir_name();
+  std::vector<char> buffer;
+  buffer.reserve(2048);
+  auto cwd = getcwd(buffer.data(), buffer.capacity());
+  while(cwd == nullptr)
+  {
+    buffer.reserve(2 * buffer.capacity());
+    cwd = getcwd(buffer.data(), buffer.capacity());
+  }
   bfs::path out(cwd);
-  free(cwd);
   return out;
 }
 
