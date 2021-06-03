@@ -10,6 +10,9 @@
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
 
+#include <boost/filesystem.hpp>
+namespace bfs = boost::filesystem;
+
 #include "assets/Robot_Regular_ttf.h"
 
 class ColoredDrawable : public SceneGraph::Drawable3D
@@ -133,7 +136,8 @@ McRtcGui::McRtcGui(const Arguments & arguments)
     camera_.emplace(scene_, eye, center, up, 60.0_degf, windowSize(), framebufferSize());
   }
 
-  client_.connect("ipc:///tmp/mc_rtc_pub.ipc", "ipc:///tmp/mc_rtc_rep.ipc");
+  std::string socket = fmt::format("ipc://{}", (bfs::temp_directory_path() / "mc_rtc_").string());
+  client_.connect(socket + "pub.ipc", socket + "rep.ipc");
   client_.timeout(1.0);
 
   /** Grid */
