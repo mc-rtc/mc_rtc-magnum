@@ -56,8 +56,9 @@ bool InteractiveMarker::draw(const Camera & camera)
     return false;
   }
   ImGuizmo::SetID(id_);
-  auto view = camera.viewMatrix();
-  auto projection = camera.camera().projectionMatrix();
+  ImGuizmo::SetOrthographic(camera.isOrthographic());
+  auto view = camera.camera()->cameraMatrix();
+  auto projection = camera.camera()->projectionMatrix();
   Magnum::Matrix4 mat = convert(pose_);
   float m[16];
   memcpy(&m, mat.data(), 16 * sizeof(float));

@@ -130,10 +130,7 @@ McRtcGui::McRtcGui(const Arguments & arguments)
 
   /** Camera setup */
   {
-    const Vector3 eye{2.5f, -1.5f, 1.5f};
-    const Vector3 center{0.0f, 0.0f, 0.75f};
-    const Vector3 up = Vector3::zAxis();
-    camera_.emplace(scene_, eye, center, up, 60.0_degf, windowSize(), framebufferSize());
+    camera_.emplace(*this, scene_);
   }
 
   std::string socket = fmt::format("ipc://{}", (bfs::temp_directory_path() / "mc_rtc_").string());
@@ -321,8 +318,7 @@ void McRtcGui::drawEvent()
 
   client_.update();
 
-  camera_->update();
-  camera_->draw(drawables_);
+  camera_->camera()->draw(drawables_);
   drawFrame({}, 0.1);
 
   imgui_.newFrame();
@@ -373,7 +369,10 @@ void McRtcGui::viewportEvent(ViewportEvent & event)
 
   imgui_.relayout(Vector2{event.windowSize()} / event.dpiScaling(), event.windowSize(), event.framebufferSize());
 
-  camera_->reshape(event.windowSize(), event.framebufferSize());
+  if(camera_)
+  {
+    camera_->viewportEvent(event);
+  }
 }
 
 void McRtcGui::keyPressEvent(KeyEvent & event)
@@ -382,6 +381,7 @@ void McRtcGui::keyPressEvent(KeyEvent & event)
   {
     return;
   }
+  camera_->keyPressEvent(*this, event);
 }
 
 void McRtcGui::keyReleaseEvent(KeyEvent & event)
@@ -395,9 +395,7 @@ void McRtcGui::mousePressEvent(MouseEvent & event)
   {
     return;
   }
-  camera_->initTransformation(event.position());
-  event.setAccepted();
-  redraw();
+  camera_->mousePressEvent(*this, event);
 }
 
 void McRtcGui::mouseReleaseEvent(MouseEvent & event)
@@ -414,20 +412,7 @@ void McRtcGui::mouseMoveEvent(MouseMoveEvent & event)
   {
     return;
   }
-  if(!event.buttons())
-  {
-    return;
-  }
-  if(event.modifiers() & MouseMoveEvent::Modifier::Shift)
-  {
-    camera_->translate(event.position());
-  }
-  else
-  {
-    camera_->rotate(event.position());
-  }
-  event.setAccepted();
-  redraw();
+  camera_->mouseMoveEvent(*this, event);
 }
 
 void McRtcGui::mouseScrollEvent(MouseScrollEvent & event)
@@ -438,14 +423,7 @@ void McRtcGui::mouseScrollEvent(MouseScrollEvent & event)
     event.setAccepted();
     return;
   }
-  const auto delta = event.offset().y();
-  if(Math::abs(delta) < 1.0e-2f)
-  {
-    return;
-  }
-  camera_->zoom(delta);
-  event.setAccepted();
-  redraw();
+  camera_->mouseScrollEvent(*this, event);
 }
 
 void McRtcGui::textInputEvent(TextInputEvent & event)
@@ -514,7 +492,7 @@ void McRtcGui::drawArrow(Vector3 start, Vector3 end, float shaft_diam, float hea
 
 void McRtcGui::drawFrame(Matrix4 pos, float scale)
 {
-  auto & camera = camera_->camera();
+  auto & camera = *camera_->camera();
   vertexShader_
       .setTransformationProjectionMatrix(camera.projectionMatrix() * camera.cameraMatrix() * pos
                                          * Matrix4::scaling(Vector3{scale}))
@@ -523,7 +501,7 @@ void McRtcGui::drawFrame(Matrix4 pos, float scale)
 
 void McRtcGui::draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & worldTransform)
 {
-  auto & camera = camera_->camera();
+  auto & camera = *camera_->camera();
   Matrix4 transform = camera.cameraMatrix() * worldTransform;
   shader_.setDiffuseColor(color)
       .setAmbientColor(Color3::fromHsv({color.hue(), 1.0f, 0.3f}))

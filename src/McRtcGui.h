@@ -1,50 +1,9 @@
 #pragma once
 
-#include <Corrade/Containers/Optional.h>
-#include <Corrade/PluginManager/Manager.h>
-#include <Magnum/GL/DefaultFramebuffer.h>
-#include <Magnum/GL/Mesh.h>
-#include <Magnum/GL/Renderer.h>
-#include <Magnum/GL/TextureFormat.h>
-#include <Magnum/ImGuiIntegration/Context.hpp>
-#include <Magnum/ImageView.h>
-#include <Magnum/Math/Color.h>
-#include <Magnum/MeshTools/Compile.h>
-#include <Magnum/PixelFormat.h>
-#include <Magnum/SceneGraph/Camera.h>
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/Shaders/Flat.h>
-#include <Magnum/Shaders/Phong.h>
-#include <Magnum/Shaders/VertexColor.h>
-#include <Magnum/Trade/AbstractImporter.h>
-#include <Magnum/Trade/ImageData.h>
-#include <Magnum/Trade/MeshData.h>
-#include <Magnum/Trade/MeshObjectData3D.h>
-#include <Magnum/Trade/PhongMaterialData.h>
-#include <Magnum/Trade/SceneData.h>
-#include <Magnum/Trade/TextureData.h>
-
-#ifdef CORRADE_TARGET_ANDROID
-#  include <Magnum/Platform/AndroidApplication.h>
-#elif defined(CORRADE_TARGET_EMSCRIPTEN)
-#  include <Magnum/Platform/EmscriptenApplication.h>
-#else
-#  include <Magnum/Platform/GlfwApplication.h>
-#endif
-
-#include "Camera.h"
 #include "Client.h"
 #include "ImGuizmo.h"
 
-using namespace Magnum;
-using namespace Math::Literals;
-
-using Transform3D = SceneGraph::MatrixTransformation3D;
-using Object3D = SceneGraph::Object<Transform3D>;
-using Scene3D = SceneGraph::Scene<Transform3D>;
+#include "Camera.h"
 
 struct McRtcGui : public Platform::Application
 {

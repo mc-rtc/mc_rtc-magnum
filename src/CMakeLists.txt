@@ -10,6 +10,7 @@ set(project_SRC
   McRtcGui.h
   McRtcGui.cpp
   Camera.h
+  Camera.cpp
   Category.h
   Category.cpp
   Client.h

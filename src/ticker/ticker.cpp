@@ -46,8 +46,7 @@ int main()
   size_t nextStep = 0;
   bool stepByStep = false;
   auto gui = controller.controller().gui();
-  auto toogleStepByStep = [&]()
-  {
+  auto toogleStepByStep = [&]() {
     if(stepByStep)
     {
       stepByStep = false;
@@ -62,11 +61,9 @@ int main()
   if(gui)
   {
     gui->addElement({"Ticker"}, mc_rtc::gui::Button("Stop", [&ticker_run]() { ticker_run = false; }),
-                    mc_rtc::gui::Checkbox(
-                        "Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
+                    mc_rtc::gui::Checkbox("Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
     auto dt = controller.timestep();
-    auto buttonText = [&](size_t n)
-    {
+    auto buttonText = [&](size_t n) {
       size_t n_ms = std::ceil(n * 1000 * dt);
       return "+" + std::to_string(n_ms) + "ms";
     };
@@ -78,8 +75,7 @@ int main()
                     mc_rtc::gui::Button(buttonText(100), [&]() { nextStep = 100; }));
   }
 
-  auto runController = [&]()
-  {
+  auto runController = [&]() {
     auto & mbc = controller.robot().mbc();
     const auto & rjo = controller.ref_joint_order();
     q.resize(rjo.size());
@@ -99,8 +95,7 @@ int main()
     controller.setEncoderValues(q);
     controller.run();
   };
-  auto updateGUI = [&]()
-  {
+  auto updateGUI = [&]() {
     controller.running = false;
     controller.run();
     controller.running = true;

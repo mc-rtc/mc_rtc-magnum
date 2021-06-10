@@ -228,7 +228,7 @@ struct RobotImpl
       {
         d();
       }
-      gui().camera().camera().draw(visualGroup_);
+      gui().camera().camera()->draw(visualGroup_);
     }
     if(drawCollisionModel_)
     {
@@ -236,7 +236,7 @@ struct RobotImpl
       {
         d();
       }
-      gui().camera().camera().draw(collisionGroup_);
+      gui().camera().camera()->draw(collisionGroup_);
     }
   }
 

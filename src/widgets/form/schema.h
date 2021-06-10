@@ -49,6 +49,8 @@ struct ObjectForm : public Widget
 
   void collect(mc_rtc::Configuration & out) override;
 
+  using Widget::value;
+
   std::optional<std::string> value(const std::string & name) const;
 
   inline bool trivial() const override
