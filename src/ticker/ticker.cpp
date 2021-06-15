@@ -6,6 +6,22 @@
 #include <chrono>
 #include <iostream>
 
+static constexpr int MC_RTC_VERSION_MAJOR = mc_rtc::MC_RTC_VERSION[0] - '0';
+
+template<typename T>
+mc_rtc::gui::StateBuilder * get_gui(T & gc)
+{
+  static_assert(std::is_same_v<T, mc_control::MCGlobalController>);
+  if constexpr(MC_RTC_VERSION_MAJOR >= 2)
+  {
+    return &gc.controller().gui();
+  }
+  else
+  {
+    return gc.controller().gui().get();
+  }
+}
+
 int main()
 {
   if(mc_rtc::MC_RTC_VERSION != mc_rtc::version())
@@ -45,7 +61,6 @@ int main()
 
   size_t nextStep = 0;
   bool stepByStep = false;
-  auto gui = controller.controller().gui();
   auto toogleStepByStep = [&]() {
     if(stepByStep)
     {
@@ -58,6 +73,7 @@ int main()
     }
   };
   bool ticker_run = true;
+  mc_rtc::gui::StateBuilder * gui = get_gui(controller);
   if(gui)
   {
     gui->addElement({"Ticker"}, mc_rtc::gui::Button("Stop", [&ticker_run]() { ticker_run = false; }),
