@@ -40,14 +40,14 @@ void Camera::setProjection(const Vector2i & windowSize)
 {
   if(orthographic_)
   {
-    camera_->setProjectionMatrix(
-        Matrix4::perspectiveProjection(60.0_degf, Vector2{windowSize}.aspectRatio(), 0.01f, 100.0f));
-  }
-  else
-  {
     Float ratio = Vector2{windowSize}.aspectRatio();
     Float distance = (cameraPosition_ - focusPoint_).length() / 2.0f;
     camera_->setProjectionMatrix(Matrix4::orthographicProjection(Vector2{ratio * distance, distance}, 0.01, 100.0f));
+  }
+  else
+  {
+    camera_->setProjectionMatrix(
+        Matrix4::perspectiveProjection(60.0_degf, Vector2{windowSize}.aspectRatio(), 0.01f, 100.0f));
   }
 }
 
