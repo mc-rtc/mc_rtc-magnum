@@ -16,7 +16,9 @@ namespace bfs = boost::filesystem;
 namespace details
 {
 
+#ifndef MC_RTC_VERSION_MAJOR
 static constexpr int MC_RTC_VERSION_MAJOR = mc_rtc::MC_RTC_VERSION[0] - '0';
+#endif
 
 template<typename T>
 void setConfiguration(T & robot, const std::vector<std::vector<double>> & q)

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <mc_rtc/gui/types.h>
+
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Matrix4.h>
-
-#include <mc_rtc/gui/types.h>
 
 inline Magnum::Color4 convert(const mc_rtc::gui::Color & c)
 {

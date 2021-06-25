@@ -6,7 +6,9 @@
 #include <chrono>
 #include <iostream>
 
+#ifndef MC_RTC_VERSION_MAJOR
 static constexpr int MC_RTC_VERSION_MAJOR = mc_rtc::MC_RTC_VERSION[0] - '0';
+#endif
 
 template<typename T>
 mc_rtc::gui::StateBuilder * get_gui(T & gc)
