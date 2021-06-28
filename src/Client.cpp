@@ -27,6 +27,9 @@
 #include "widgets/Visual.h"
 #include "widgets/XYTheta.h"
 
+namespace mc_rtc::magnum
+{
+
 void Client::update()
 {
   run(buffer_, t_last_);
@@ -285,9 +288,7 @@ void Client::robot(const ElementId & id,
   widget<Robot>(id).data(params, q, posW);
 }
 
-void Client::visual(const ElementId & id,
-                    const rbd::parsers::Visual & visual,
-                    const sva::PTransformd & pos)
+void Client::visual(const ElementId & id, const rbd::parsers::Visual & visual, const sva::PTransformd & pos)
 {
   widget<Visual>(id).data(visual, pos);
 }
@@ -316,3 +317,5 @@ auto Client::getCategory(const std::vector<std::string> & category) -> Category 
   }
   return out.get();
 }
+
+} // namespace mc_rtc::magnum

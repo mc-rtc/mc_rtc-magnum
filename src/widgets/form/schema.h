@@ -2,12 +2,15 @@
 
 #include "widgets.h"
 
+namespace mc_rtc::magnum
+{
+
 namespace form
 {
 
 struct ArrayForm : public Widget
 {
-  ArrayForm(const ::Widget & parent, const std::string & name, const mc_rtc::Configuration & schema);
+  ArrayForm(const ::mc_rtc::magnum::Widget & parent, const std::string & name, const mc_rtc::Configuration & schema);
 
   bool ready() override;
 
@@ -36,7 +39,7 @@ protected:
 
 struct ObjectForm : public Widget
 {
-  ObjectForm(const ::Widget & parent,
+  ObjectForm(const ::mc_rtc::magnum::Widget & parent,
              const std::string & name,
              const std::map<std::string, mc_rtc::Configuration> & properties,
              const std::vector<std::string> & required);
@@ -64,3 +67,5 @@ protected:
 };
 
 } // namespace form
+
+} // namespace mc_rtc::magnum

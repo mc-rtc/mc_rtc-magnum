@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 namespace details
 {
 
@@ -25,3 +28,5 @@ struct Robot : public Widget
 private:
   std::unique_ptr<details::RobotImpl> impl_;
 };
+
+} // namespace mc_rtc::magnum

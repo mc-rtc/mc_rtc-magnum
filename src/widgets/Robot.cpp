@@ -5,6 +5,9 @@
 
 #include <mc_rtc/version.h>
 
+namespace mc_rtc::magnum
+{
+
 namespace details
 {
 
@@ -52,8 +55,6 @@ struct RobotImpl
 {
   RobotImpl(Robot & robot) : self_(robot)
   {
-    collisionRoot_.setParent(&gui().scene());
-    visualRoot_.setParent(&gui().scene());
     if(self_.id.category.size() > 1)
     {
       drawVisualModel_ = false;
@@ -82,13 +83,14 @@ struct RobotImpl
         return;
       }
       robots_ = mc_rbdyn::loadRobot(*rm);
-      auto loadMeshCallback = [&](std::vector<std::function<void()>> & draws, Object3D & root,
-                                  SceneGraph::DrawableGroup3D & group, size_t bIdx,
-                                  const rbd::parsers::Visual & visual) {
+      using Objects = std::vector<std::shared_ptr<CommonDrawable>>;
+      auto loadMeshCallback = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
+                                  const rbd::parsers::Visual & visual, bool hidden) {
         const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
         auto path = convertURI(mesh.filename);
-        auto object = std::make_shared<Object3D>(&root);
-        gui().loadMesh(path.string(), *object, group);
+        auto object = gui().loadMesh(path.string());
+        object->hidden(hidden);
+        objects.push_back(object);
         draws.push_back([this, bIdx, visual, object]() {
           const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
           object->setTransformation(convert(X_0_b));
@@ -121,16 +123,15 @@ struct RobotImpl
           gui().drawSphere(translation(X_0_b), static_cast<float>(sphere.radius), color(visual.material));
         });
       };
-      auto loadBodyCallbacks = [&](std::vector<std::function<void()>> & draws, Object3D & root,
-                                   SceneGraph::DrawableGroup3D & group, size_t bIdx,
-                                   const std::vector<rbd::parsers::Visual> & visuals) {
+      auto loadBodyCallbacks = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
+                                   const std::vector<rbd::parsers::Visual> & visuals, bool hidden) {
         for(const auto & visual : visuals)
         {
           using Geometry = rbd::parsers::Geometry;
           switch(visual.geometry.type)
           {
             case Geometry::MESH:
-              loadMeshCallback(draws, root, group, bIdx, visual);
+              loadMeshCallback(objects, draws, bIdx, visual, hidden);
               break;
             case Geometry::BOX:
               loadBoxCallback(draws, bIdx, visual);
@@ -146,8 +147,8 @@ struct RobotImpl
           };
         }
       };
-      auto loadCallbacks = [&](std::vector<std::function<void()>> & draws, Object3D & root,
-                               SceneGraph::DrawableGroup3D & group, const auto & visuals) {
+      auto loadCallbacks = [&](Objects & objects, std::vector<std::function<void()>> & draws, const auto & visuals,
+                               bool hidden) {
         draws.clear();
         const auto & bodies = robot().mb().bodies();
         for(size_t i = 0; i < bodies.size(); ++i)
@@ -157,11 +158,11 @@ struct RobotImpl
           {
             continue;
           }
-          loadBodyCallbacks(draws, root, group, i, visuals.at(b.name()));
+          loadBodyCallbacks(objects, draws, i, visuals.at(b.name()), hidden);
         }
       };
-      loadCallbacks(drawVisual_, visualRoot_, visualGroup_, robot().module()._visual);
-      loadCallbacks(drawCollision_, collisionRoot_, collisionGroup_, robot().module()._collision);
+      loadCallbacks(visualObjects_, drawVisual_, robot().module()._visual, !drawVisualModel_);
+      loadCallbacks(collisionObjects_, drawCollision_, robot().module()._collision, !drawCollisionModel_);
     }
     setConfiguration(robot(), q);
     robot().posW(posW);
@@ -173,8 +174,21 @@ struct RobotImpl
     {
       return;
     }
-    ImGui::Checkbox(self_.label(fmt::format("Draw {} visual model", self_.id.name)).c_str(), &drawVisualModel_);
-    ImGui::Checkbox(self_.label(fmt::format("Draw {} collision model", self_.id.name)).c_str(), &drawCollisionModel_);
+    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} visual model", self_.id.name)).c_str(), &drawVisualModel_))
+    {
+      for(auto & o : visualObjects_)
+      {
+        o->hidden(!drawVisualModel_);
+      }
+    }
+    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} collision model", self_.id.name)).c_str(),
+                       &drawCollisionModel_))
+    {
+      for(auto & o : collisionObjects_)
+      {
+        o->hidden(!drawCollisionModel_);
+      }
+    }
   }
 
   void draw3D()
@@ -189,7 +203,6 @@ struct RobotImpl
       {
         d();
       }
-      gui().camera().camera()->draw(visualGroup_);
     }
     if(drawCollisionModel_)
     {
@@ -197,7 +210,6 @@ struct RobotImpl
       {
         d();
       }
-      gui().camera().camera()->draw(collisionGroup_);
     }
   }
 
@@ -206,11 +218,9 @@ private:
   std::shared_ptr<mc_rbdyn::Robots> robots_;
   bool drawVisualModel_ = true;
   bool drawCollisionModel_ = false;
-  Object3D visualRoot_;
-  SceneGraph::DrawableGroup3D visualGroup_;
+  std::vector<std::shared_ptr<CommonDrawable>> visualObjects_;
   std::vector<std::function<void()>> drawVisual_;
-  Object3D collisionRoot_;
-  SceneGraph::DrawableGroup3D collisionGroup_;
+  std::vector<std::shared_ptr<CommonDrawable>> collisionObjects_;
   std::vector<std::function<void()>> drawCollision_;
 };
 
@@ -236,3 +246,5 @@ void Robot::draw3D()
 {
   impl_->draw3D();
 }
+
+} // namespace mc_rtc::magnum

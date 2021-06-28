@@ -5,6 +5,9 @@
 
 #include <iostream>
 
+namespace mc_rtc::magnum
+{
+
 Camera::Camera(Platform::Application & app, Scene3D & scene)
 {
   object_ = new Object3D{&scene};
@@ -186,3 +189,5 @@ void Camera::viewportEvent(ViewportEvent & event)
 {
   setProjection(event.windowSize());
 }
+
+} // namespace mc_rtc::magnum

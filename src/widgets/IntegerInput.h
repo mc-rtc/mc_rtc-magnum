@@ -2,6 +2,9 @@
 
 #include "details/SingleInput.h"
 
+namespace mc_rtc::magnum
+{
+
 struct IntegerInput : public SingleInput<int>
 {
   inline IntegerInput(Client & client, const ElementId & id) : SingleInput<int>(client, id) {}
@@ -27,3 +30,5 @@ struct IntegerInput : public SingleInput<int>
 private:
   int buffer_;
 };
+
+} // namespace mc_rtc::magnum

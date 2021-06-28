@@ -15,6 +15,10 @@ set(project_SRC
   Category.cpp
   Client.h
   Client.cpp
+  Mesh.h
+  Mesh.cpp
+  Primitives.h
+  Primitives.cpp
   Widget.h
   widgets/ArrayInput.h
   widgets/ArrayLabel.h

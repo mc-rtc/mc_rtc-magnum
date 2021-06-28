@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Polygon : public Widget
 {
   Polygon(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -36,3 +39,5 @@ private:
   std::vector<std::vector<Eigen::Vector3d>> points_;
   mc_rtc::gui::LineConfig config_;
 };
+
+} // namespace mc_rtc::magnum

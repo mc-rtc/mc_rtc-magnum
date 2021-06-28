@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Checkbox : public Widget
 {
   inline Checkbox(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -24,3 +27,5 @@ struct Checkbox : public Widget
 private:
   bool data_ = false;
 };
+
+} // namespace mc_rtc::magnum

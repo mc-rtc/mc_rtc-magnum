@@ -15,59 +15,8 @@ namespace bfs = boost::filesystem;
 
 #include "assets/Robot_Regular_ttf.h"
 
-class ColoredDrawable : public SceneGraph::Drawable3D
+namespace mc_rtc::magnum
 {
-public:
-  explicit ColoredDrawable(Object3D & object,
-                           Shaders::Phong & shader,
-                           GL::Mesh & mesh,
-                           const Color4 & color,
-                           SceneGraph::DrawableGroup3D & group)
-  : SceneGraph::Drawable3D{object, &group}, shader_(shader), mesh_(mesh), color_{color}
-  {
-  }
-
-private:
-  void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override
-  {
-    shader_.setDiffuseColor(color_)
-        .setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.normalMatrix())
-        .setProjectionMatrix(camera.projectionMatrix())
-        .draw(mesh_);
-  }
-
-  Shaders::Phong & shader_;
-  GL::Mesh & mesh_;
-  Color4 color_;
-};
-
-class TexturedDrawable : public SceneGraph::Drawable3D
-{
-public:
-  explicit TexturedDrawable(Object3D & object,
-                            Shaders::Phong & shader,
-                            GL::Mesh & mesh,
-                            GL::Texture2D & texture,
-                            SceneGraph::DrawableGroup3D & group)
-  : SceneGraph::Drawable3D{object, &group}, shader_(shader), mesh_(mesh), texture_(texture)
-  {
-  }
-
-private:
-  void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override
-  {
-    shader_.setTransformationMatrix(transformationMatrix)
-        .setNormalMatrix(transformationMatrix.normalMatrix())
-        .setProjectionMatrix(camera.projectionMatrix())
-        .bindDiffuseTexture(texture_)
-        .draw(mesh_);
-  }
-
-  Shaders::Phong & shader_;
-  GL::Mesh & mesh_;
-  GL::Texture2D & texture_;
-};
 
 struct Grid : public SceneGraph::Drawable3D
 {
@@ -116,6 +65,7 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   /* Set up proper blending to be used by ImGui. There's a great chance
      you'll need this exact behavior for the rest of your scene. If not, set
      this only for the drawFrame() call. */
+  GL::Renderer::setFeature(GL::Renderer::Feature::Blending, true);
   GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
   GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha,
                                  GL::Renderer::BlendFunction::OneMinusSourceAlpha);
@@ -242,73 +192,10 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   return out;
 }
 
-void McRtcGui::loadMesh(const std::string & path, Object3D & parent, SceneGraph::DrawableGroup3D & group)
+std::shared_ptr<Mesh> McRtcGui::loadMesh(const std::string & path)
 {
   auto & data = importData(path);
-  if(data.scene_)
-  {
-    for(UnsignedInt objectId : data.scene_->children3D())
-    {
-      addObject(data, parent, group, objectId);
-    }
-  }
-  else if(!data.meshes_.empty() && data.meshes_[0])
-  {
-    new ColoredDrawable{parent, colorShader_, *data.meshes_[0], 0xffffff_rgbf, drawables_};
-  }
-}
-
-void McRtcGui::addObject(ImportedMesh & data, Object3D & parent, SceneGraph::DrawableGroup3D & group, UnsignedInt i)
-{
-  const Containers::Pointer<Trade::ObjectData3D> & objectData = data.objects_[i];
-  if(!objectData)
-  {
-    Error{} << "Cannot import object, skipping";
-    return;
-  }
-
-  /* Add the object to the scene and set its transformation */
-  auto * object = new Object3D{&parent};
-  object->setTransformation(objectData->transformation());
-
-  /* Add a drawable if the object has a mesh and the mesh is loaded */
-  if(objectData->instanceType() == Trade::ObjectInstanceType3D::Mesh && objectData->instance() != -1
-     && data.meshes_[objectData->instance()])
-  {
-    const Int materialId = static_cast<const Trade::MeshObjectData3D *>(objectData.get())->material();
-
-    /* Material not available / not loaded, use a default material */
-    if(materialId == -1 || !data.materials_[materialId])
-    {
-      new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, group};
-    }
-    /* Textured material. If the texture failed to load, again just use a
-       default colored material. */
-    else if(data.materials_[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseTexture))
-    {
-      Containers::Optional<GL::Texture2D> & texture = data.textures_[data.materials_[materialId]->diffuseTexture()];
-      if(texture)
-      {
-        new TexturedDrawable{*object, textureShader_, *data.meshes_[objectData->instance()], *texture, group};
-      }
-      else
-      {
-        new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()], 0xffffff_rgbf, group};
-      }
-    }
-    /* Color-only material */
-    else
-    {
-      new ColoredDrawable{*object, colorShader_, *data.meshes_[objectData->instance()],
-                          data.materials_[materialId]->diffuseColor(), group};
-    }
-  }
-
-  /* Recursively add children */
-  for(std::size_t id : objectData->children())
-  {
-    addObject(data, *object, group, id);
-  }
+  return std::make_shared<Mesh>(&scene_, &drawables_, data, colorShader_, textureShader_);
 }
 
 void McRtcGui::drawEvent()
@@ -318,12 +205,11 @@ void McRtcGui::drawEvent()
 
   client_.update();
 
-  camera_->camera()->draw(drawables_);
-  drawFrame({}, 0.1);
-
   imgui_.newFrame();
   ImGuizmo::BeginFrame();
 
+  drawFrame({}, 0.1);
+  camera_->camera()->draw(drawables_);
   client_.draw3D();
 
   /* Enable text input, if needed */
@@ -511,4 +397,6 @@ void McRtcGui::draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & world
       .draw(mesh);
 }
 
-MAGNUM_APPLICATION_MAIN(McRtcGui)
+} // namespace mc_rtc::magnum
+
+MAGNUM_APPLICATION_MAIN(mc_rtc::magnum::McRtcGui)

@@ -1,12 +1,11 @@
 #include "Visual.h"
 
-Visual::Visual(Client & client, const ElementId & id)
-: Widget(client, id)
+namespace mc_rtc::magnum
 {
-}
 
-void Visual::data(const rbd::parsers::Visual & visual,
-                  const sva::PTransformd & pos)
+Visual::Visual(Client & client, const ElementId & id) : Widget(client, id) {}
+
+void Visual::data(const rbd::parsers::Visual & visual, const sva::PTransformd & pos)
 {
   visual_ = visual;
   // Bake the visual origin in the position
@@ -23,11 +22,9 @@ void Visual::draw3D()
     if(path != mesh_)
     {
       mesh_ = path;
-      object_ = std::make_unique<Object3D>(&client.gui().scene());
-      client.gui().loadMesh(path.string(), *object_, group_);
+      object_ = client.gui().loadMesh(path.string());
     }
     object_->setTransformation(convert(pos_));
-    client.gui().camera().camera()->draw(group_);
   };
   auto handleBox = [&]() {
     const auto & box = boost::get<Geometry::Box>(visual_.geometry.data);
@@ -43,6 +40,10 @@ void Visual::draw3D()
     const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual_.geometry.data);
     client.gui().drawSphere(translation(pos_), static_cast<float>(sphere.radius), color(visual_.material));
   };
+  if(object_ && visual_.geometry.type != Type::MESH)
+  {
+    object_.reset();
+  }
   switch(visual_.geometry.type)
   {
     case Type::MESH:
@@ -61,3 +62,5 @@ void Visual::draw3D()
       break;
   }
 }
+
+} // namespace mc_rtc::magnum

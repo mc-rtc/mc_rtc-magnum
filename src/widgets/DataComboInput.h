@@ -2,6 +2,9 @@
 
 #include "ComboInput.h"
 
+namespace mc_rtc::magnum
+{
+
 struct DataComboInput : public ComboInput
 {
   using ComboInput::ComboInput;
@@ -26,3 +29,5 @@ struct DataComboInput : public ComboInput
     values_ = out(values.back(), std::vector<std::string>{});
   }
 };
+
+} // namespace mc_rtc::magnum

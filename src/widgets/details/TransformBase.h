@@ -3,6 +3,9 @@
 #include "../Widget.h"
 #include "InteractiveMarker.h"
 
+namespace mc_rtc::magnum
+{
+
 template<ControlAxis ctl>
 struct TransformBase : public Widget
 {
@@ -55,3 +58,5 @@ protected:
   ElementId requestId_;
   InteractiveMarker marker_;
 };
+
+} // namespace mc_rtc::magnum

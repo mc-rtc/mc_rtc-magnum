@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Table : public Widget
 {
   Table(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -42,3 +45,5 @@ private:
   std::vector<std::string> header_;
   std::vector<std::vector<std::string>> data_;
 };
+
+} // namespace mc_rtc::magnum

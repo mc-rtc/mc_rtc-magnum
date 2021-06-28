@@ -2,6 +2,9 @@
 
 #include <type_traits>
 
+namespace mc_rtc::magnum
+{
+
 enum class ControlAxis
 {
   NONE = 0,
@@ -29,3 +32,5 @@ inline ControlAxis operator&(ControlAxis lhs, ControlAxis rhs)
   using enum_t = std::underlying_type_t<ControlAxis>;
   return static_cast<ControlAxis>(static_cast<enum_t>(lhs) & static_cast<enum_t>(rhs));
 }
+
+} // namespace mc_rtc::magnum

@@ -2,6 +2,9 @@
 
 #include "Arrow.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Force : public Arrow
 {
   Force(Client & client, const ElementId & id, const ElementId & reqId) : Arrow(client, id, reqId) {}
@@ -13,3 +16,5 @@ struct Force : public Arrow
     Arrow::data(p0, p1, config, true);
   }
 };
+
+} // namespace mc_rtc::magnum

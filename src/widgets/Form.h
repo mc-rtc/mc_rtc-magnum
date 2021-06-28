@@ -4,6 +4,9 @@
 
 #include "form/widgets.h"
 
+namespace mc_rtc::magnum
+{
+
 // FIXME Does not update if the form is changed between two calls
 struct Form : public Widget
 {
@@ -94,3 +97,5 @@ protected:
     }
   }
 };
+
+} // namespace mc_rtc::magnum

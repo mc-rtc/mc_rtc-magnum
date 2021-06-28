@@ -4,6 +4,9 @@
 
 #include "Category.h"
 
+namespace mc_rtc::magnum
+{
+
 struct McRtcGui;
 
 struct Client : public mc_control::ControllerClient
@@ -137,9 +140,7 @@ private:
              const std::vector<std::vector<double>> & q,
              const sva::PTransformd & posW) override;
 
-  void visual(const ElementId & id,
-              const rbd::parsers::Visual & visual,
-              const sva::PTransformd & pos) override;
+  void visual(const ElementId & id, const rbd::parsers::Visual & visual, const sva::PTransformd & pos) override;
 
   void schema(const ElementId & id, const std::string & schema) override;
 
@@ -208,3 +209,5 @@ private:
     }
   }
 };
+
+} // namespace mc_rtc::magnum

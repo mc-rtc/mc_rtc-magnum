@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Button : public Widget
 {
   inline Button(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -16,3 +19,5 @@ struct Button : public Widget
     }
   }
 };
+
+} // namespace mc_rtc::magnum

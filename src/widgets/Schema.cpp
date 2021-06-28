@@ -4,6 +4,9 @@
 
 #include <mc_rtc/config.h>
 
+namespace mc_rtc::magnum
+{
+
 namespace details
 {
 
@@ -122,7 +125,7 @@ void resolveAllOf(mc_rtc::Configuration conf)
 
 struct SchemaForm
 {
-  SchemaForm(const ::Widget & parent, const std::string & name, const mc_rtc::Configuration & schema)
+  SchemaForm(const ::mc_rtc::magnum::Widget & parent, const std::string & name, const mc_rtc::Configuration & schema)
   {
     if(!schema.has("properties"))
     {
@@ -258,3 +261,5 @@ mc_rtc::Configuration & Schema::loadSchema(const bfs::path & path)
   resolveAllOf(schema);
   return schema;
 }
+
+} // namespace mc_rtc::magnum

@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct ComboInput : public Widget
 {
   inline ComboInput(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -53,3 +56,5 @@ protected:
   std::vector<std::string> values_;
   std::string data_;
 };
+
+} // namespace mc_rtc::magnum

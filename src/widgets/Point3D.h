@@ -2,6 +2,9 @@
 
 #include "details/TransformBase.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Point3D : public TransformBase<ControlAxis::TRANSLATION>
 {
   Point3D(Client & client, const ElementId & id, const ElementId & requestId);
@@ -15,3 +18,5 @@ struct Point3D : public TransformBase<ControlAxis::TRANSLATION>
 private:
   mc_rtc::gui::PointConfig config_;
 };
+
+} // namespace mc_rtc::magnum

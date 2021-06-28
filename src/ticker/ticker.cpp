@@ -79,7 +79,8 @@ int main()
   if(gui)
   {
     gui->addElement({"Ticker"}, mc_rtc::gui::Button("Stop", [&ticker_run]() { ticker_run = false; }),
-                    mc_rtc::gui::Checkbox("Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
+                    mc_rtc::gui::Checkbox(
+                        "Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
     auto dt = controller.timestep();
     auto buttonText = [&](size_t n) {
       size_t n_ms = std::ceil(n * 1000 * dt);

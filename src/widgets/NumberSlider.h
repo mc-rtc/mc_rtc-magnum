@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct NumberSlider : public Widget
 {
   inline NumberSlider(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -28,3 +31,5 @@ private:
   float min_;
   float max_;
 };
+
+} // namespace mc_rtc::magnum

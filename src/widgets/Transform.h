@@ -2,6 +2,9 @@
 
 #include "details/TransformBase.h"
 
+namespace mc_rtc::magnum
+{
+
 struct TransformWidget : public TransformBase<ControlAxis::ALL>
 {
   TransformWidget(Client & client, const ElementId & id, const ElementId & reqId) : TransformBase(client, id, reqId) {}
@@ -12,3 +15,5 @@ struct TransformWidget : public TransformBase<ControlAxis::ALL>
     client.gui().drawFrame(convert(marker_.pose()));
   }
 };
+
+} // namespace mc_rtc::magnum

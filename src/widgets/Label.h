@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Label : public Widget
 {
   inline Label(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -21,3 +24,5 @@ struct Label : public Widget
 private:
   std::string txt_;
 };
+
+} // namespace mc_rtc::magnum

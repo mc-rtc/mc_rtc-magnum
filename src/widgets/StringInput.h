@@ -2,6 +2,9 @@
 
 #include "details/SingleInput.h"
 
+namespace mc_rtc::magnum
+{
+
 struct StringInput : public SingleInput<std::string>
 {
   inline StringInput(Client & client, const ElementId & id) : SingleInput<std::string>(client, id) {}
@@ -32,3 +35,5 @@ struct StringInput : public SingleInput<std::string>
 private:
   std::vector<char> buffer_;
 };
+
+} // namespace mc_rtc::magnum

@@ -7,6 +7,9 @@
 #include "../../Camera.h"
 #include "ControlAxis.h"
 
+namespace mc_rtc::magnum
+{
+
 struct InteractiveMarker
 {
   InteractiveMarker(const sva::PTransformd & pose = sva::PTransformd::Identity(), ControlAxis mask = ControlAxis::NONE);
@@ -31,3 +34,5 @@ private:
 };
 
 using InteractiveMarkerPtr = std::unique_ptr<InteractiveMarker>;
+
+} // namespace mc_rtc::magnum

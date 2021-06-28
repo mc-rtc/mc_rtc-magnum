@@ -13,6 +13,9 @@
 #  include <spdlog/fmt/bundled/ranges.h>
 #endif
 
+namespace mc_rtc::magnum
+{
+
 /* Typedef for brievity */
 using ElementId = mc_control::ElementId;
 
@@ -52,3 +55,5 @@ struct Widget
 };
 
 using WidgetPtr = std::unique_ptr<Widget>;
+
+} // namespace mc_rtc::magnum

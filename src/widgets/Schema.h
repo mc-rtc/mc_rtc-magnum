@@ -5,6 +5,9 @@
 #include <boost/filesystem.hpp>
 namespace bfs = boost::filesystem;
 
+namespace mc_rtc::magnum
+{
+
 struct SchemaForm;
 
 struct Schema : public Widget
@@ -30,3 +33,5 @@ private:
   /** Schema form currently selected */
   std::unique_ptr<SchemaForm> form_;
 };
+
+} // namespace mc_rtc::magnum

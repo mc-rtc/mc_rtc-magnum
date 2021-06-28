@@ -2,6 +2,9 @@
 
 #include "../Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 template<typename DataT>
 struct SingleInput : public Widget
 {
@@ -59,3 +62,5 @@ protected:
   bool busy_ = false;
   DataT data_;
 };
+
+} // namespace mc_rtc::magnum

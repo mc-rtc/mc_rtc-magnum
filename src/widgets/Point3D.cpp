@@ -1,5 +1,8 @@
 #include "Point3D.h"
 
+namespace mc_rtc::magnum
+{
+
 Point3D::Point3D(Client & client, const ElementId & id, const ElementId & requestId)
 : TransformBase(client, id, requestId)
 {
@@ -16,3 +19,5 @@ void Point3D::draw3D()
   TransformBase::draw3D();
   client.gui().drawSphere(translation(marker_.pose()), static_cast<float>(config_.scale), convert(config_.color));
 }
+
+} // namespace mc_rtc::magnum

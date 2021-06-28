@@ -6,6 +6,9 @@
 
 #include "../utils.h"
 
+namespace mc_rtc::magnum
+{
+
 static inline bool has(ControlAxis mask, ControlAxis value)
 {
   return static_cast<std::underlying_type_t<ControlAxis>>(mask & value) != 0;
@@ -71,3 +74,5 @@ bool InteractiveMarker::draw(const Camera & camera)
   }
   return changed;
 }
+
+} // namespace mc_rtc::magnum

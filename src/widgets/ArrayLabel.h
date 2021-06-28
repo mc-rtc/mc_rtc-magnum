@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct ArrayLabel : public Widget
 {
   inline ArrayLabel(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -78,3 +81,5 @@ private:
   std::vector<std::string> labels_;
   Eigen::VectorXd data_;
 };
+
+} // namespace mc_rtc::magnum

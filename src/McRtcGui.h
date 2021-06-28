@@ -4,6 +4,10 @@
 #include "ImGuizmo.h"
 
 #include "Camera.h"
+#include "Mesh.h"
+
+namespace mc_rtc::magnum
+{
 
 struct McRtcGui : public Platform::Application
 {
@@ -22,7 +26,7 @@ struct McRtcGui : public Platform::Application
   void mouseScrollEvent(MouseScrollEvent & event) override;
   void textInputEvent(TextInputEvent & event) override;
 
-  void loadMesh(const std::string & path, Object3D & parent, SceneGraph::DrawableGroup3D & group);
+  std::shared_ptr<Mesh> loadMesh(const std::string & path);
 
   void drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
 
@@ -56,19 +60,9 @@ private:
   Shaders::Phong colorShader_;
   Shaders::Phong textureShader_{Shaders::Phong::Flag::DiffuseTexture};
 
-  struct ImportedMesh
-  {
-    Containers::Array<Containers::Optional<GL::Mesh>> meshes_;
-    Containers::Array<Containers::Optional<Trade::PhongMaterialData>> materials_;
-    Containers::Array<Containers::Optional<GL::Texture2D>> textures_;
-    Containers::Optional<Trade::SceneData> scene_;
-    Containers::Array<Containers::Pointer<Trade::ObjectData3D>> objects_;
-  };
   std::unordered_map<std::string, ImportedMesh> importedData_;
 
   ImportedMesh & importData(const std::string & mesh);
-
-  void addObject(ImportedMesh & data, Object3D & parent, SceneGraph::DrawableGroup3D & group, UnsignedInt i);
 
   GL::Mesh cubeMesh_;
   GL::Mesh sphereMesh_;
@@ -80,3 +74,5 @@ private:
 
   void draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & worldTransform = {});
 };
+
+} // namespace mc_rtc::magnum

@@ -35,6 +35,9 @@
 #  include <Magnum/Platform/GlfwApplication.h>
 #endif
 
+namespace mc_rtc::magnum
+{
+
 using namespace Magnum;
 using namespace Math::Literals;
 
@@ -83,3 +86,5 @@ private:
   void setProjection(const Vector2i & windowSize);
   void swapProjectionType(Platform::Application & app);
 };
+
+} // namespace mc_rtc::magnum

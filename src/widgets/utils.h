@@ -17,6 +17,9 @@ namespace bfs = boost::filesystem;
 
 #include <RBDyn/parsers/common.h>
 
+namespace mc_rtc::magnum
+{
+
 inline Magnum::Color4 convert(const mc_rtc::gui::Color & c)
 {
   return {static_cast<float>(c.r), static_cast<float>(c.g), static_cast<float>(c.b), static_cast<float>(c.a)};
@@ -121,3 +124,4 @@ inline Magnum::Color4 color(const rbd::parsers::Material & m)
   return {1.0f, 1.0f, 1.0f, 1.0f};
 }
 
+} // namespace mc_rtc::magnum

@@ -4,6 +4,9 @@
 
 #include "details/InteractiveMarker.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Arrow : public Widget
 {
   Arrow(Client & client, const ElementId & id, const ElementId & reqId) : Widget(client, id), requestId_(reqId) {}
@@ -41,3 +44,5 @@ private:
   InteractiveMarker startMarker_;
   InteractiveMarker endMarker_;
 };
+
+} // namespace mc_rtc::magnum

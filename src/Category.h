@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct Category;
 using CategoryPtr = std::unique_ptr<Category>;
 
@@ -26,3 +29,5 @@ struct Category
   void started();
   void stopped();
 };
+
+} // namespace mc_rtc::magnum

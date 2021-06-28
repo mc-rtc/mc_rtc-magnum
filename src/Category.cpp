@@ -2,6 +2,9 @@
 
 #include "imgui.h"
 
+namespace mc_rtc::magnum
+{
+
 void Category::draw2D()
 {
   int sid = -100;
@@ -87,3 +90,5 @@ void Category::stopped()
     widgets.erase(it, widgets.end());
   }
 }
+
+} // namespace mc_rtc::magnum

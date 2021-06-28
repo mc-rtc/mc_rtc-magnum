@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 template<typename T>
 struct Trajectory : public Widget
 {
@@ -58,3 +61,5 @@ private:
   std::vector<T> points_;
   mc_rtc::gui::LineConfig config_;
 };
+
+} // namespace mc_rtc::magnum

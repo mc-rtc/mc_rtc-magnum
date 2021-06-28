@@ -2,6 +2,9 @@
 
 #include "Widget.h"
 
+namespace mc_rtc::magnum
+{
+
 struct ArrayInput : public Widget
 {
   inline ArrayInput(Client & client, const ElementId & id) : Widget(client, id) {}
@@ -70,3 +73,5 @@ private:
   Eigen::VectorXd data_;
   Eigen::VectorXd buffer_;
 };
+
+} // namespace mc_rtc::magnum
