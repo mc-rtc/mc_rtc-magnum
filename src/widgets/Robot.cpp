@@ -54,6 +54,10 @@ struct RobotImpl
   {
     collisionRoot_.setParent(&gui().scene());
     visualRoot_.setParent(&gui().scene());
+    if(self_.id.category.size() > 1)
+    {
+      drawVisualModel_ = false;
+    }
   }
 
   inline mc_rbdyn::Robot & robot()
