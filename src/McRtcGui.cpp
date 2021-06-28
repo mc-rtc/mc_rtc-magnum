@@ -504,7 +504,7 @@ void McRtcGui::draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & world
   auto & camera = *camera_->camera();
   Matrix4 transform = camera.cameraMatrix() * worldTransform;
   shader_.setDiffuseColor(color)
-      .setAmbientColor(Color3::fromHsv({color.hue(), 1.0f, 0.3f}))
+      .setAmbientColor(Color4::fromHsv({color.hue(), 1.0f, 0.3f}, color.a()))
       .setTransformationMatrix(transform)
       .setNormalMatrix(transform.normalMatrix())
       .setProjectionMatrix(camera.projectionMatrix())
