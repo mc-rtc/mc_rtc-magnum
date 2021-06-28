@@ -42,6 +42,8 @@ set(project_SRC
   widgets/Trajectory.h
   widgets/Transform.h
   widgets/utils.h
+  widgets/Visual.h
+  widgets/Visual.cpp
   widgets/Widget.h
   widgets/XYTheta.h
   widgets/details/InteractiveMarker.cpp

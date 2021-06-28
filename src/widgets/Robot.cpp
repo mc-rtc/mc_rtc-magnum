@@ -1,16 +1,8 @@
 #include "Robot.h"
 
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
-
-#ifdef MC_RTC_HAS_ROS_SUPPORT
-#  include <ros/package.h>
-#endif
-
 #include <mc_rbdyn/RobotLoader.h>
 #include <mc_rbdyn/Robots.h>
 
-#include <mc_rtc/config.h>
 #include <mc_rtc/version.h>
 
 namespace details
@@ -34,53 +26,7 @@ void setConfiguration(T & robot, const std::vector<std::vector<double>> & q)
   }
 }
 
-inline bfs::path convertURI(const std::string & uri)
-{
-  const std::string package = "package://";
-  if(uri.size() >= package.size() && uri.find(package) == 0)
-  {
-    size_t split = uri.find('/', package.size());
-    std::string pkg = uri.substr(package.size(), split - package.size());
-    auto leaf = bfs::path(uri.substr(split + 1));
-    bfs::path MC_ENV_DESCRIPTION_PATH(mc_rtc::MC_ENV_DESCRIPTION_PATH);
-#ifndef __EMSCRIPTEN__
-#  ifndef MC_RTC_HAS_ROS_SUPPORT
-    // FIXME Prompt the user for unknown packages
-    if(pkg == "jvrc_description")
-    {
-      pkg = (MC_ENV_DESCRIPTION_PATH / ".." / "jvrc_description").string();
-    }
-    else if(pkg == "mc_env_description")
-    {
-      pkg = MC_ENV_DESCRIPTION_PATH.string();
-    }
-    else if(pkg == "mc_int_obj_description")
-    {
-      pkg = (MC_ENV_DESCRIPTION_PATH / ".." / "mc_int_obj_description").string();
-    }
-    else
-    {
-      mc_rtc::log::critical("Cannot resolve package: {}", pkg);
-    }
-#  else
-    pkg = ros::package::getPath(pkg);
-#  endif
-#else
-    pkg = "/assets/" + pkg;
-#endif
-    return pkg / leaf;
-  }
-  const std::string file = "file://";
-  if(uri.size() >= file.size() && uri.find(file) == 0)
-  {
-    return bfs::path(uri.substr(file.size()));
-  }
-  return uri;
-}
-
-mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p);
-
-mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p)
+inline mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p)
 {
   mc_rbdyn::RobotModulePtr rm{nullptr};
   if(p.size() == 1)
@@ -100,16 +46,6 @@ mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p)
     mc_rtc::log::warning("Too many parameters provided to load the robot, complain to the developpers of this package");
   }
   return rm;
-}
-
-inline Magnum::Color4 color(const rbd::parsers::Material & m)
-{
-  if(m.type == rbd::parsers::Material::Type::COLOR)
-  {
-    const auto & c = boost::get<rbd::parsers::Material::Color>(m.data);
-    return {static_cast<float>(c.r), static_cast<float>(c.g), static_cast<float>(c.b), static_cast<float>(c.a)};
-  }
-  return {1.0f, 1.0f, 1.0f, 1.0f};
 }
 
 struct RobotImpl

@@ -24,6 +24,7 @@
 #include "widgets/Table.h"
 #include "widgets/Trajectory.h"
 #include "widgets/Transform.h"
+#include "widgets/Visual.h"
 #include "widgets/XYTheta.h"
 
 void Client::update()
@@ -282,6 +283,13 @@ void Client::robot(const ElementId & id,
                    const sva::PTransformd & posW)
 {
   widget<Robot>(id).data(params, q, posW);
+}
+
+void Client::visual(const ElementId & id,
+                    const rbd::parsers::Visual & visual,
+                    const sva::PTransformd & pos)
+{
+  widget<Visual>(id).data(visual, pos);
 }
 
 void Client::schema(const ElementId & id, const std::string & schema)
