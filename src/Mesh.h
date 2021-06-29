@@ -22,7 +22,8 @@ struct Mesh : public CommonDrawable
        SceneGraph::DrawableGroup3D * group,
        ImportedMesh & data,
        Shaders::Phong & colorShader,
-       Shaders::Phong & textureShader);
+       Shaders::Phong & textureShader,
+       Color4 color);
 
 private:
   std::vector<CommonDrawable *> drawables_;
@@ -32,7 +33,8 @@ private:
                  ImportedMesh & data,
                  UnsignedInt idx,
                  Shaders::Phong & colorShader,
-                 Shaders::Phong & textureShader);
+                 Shaders::Phong & textureShader,
+                 Color4 color);
 
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
 };

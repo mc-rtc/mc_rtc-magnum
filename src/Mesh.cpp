@@ -7,19 +7,20 @@ Mesh::Mesh(Object3D * parent,
            SceneGraph::DrawableGroup3D * group,
            ImportedMesh & data,
            Shaders::Phong & colorShader,
-           Shaders::Phong & textureShader)
+           Shaders::Phong & textureShader,
+           Color4 color)
 : CommonDrawable(parent, group)
 {
   if(data.scene_)
   {
     for(UnsignedInt id : data.scene_->children3D())
     {
-      addObject(this, group, data, id, colorShader, textureShader);
+      addObject(this, group, data, id, colorShader, textureShader, color);
     }
   }
   else if(!data.meshes_.empty() && data.meshes_[0])
   {
-    drawables_.push_back(new ColoredDrawable(this, group, colorShader, *data.meshes_[0], 0xffffff_rgbf));
+    drawables_.push_back(new ColoredDrawable(this, group, colorShader, *data.meshes_[0], color));
   }
 }
 
@@ -28,7 +29,8 @@ void Mesh::addObject(Object3D * parent,
                      ImportedMesh & data,
                      UnsignedInt idx,
                      Shaders::Phong & colorShader,
-                     Shaders::Phong & textureShader)
+                     Shaders::Phong & textureShader,
+                     Color4 color)
 {
   const auto & objectData = data.objects_[idx];
   if(!objectData)
@@ -49,7 +51,7 @@ void Mesh::addObject(Object3D * parent,
     /* Material not available / not loaded, use a default material */
     if(materialId == -1 || !data.materials_[materialId])
     {
-      drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], 0xffffff_rgbf};
+      drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], color};
     }
     /* Textured material. If the texture failed to load, again just use a
        default colored material. */
@@ -62,15 +64,13 @@ void Mesh::addObject(Object3D * parent,
       }
       else
       {
-        drawable =
-            new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], 0xffffff_rgbf};
+        drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], color};
       }
     }
     /* Color-only material */
     else
     {
-      drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()],
-                                     data.materials_[materialId]->diffuseColor()};
+      drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], color};
     }
   }
 
@@ -88,7 +88,7 @@ void Mesh::addObject(Object3D * parent,
   /* Recursively add children */
   for(std::size_t id : objectData->children())
   {
-    addObject(object, group, data, id, colorShader, textureShader);
+    addObject(object, group, data, id, colorShader, textureShader, color);
   }
 }
 

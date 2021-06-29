@@ -88,7 +88,7 @@ struct RobotImpl
                                   const rbd::parsers::Visual & visual, bool hidden) {
         const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
         auto path = convertURI(mesh.filename);
-        auto object = gui().loadMesh(path.string());
+        auto object = gui().loadMesh(path.string(), color(visual.material));
         object->hidden(hidden);
         objects.push_back(object);
         draws.push_back([this, bIdx, visual, object]() {

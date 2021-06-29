@@ -26,7 +26,7 @@ struct McRtcGui : public Platform::Application
   void mouseScrollEvent(MouseScrollEvent & event) override;
   void textInputEvent(TextInputEvent & event) override;
 
-  std::shared_ptr<Mesh> loadMesh(const std::string & path);
+  std::shared_ptr<Mesh> loadMesh(const std::string & path, Color4 color);
 
   void drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
 

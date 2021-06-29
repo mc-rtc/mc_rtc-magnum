@@ -22,7 +22,7 @@ void Visual::draw3D()
     if(path != mesh_)
     {
       mesh_ = path;
-      object_ = client.gui().loadMesh(path.string());
+      object_ = client.gui().loadMesh(path.string(), color(visual_.material));
     }
     object_->setTransformation(convert(pos_));
   };

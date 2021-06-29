@@ -192,10 +192,10 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   return out;
 }
 
-std::shared_ptr<Mesh> McRtcGui::loadMesh(const std::string & path)
+std::shared_ptr<Mesh> McRtcGui::loadMesh(const std::string & path, Color4 color)
 {
   auto & data = importData(path);
-  return std::make_shared<Mesh>(&scene_, &drawables_, data, colorShader_, textureShader_);
+  return std::make_shared<Mesh>(&scene_, &drawables_, data, colorShader_, textureShader_, color);
 }
 
 void McRtcGui::drawEvent()
