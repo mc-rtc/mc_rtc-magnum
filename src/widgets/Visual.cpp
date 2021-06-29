@@ -16,6 +16,18 @@ void Visual::data(const rbd::parsers::Visual & visual, const sva::PTransformd & 
   pos_ = visual.origin * pos;
 }
 
+void Visual::draw2D()
+{
+  if(object_)
+  {
+    bool show = !object_->hidden();
+    if(ImGui::Checkbox(label(fmt::format("Show {}", id.name)).c_str(), &show))
+    {
+      object_->hidden(!show);
+    }
+  }
+}
+
 void Visual::draw3D()
 {
   using Geometry = rbd::parsers::Geometry;
@@ -55,6 +67,7 @@ void Visual::draw3D()
   {
     object_.reset();
   }
+  typeChanged_ = false;
   switch(visual_.geometry.type)
   {
     case Type::MESH:

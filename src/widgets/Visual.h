@@ -11,7 +11,7 @@ struct Visual : public Widget
 
   void data(const rbd::parsers::Visual & visual, const sva::PTransformd & pos);
 
-  void draw2D() override {}
+  void draw2D() override;
 
   void draw3D() override;
 

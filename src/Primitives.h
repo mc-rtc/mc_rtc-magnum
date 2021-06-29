@@ -15,6 +15,11 @@ public:
   {
   }
 
+  inline bool hidden() const noexcept
+  {
+    return hidden_;
+  }
+
   void hidden(bool hidden) noexcept;
 
   virtual void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) = 0;
