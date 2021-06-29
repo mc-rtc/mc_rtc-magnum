@@ -72,4 +72,21 @@ void TexturedDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::C
       .draw(mesh_);
 }
 
+Sphere::Sphere(Object3D * parent,
+               SceneGraph::DrawableGroup3D * group,
+               Shaders::Phong & shader,
+               GL::Mesh & mesh,
+               Vector3 center,
+               float radius,
+               Color4 color)
+: ColoredDrawable(parent, group, shader, mesh, color), center_(center), radius_(radius)
+{
+  update();
+}
+
+void Sphere::update() noexcept
+{
+  setTransformation(Matrix4::from(Matrix3{Math::IdentityInit, radius_}, center_));
+}
+
 } // namespace mc_rtc::magnum

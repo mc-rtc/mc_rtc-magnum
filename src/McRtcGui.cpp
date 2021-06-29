@@ -322,9 +322,9 @@ void McRtcGui::drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
   draw(cubeMesh_, color, Matrix4::from(ori * Matrix3::fromDiagonal(size / 2.0), center));
 }
 
-void McRtcGui::drawSphere(Vector3 center, float radius, Color4 color)
+SpherePtr McRtcGui::makeSphere(Vector3 center, float radius, Color4 color)
 {
-  draw(sphereMesh_, color, Matrix4::from(Matrix3{Math::IdentityInit, radius}, center));
+  return std::make_shared<Sphere>(&scene_, &drawables_, shader_, sphereMesh_, center, radius, color);
 }
 
 void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickness*/)

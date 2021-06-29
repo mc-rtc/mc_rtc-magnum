@@ -115,12 +115,15 @@ struct RobotImpl
                           color(visual.material));
         });
       };
-      auto loadSphereCallback = [&](std::vector<std::function<void()>> & draws, size_t bIdx,
-                                    const rbd::parsers::Visual & visual) {
-        draws.push_back([this, bIdx, visual]() {
-          const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual.geometry.data);
+      auto loadSphereCallback = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
+                                    const rbd::parsers::Visual & visual, bool hidden) {
+        const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual.geometry.data);
+        auto s = gui().makeSphere({}, static_cast<float>(sphere.radius), color(visual.material));
+        s->hidden(hidden);
+        objects.push_back(s);
+        draws.push_back([this, bIdx, visual, s]() {
           const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-          gui().drawSphere(translation(X_0_b), static_cast<float>(sphere.radius), color(visual.material));
+          s->center(translation(X_0_b));
         });
       };
       auto loadBodyCallbacks = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
@@ -140,7 +143,7 @@ struct RobotImpl
               loadCylinderCallback(draws, bIdx, visual);
               break;
             case Geometry::SPHERE:
-              loadSphereCallback(draws, bIdx, visual);
+              loadSphereCallback(objects, draws, bIdx, visual, hidden);
               break;
             default:
               break;

@@ -16,7 +16,7 @@ struct Point3D : public TransformBase<ControlAxis::TRANSLATION>
   void draw3D() override;
 
 private:
-  mc_rtc::gui::PointConfig config_;
+  SpherePtr sphere_;
 };
 
 } // namespace mc_rtc::magnum

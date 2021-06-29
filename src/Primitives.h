@@ -2,6 +2,8 @@
 
 #include "Camera.h"
 
+#include <memory>
+
 namespace mc_rtc::magnum
 {
 
@@ -44,7 +46,7 @@ public:
     color_ = color;
   }
 
-private:
+protected:
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
 
   Shaders::Phong & shader_;
@@ -68,5 +70,35 @@ private:
   GL::Mesh & mesh_;
   GL::Texture2D & texture_;
 };
+
+class Sphere : public ColoredDrawable
+{
+public:
+  explicit Sphere(Object3D * parent,
+                  SceneGraph::DrawableGroup3D * group,
+                  Shaders::Phong & shader,
+                  GL::Mesh & mesh,
+                  Vector3 center,
+                  float radius,
+                  Color4 color);
+
+  inline void center(const Vector3 & c) noexcept
+  {
+    center_ = c;
+    update();
+  }
+
+  inline void radius(float radius) noexcept
+  {
+    radius_ = radius;
+    update();
+  }
+private:
+  Vector3 center_;
+  float radius_;
+  void update() noexcept;
+};
+
+using SpherePtr = std::shared_ptr<Sphere>;
 
 } // namespace mc_rtc::magnum

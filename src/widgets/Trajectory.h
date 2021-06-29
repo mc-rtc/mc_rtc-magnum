@@ -53,13 +53,18 @@ struct Trajectory : public Widget
     else
     {
       client.gui().drawCube(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c);
-      client.gui().drawSphere(translation(points_.back()), 0.04, c);
+      if(!sphereMarker_)
+      {
+        sphereMarker_ = client.gui().makeSphere(translation(points_.back()), 0.04f, c);
+      }
+      sphereMarker_->center(translation(points_.back()));
     }
   }
 
 private:
   std::vector<T> points_;
   mc_rtc::gui::LineConfig config_;
+  SpherePtr sphereMarker_;
 };
 
 } // namespace mc_rtc::magnum

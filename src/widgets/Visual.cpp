@@ -7,6 +7,10 @@ Visual::Visual(Client & client, const ElementId & id) : Widget(client, id) {}
 
 void Visual::data(const rbd::parsers::Visual & visual, const sva::PTransformd & pos)
 {
+  if(visual_.geometry.type != visual.geometry.type)
+  {
+    typeChanged_ = true;
+  }
   visual_ = visual;
   // Bake the visual origin in the position
   pos_ = visual.origin * pos;
@@ -38,9 +42,16 @@ void Visual::draw3D()
   };
   auto handleSphere = [&]() {
     const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual_.geometry.data);
-    client.gui().drawSphere(translation(pos_), static_cast<float>(sphere.radius), color(visual_.material));
+    if(!object_)
+    {
+      object_ = client.gui().makeSphere(translation(pos_), static_cast<float>(sphere.radius), color(visual_.material));
+    }
+    auto & s = static_cast<Sphere &>(*object_);
+    s.center(translation(pos_));
+    s.radius(static_cast<float>(sphere.radius));
+    s.color(color(visual_.material));
   };
-  if(object_ && visual_.geometry.type != Type::MESH)
+  if(object_ && typeChanged_)
   {
     object_.reset();
   }

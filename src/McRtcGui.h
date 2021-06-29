@@ -30,7 +30,7 @@ struct McRtcGui : public Platform::Application
 
   void drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
 
-  void drawSphere(Vector3 center, float radius, Color4 color);
+  SpherePtr makeSphere(Vector3 center, float radius, Color4 color);
 
   void drawFrame(Matrix4 pos, float scale = 0.15);
 

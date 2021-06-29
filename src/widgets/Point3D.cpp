@@ -6,18 +6,20 @@ namespace mc_rtc::magnum
 Point3D::Point3D(Client & client, const ElementId & id, const ElementId & requestId)
 : TransformBase(client, id, requestId)
 {
+  sphere_ = client.gui().makeSphere({}, 0.0f, {});
 }
 
 void Point3D::data(bool ro, const Eigen::Vector3d & pos, const mc_rtc::gui::PointConfig & config)
 {
   TransformBase::data(ro, pos);
-  config_ = config;
+  sphere_->center(translation(marker_.pose()));
+  sphere_->radius(config.scale);
+  sphere_->color(convert(config.color));
 }
 
 void Point3D::draw3D()
 {
   TransformBase::draw3D();
-  client.gui().drawSphere(translation(marker_.pose()), static_cast<float>(config_.scale), convert(config_.color));
 }
 
 } // namespace mc_rtc::magnum

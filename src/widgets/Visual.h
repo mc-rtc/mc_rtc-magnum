@@ -17,6 +17,7 @@ struct Visual : public Widget
 
 private:
   rbd::parsers::Visual visual_;
+  bool typeChanged_ = false;
   sva::PTransformd pos_;
   std::shared_ptr<CommonDrawable> object_;
   bfs::path mesh_;
