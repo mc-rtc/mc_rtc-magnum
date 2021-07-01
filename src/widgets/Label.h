@@ -18,7 +18,14 @@ struct Label : public Widget
 
   inline void draw2D() override
   {
-    ImGui::LabelText(txt_.c_str(), "%s", id.name.c_str());
+    if(txt_.size())
+    {
+      ImGui::LabelText(txt_.c_str(), "%s", id.name.c_str());
+    }
+    else
+    {
+      ImGui::Text("%s", id.name.c_str());
+    }
   }
 
 private:
