@@ -44,11 +44,31 @@ public:
                            SceneGraph::DrawableGroup3D * group,
                            Shaders::Phong & shader,
                            GL::Mesh & mesh,
-                           const Color4 & color);
+                           const Color4 & color,
+                           const Containers::Optional<Color4> & ambient = Containers::NullOpt);
 
   inline void color(const Color4 & color) noexcept
   {
     color_ = color;
+  }
+
+  inline void ambient(const Color4 & ambient) noexcept
+  {
+    ambient_ = ambient;
+  }
+
+  inline void colorWithAmbient(const Color4 & color) noexcept
+  {
+    color_ = color;
+    if(color_.r() == color_.g() && color_.g() == color_.a())
+    {
+      ambient_ = 0x000000ff_rgbaf;
+      ambient_.a() = color_.a();
+    }
+    else
+    {
+      ambient_ = Color4::fromHsv({color_.hue(), 1.0f, 0.3f}, color_.a());
+    }
   }
 
 protected:
@@ -57,6 +77,7 @@ protected:
   Shaders::Phong & shader_;
   GL::Mesh & mesh_;
   Color4 color_;
+  Color4 ambient_;
 };
 
 class TexturedDrawable : public CommonDrawable
@@ -98,6 +119,7 @@ public:
     radius_ = radius;
     update();
   }
+
 private:
   Vector3 center_;
   float radius_;

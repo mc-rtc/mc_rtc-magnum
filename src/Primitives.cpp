@@ -41,24 +41,22 @@ ColoredDrawable::ColoredDrawable(Object3D * object,
                                  SceneGraph::DrawableGroup3D * group,
                                  Shaders::Phong & shader,
                                  GL::Mesh & mesh,
-                                 const Color4 & color)
+                                 const Color4 & color,
+                                 const Containers::Optional<Color4> & ambient)
 : CommonDrawable(object, group), shader_(shader), mesh_(mesh), color_(color)
 {
+  if(ambient)
+  {
+    ambient_ = *ambient;
+  }
+  else
+  {
+    colorWithAmbient(color_);
+  }
 }
 
 void ColoredDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera)
 {
-  Color4 ambient_;
-  if(color_.r() == color_.g() && color_.g() == color_.b())
-  {
-    // Gray
-    ambient_ = 0x000000ff_rgbaf;
-    ambient_.a() = color_.a();
-  }
-  else
-  {
-    ambient_ = Color4::fromHsv({color_.hue(), 1.0f, 0.3f}, color_.a());
-  }
   shader_.setDiffuseColor(color_)
       .setAmbientColor(ambient_)
       .setTransformationMatrix(transformationMatrix)

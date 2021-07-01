@@ -164,10 +164,9 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   for(UnsignedInt i = 0; i != importer_->meshCount(); ++i)
   {
     Containers::Optional<Trade::MeshData> meshData = importer_->mesh(i);
-    if(!meshData || !meshData->hasAttribute(Trade::MeshAttribute::Normal)
-       || meshData->primitive() != MeshPrimitive::Triangles)
+    if(!meshData || !meshData->hasAttribute(Trade::MeshAttribute::Normal))
     {
-      Warning{} << "Cannot load the mesh, skipping " << path.c_str();
+      Warning{} << "Cannot load mesh " << i << " in skipping " << path.c_str();
       continue;
     }
 

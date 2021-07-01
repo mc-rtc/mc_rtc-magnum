@@ -70,7 +70,20 @@ void Mesh::addObject(Object3D * parent,
     /* Color-only material */
     else
     {
-      drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], color};
+      Containers::Optional<Color4> ambient = Containers::NullOpt;
+      if(data.materials_[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseColor))
+      {
+        auto diffuse = data.materials_[materialId]->diffuseColor();
+        if(diffuse != 0xffffffff_rgbaf)
+        {
+          color = diffuse;
+        }
+        if(data.materials_[materialId]->hasAttribute(Trade::MaterialAttribute::AmbientColor))
+        {
+          ambient = data.materials_[materialId]->ambientColor();
+        }
+      }
+      drawable = new ColoredDrawable{parent, group, colorShader, *data.meshes_[objectData->instance()], color, ambient};
     }
   }
 
