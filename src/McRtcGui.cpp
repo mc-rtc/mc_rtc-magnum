@@ -85,7 +85,7 @@ McRtcGui::McRtcGui(const Arguments & arguments)
 
   std::string socket = fmt::format("ipc://{}", (bfs::temp_directory_path() / "mc_rtc_").string());
   client_.connect(socket + "pub.ipc", socket + "rep.ipc");
-  client_.timeout(1.0);
+  client_.timeout(3.0);
 
   /** Grid */
   {

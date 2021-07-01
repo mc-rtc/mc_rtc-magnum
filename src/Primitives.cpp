@@ -3,6 +3,22 @@
 namespace mc_rtc::magnum
 {
 
+static void set_children_hidden(Object3D * object, bool hidden)
+{
+  for(auto & c : object->children())
+  {
+    auto * cd = dynamic_cast<CommonDrawable *>(&c);
+    if(cd)
+    {
+      cd->hidden(hidden);
+    }
+    else
+    {
+      set_children_hidden(&c, hidden);
+    }
+  }
+}
+
 void CommonDrawable::hidden(bool hidden) noexcept
 {
   if(hidden_ == hidden)
@@ -18,10 +34,7 @@ void CommonDrawable::hidden(bool hidden) noexcept
   {
     group_->add(*this);
   }
-  for(auto & c : children())
-  {
-    static_cast<CommonDrawable &>(c).hidden(hidden);
-  }
+  set_children_hidden(this, hidden);
 }
 
 ColoredDrawable::ColoredDrawable(Object3D * object,

@@ -76,7 +76,7 @@ void Mesh::addObject(Object3D * parent,
 
   if(!drawable)
   {
-    object = new Object3D{this};
+    object = new Object3D{parent};
   }
   else
   {
