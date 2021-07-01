@@ -69,7 +69,8 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
   GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::SourceAlpha,
                                  GL::Renderer::BlendFunction::OneMinusSourceAlpha);
-
+  Color4ub bg = 0xd3d7cfff_rgba;
+  GL::Renderer::setClearColor(bg.toSrgbAlpha());
   colorShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0xffffff_rgbf).setShininess(80.0f);
   textureShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0x111111_rgbf).setShininess(80.0f);
 

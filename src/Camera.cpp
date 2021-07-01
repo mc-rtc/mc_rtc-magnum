@@ -17,7 +17,7 @@ Camera::Camera(Platform::Application & app, Scene3D & scene)
 
 void Camera::resetTransform(Platform::Application & app)
 {
-  cameraPosition_ = {2.5f, 2.5f, 1.5f};
+  cameraPosition_ = {2.5f, 2.5f, 2.5f};
   focusPoint_ = {0.0f, 0.0f, 0.75f};
   setTransform(app);
 }
