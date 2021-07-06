@@ -89,11 +89,12 @@ struct RobotImpl
         const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
         auto path = convertURI(mesh.filename);
         auto object = gui().loadMesh(path.string(), color(visual.material));
+        auto scale = static_cast<float>(mesh.scale);
         object->hidden(hidden);
         objects.push_back(object);
-        draws.push_back([this, bIdx, visual, object]() {
+        draws.push_back([this, bIdx, visual, object, scale]() {
           const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-          object->setTransformation(convert(X_0_b));
+          object->setTransformation(convert(X_0_b) * Matrix4::scaling({scale, scale, scale}));
         });
       };
       auto loadBoxCallback = [&](std::vector<std::function<void()>> & draws, size_t bIdx,

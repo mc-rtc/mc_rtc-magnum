@@ -40,7 +40,8 @@ void Visual::draw3D()
       mesh_ = path;
       object_ = client.gui().loadMesh(path.string(), color(visual_.material));
     }
-    object_->setTransformation(convert(pos_));
+    auto scale = static_cast<float>(in.scale);
+    object_->setTransformation(convert(pos_) * Matrix4::scaling({scale, scale, scale}));
   };
   auto handleBox = [&]() {
     const auto & box = boost::get<Geometry::Box>(visual_.geometry.data);
