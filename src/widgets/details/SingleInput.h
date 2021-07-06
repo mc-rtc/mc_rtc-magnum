@@ -40,8 +40,12 @@ struct SingleInput : public Widget
     }
     else
     {
-      if(ImGui::Button(label("Done").c_str())
-         || fn(label("", "Input").c_str(), std::forward<Args>(args)..., ImGuiInputTextFlags_EnterReturnsTrue))
+      bool clicked = ImGui::Button(label("Done").c_str());
+      fn(label("", "Input").c_str(), std::forward<Args>(args)..., ImGuiInputTextFlags_None);
+      if(clicked
+         || (ImGui::IsItemDeactivatedAfterEdit()
+             && (ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Enter))
+                 || ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_KeyPadEnter)))))
       {
         auto nData = dataFromBuffer();
         if(nData != data_)
@@ -50,10 +54,7 @@ struct SingleInput : public Widget
           client.send_request(id, data_);
           data_ = nData;
         }
-        else
-        {
-          busy_ = false;
-        }
+        busy_ = false;
       }
     }
   }
