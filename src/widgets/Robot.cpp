@@ -87,7 +87,7 @@ struct RobotImpl
       auto loadMeshCallback = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
                                   const rbd::parsers::Visual & visual, bool hidden) {
         const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
-        auto path = convertURI(mesh.filename);
+        auto path = convertURI(mesh.filename, rm->path);
         auto object = gui().loadMesh(path.string(), color(visual.material));
         auto scale = static_cast<float>(mesh.scale);
         object->hidden(hidden);

@@ -10,6 +10,7 @@ namespace mc_rtc::magnum
 namespace details
 {
 
+#ifdef __EMSCRIPTEN__
 inline bfs::path current_path()
 {
   std::vector<char> buffer;
@@ -23,6 +24,7 @@ inline bfs::path current_path()
   bfs::path out(cwd);
   return out;
 }
+#endif
 
 inline bfs::path canonical(const bfs::path & p)
 {

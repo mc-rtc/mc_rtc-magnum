@@ -35,7 +35,7 @@ struct Widget
   virtual void collect(mc_rtc::Configuration & out) = 0;
 
   template<typename T = const char *>
-  inline std::string label(std::string_view label, T && suffix = "")
+  inline std::string label(std::string_view label, T suffix = "")
   {
     return fmt::format("{}##{}{}{}{}", label, parent_.id.category, parent_.id.name, name_, suffix);
   }

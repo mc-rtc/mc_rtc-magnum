@@ -70,7 +70,7 @@ inline sva::PTransformd convert(const Magnum::Matrix4 & m)
   return {r_map.cast<double>(), t_map.cast<double>()};
 }
 
-inline bfs::path convertURI(const std::string & uri)
+inline bfs::path convertURI(const std::string & uri, std::string_view default_dir = "")
 {
   const std::string package = "package://";
   if(uri.size() >= package.size() && uri.find(package) == 0)
@@ -96,7 +96,7 @@ inline bfs::path convertURI(const std::string & uri)
     }
     else
     {
-      mc_rtc::log::critical("Cannot resolve package: {}", pkg);
+      pkg = default_dir;
     }
 #  else
     pkg = ros::package::getPath(pkg);

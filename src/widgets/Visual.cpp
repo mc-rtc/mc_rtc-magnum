@@ -34,7 +34,7 @@ void Visual::draw3D()
   using Type = rbd::parsers::Geometry::Type;
   auto handleMesh = [&]() {
     const auto & in = boost::get<Geometry::Mesh>(visual_.geometry.data);
-    auto path = convertURI(in.filename);
+    auto path = convertURI(in.filename, "");
     if(path != mesh_)
     {
       mesh_ = path;
