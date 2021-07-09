@@ -51,6 +51,43 @@ inline mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p)
   return rm;
 }
 
+struct RobotCache
+{
+  inline static std::shared_ptr<mc_rbdyn::Robots> get_robot(const std::vector<std::string> & params)
+  {
+    if(robots_.count(params))
+    {
+      use_cnt_[params] += 1;
+    }
+    else
+    {
+      use_cnt_[params] = 1;
+      robots_[params] = mc_rbdyn::loadRobot(*fromParams(params));
+    }
+    auto out = std::shared_ptr<mc_rbdyn::Robots>(new mc_rbdyn::Robots(), [](mc_rbdyn::Robots * robots) {
+      remove_robot(robots->robot().module().parameters());
+      delete robots;
+    });
+    auto & robot = robots_[params]->robot();
+    out->robotCopy(robot, robot.name());
+    return out;
+  }
+
+  inline static void remove_robot(const std::vector<std::string> & params)
+  {
+    use_cnt_[params] -= 1;
+    if(use_cnt_[params] == 0)
+    {
+      use_cnt_.erase(params);
+      robots_.erase(params);
+    }
+  }
+
+private:
+  inline static std::map<std::vector<std::string>, std::shared_ptr<mc_rbdyn::Robots>> robots_ = {};
+  inline static std::map<std::vector<std::string>, size_t> use_cnt_ = {};
+};
+
 struct RobotImpl
 {
   RobotImpl(Robot & robot) : self_(robot)
@@ -77,17 +114,13 @@ struct RobotImpl
   {
     if(!robots_ || robot().module().parameters() != params)
     {
-      auto rm = fromParams(params);
-      if(!rm)
-      {
-        return;
-      }
-      robots_ = mc_rbdyn::loadRobot(*rm);
+      robots_ = RobotCache::get_robot(params);
+      const auto & rm = robots_->robot().module();
       using Objects = std::vector<std::shared_ptr<CommonDrawable>>;
       auto loadMeshCallback = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
                                   const rbd::parsers::Visual & visual, bool hidden) {
         const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
-        auto path = convertURI(mesh.filename, rm->path);
+        auto path = convertURI(mesh.filename, rm.path);
         auto object = gui().loadMesh(path.string(), color(visual.material));
         auto scale = static_cast<float>(mesh.scale);
         object->hidden(hidden);
