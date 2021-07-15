@@ -17,9 +17,6 @@ struct MagnumClient : public mc_rtc::imgui::Client
 private:
   McRtcGui & gui_;
 
-  std::vector<char> buffer_ = std::vector<char>(65535);
-  std::chrono::system_clock::time_point t_last_ = std::chrono::system_clock::now();
-
   void point3d(const ElementId & id,
                const ElementId & requestId,
                bool ro,
