@@ -19,5 +19,6 @@ This package also uses code from the following packages used as submodules:
 - [ImGuizmo](https://github.com/CedricGuillemet/ImGuizmo)
 - [glfw](https://github.com/glfw/glfw)
 - [Roboto font](https://github.com/googlefonts/roboto)
+- [ImPlot](https://github.com/epezent/implot)
 
 [mc_rtc]: https://github.com/jrl-umi3218/mc_rtc
