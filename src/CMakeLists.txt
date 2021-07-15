@@ -6,43 +6,25 @@ set(arcball_SRC ${arcball_DIR}/ArcBall.cpp ${arcball_DIR}/ArcBallCamera.h ${arcb
 set(ImGuizmo_DIR ${PROJECT_SOURCE_DIR}/ext/ImGuizmo)
 set(ImGuizmo_SRC ${ImGuizmo_DIR}/ImGuizmo.h ${ImGuizmo_DIR}/ImGuizmo.cpp)
 
+add_subdirectory(mc_rtc-imgui)
+
 set(project_SRC
   McRtcGui.h
   McRtcGui.cpp
   Camera.h
   Camera.cpp
-  Category.h
-  Category.cpp
-  Client.h
-  Client.cpp
+  MagnumClient.h
+  MagnumClient.cpp
   Mesh.h
   Mesh.cpp
   Primitives.h
   Primitives.cpp
-  Widget.h
-  widgets/ArrayInput.h
-  widgets/ArrayLabel.h
   widgets/Arrow.h
-  widgets/Button.h
-  widgets/Checkbox.h
-  widgets/ComboInput.h
-  widgets/DataComboInput.h
   widgets/Force.h
-  widgets/Form.h
-  widgets/IntegerInput.h
-  widgets/Label.h
-  widgets/NumberInput.h
-  widgets/NumberSlider.h
   widgets/Point3D.cpp
   widgets/Point3D.h
-  widgets/Polygon.h
-  widgets/Robot.h
   widgets/Robot.cpp
   widgets/Rotation.h
-  widgets/Schema.cpp
-  widgets/Schema.h
-  widgets/StringInput.h
-  widgets/Table.h
   widgets/Trajectory.h
   widgets/Transform.h
   widgets/utils.h
@@ -52,12 +34,9 @@ set(project_SRC
   widgets/XYTheta.h
   widgets/details/InteractiveMarker.cpp
   widgets/details/InteractiveMarker.h
-  widgets/details/SingleInput.h
   widgets/details/TransformBase.h
-  widgets/form/schema.cpp
-  widgets/form/schema.h
-  widgets/form/widgets.cpp
-  widgets/form/widgets.h
+  ${mc_rtc-imgui-SRC}
+  ${mc_rtc-imgui-HDR}
 )
 
 add_executable(${PROJECT_NAME} ${project_SRC} ${arcball_SRC} ${ImGuizmo_SRC})

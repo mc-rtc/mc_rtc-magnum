@@ -3,7 +3,7 @@
 namespace mc_rtc::magnum
 {
 
-Visual::Visual(Client & client, const ElementId & id) : Widget(client, id) {}
+Visual::Visual(Client & client, const ElementId & id, McRtcGui & gui) : Widget(client, id, gui) {}
 
 void Visual::data(const rbd::parsers::Visual & visual, const sva::PTransformd & pos)
 {
@@ -38,26 +38,26 @@ void Visual::draw3D()
     if(path != mesh_)
     {
       mesh_ = path;
-      object_ = client.gui().loadMesh(path.string(), color(visual_.material));
+      object_ = gui_.loadMesh(path.string(), color(visual_.material));
     }
     auto scale = static_cast<float>(in.scale);
     object_->setTransformation(convert(pos_) * Matrix4::scaling({scale, scale, scale}));
   };
   auto handleBox = [&]() {
     const auto & box = boost::get<Geometry::Box>(visual_.geometry.data);
-    client.gui().drawCube(translation(pos_), rotation(pos_), translation(box.size), color(visual_.material));
+    gui_.drawCube(translation(pos_), rotation(pos_), translation(box.size), color(visual_.material));
   };
   auto handleCylinder = [&]() {
     const auto & cyl = boost::get<Geometry::Cylinder>(visual_.geometry.data);
     const auto & start = sva::PTransformd{Eigen::Vector3d{0, 0, -cyl.length / 2}} * pos_;
     const auto & end = sva::PTransformd{Eigen::Vector3d{0, 0, cyl.length / 2}} * pos_;
-    client.gui().drawArrow(translation(start), translation(end), 2 * cyl.radius, 0.0f, 0.0f, color(visual_.material));
+    gui_.drawArrow(translation(start), translation(end), 2 * cyl.radius, 0.0f, 0.0f, color(visual_.material));
   };
   auto handleSphere = [&]() {
     const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual_.geometry.data);
     if(!object_)
     {
-      object_ = client.gui().makeSphere(translation(pos_), static_cast<float>(sphere.radius), color(visual_.material));
+      object_ = gui_.makeSphere(translation(pos_), static_cast<float>(sphere.radius), color(visual_.material));
     }
     auto & s = static_cast<Sphere &>(*object_);
     s.center(translation(pos_));

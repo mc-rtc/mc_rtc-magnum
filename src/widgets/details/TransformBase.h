@@ -9,8 +9,8 @@ namespace mc_rtc::magnum
 template<ControlAxis ctl>
 struct TransformBase : public Widget
 {
-  TransformBase(Client & client, const ElementId & id, const ElementId & requestId)
-  : Widget(client, id), requestId_(requestId), marker_(sva::PTransformd::Identity(), ControlAxis::NONE)
+  TransformBase(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & requestId)
+  : Widget(client, id, gui), requestId_(requestId), marker_(sva::PTransformd::Identity(), ControlAxis::NONE)
   {
   }
 
@@ -25,7 +25,7 @@ struct TransformBase : public Widget
   void draw3D() override
   {
     const auto & pos = marker_.pose();
-    if(marker_.draw(client.gui().camera()))
+    if(marker_.draw(gui_.camera()))
     {
       if constexpr(ctl == ControlAxis::TRANSLATION)
       {
@@ -51,7 +51,7 @@ struct TransformBase : public Widget
         client.send_request(requestId_, data);
       }
     }
-    client.gui().drawFrame(convert(pos));
+    gui_.drawFrame(convert(pos));
   }
 
 protected:

@@ -3,10 +3,10 @@
 namespace mc_rtc::magnum
 {
 
-Point3D::Point3D(Client & client, const ElementId & id, const ElementId & requestId)
-: TransformBase(client, id, requestId)
+Point3D::Point3D(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & requestId)
+: TransformBase(client, id, gui, requestId)
 {
-  sphere_ = client.gui().makeSphere({}, 0.0f, {});
+  sphere_ = gui_.makeSphere({}, 0.0f, {});
 }
 
 void Point3D::data(bool ro, const Eigen::Vector3d & pos, const mc_rtc::gui::PointConfig & config)

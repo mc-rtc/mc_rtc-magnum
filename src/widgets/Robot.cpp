@@ -105,7 +105,7 @@ struct RobotImpl
 
   inline McRtcGui & gui()
   {
-    return self_.client.gui();
+    return self_.gui();
   }
 
   void data(const std::vector<std::string> & params,
@@ -263,7 +263,10 @@ private:
 
 } // namespace details
 
-Robot::Robot(Client & client, const ElementId & id) : Widget(client, id), impl_(new details::RobotImpl{*this}) {}
+Robot::Robot(Client & client, const ElementId & id, McRtcGui & gui)
+: Widget(client, id, gui), impl_(new details::RobotImpl{*this})
+{
+}
 
 Robot::~Robot() = default;
 

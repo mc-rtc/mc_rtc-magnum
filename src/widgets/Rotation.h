@@ -7,12 +7,15 @@ namespace mc_rtc::magnum
 
 struct Rotation : public TransformBase<ControlAxis::ROTATION>
 {
-  Rotation(Client & client, const ElementId & id, const ElementId & reqId) : TransformBase(client, id, reqId) {}
+  Rotation(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & reqId)
+  : TransformBase(client, id, gui, reqId)
+  {
+  }
 
   void draw3D() override
   {
     TransformBase::draw3D();
-    client.gui().drawFrame(convert(marker_.pose()));
+    gui_.drawFrame(convert(marker_.pose()));
   }
 };
 

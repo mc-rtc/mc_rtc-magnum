@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Client.h"
 #include "ImGuizmo.h"
+#include "MagnumClient.h"
 
 #include "Camera.h"
 #include "Mesh.h"
@@ -70,7 +70,7 @@ private:
   Shaders::Phong shader_;
   Shaders::VertexColor3D vertexShader_;
 
-  Client client_;
+  MagnumClient client_;
 
   void draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & worldTransform = {});
 };

@@ -7,7 +7,7 @@ namespace mc_rtc::magnum
 
 struct Visual : public Widget
 {
-  Visual(Client & client, const ElementId & id);
+  Visual(Client & client, const ElementId & id, McRtcGui & gui);
 
   void data(const rbd::parsers::Visual & visual, const sva::PTransformd & pos);
 

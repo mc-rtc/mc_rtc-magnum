@@ -7,7 +7,10 @@ namespace mc_rtc::magnum
 
 struct XYTheta : public TransformBase<ControlAxis::XYZTHETA>
 {
-  XYTheta(Client & client, const ElementId & id, const ElementId & reqId) : TransformBase(client, id, reqId) {}
+  XYTheta(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & reqId)
+  : TransformBase(client, id, gui, reqId)
+  {
+  }
 
   void data(bool ro, const Eigen::Vector3d & xytheta, double altitude)
   {
@@ -17,7 +20,7 @@ struct XYTheta : public TransformBase<ControlAxis::XYZTHETA>
   void draw3D() override
   {
     TransformBase::draw3D();
-    client.gui().drawFrame(convert(marker_.pose()));
+    gui_.drawFrame(convert(marker_.pose()));
   }
 };
 

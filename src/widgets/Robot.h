@@ -13,7 +13,7 @@ struct RobotImpl;
 
 struct Robot : public Widget
 {
-  Robot(Client & client, const ElementId & id);
+  Robot(Client & client, const ElementId & id, McRtcGui & gui);
 
   ~Robot() override;
 
@@ -24,6 +24,11 @@ struct Robot : public Widget
   void draw2D() override;
 
   void draw3D() override;
+
+  inline McRtcGui & gui() noexcept
+  {
+    return gui_;
+  }
 
 private:
   std::unique_ptr<details::RobotImpl> impl_;

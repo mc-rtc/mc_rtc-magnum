@@ -9,7 +9,10 @@ namespace mc_rtc::magnum
 
 struct Arrow : public Widget
 {
-  Arrow(Client & client, const ElementId & id, const ElementId & reqId) : Widget(client, id), requestId_(reqId) {}
+  Arrow(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & reqId)
+  : Widget(client, id, gui), requestId_(reqId)
+  {
+  }
 
   void data(const Eigen::Vector3d & start,
             const Eigen::Vector3d & end,
@@ -27,10 +30,10 @@ struct Arrow : public Widget
   {
     const auto & start = startMarker_.pose().translation();
     const auto & end = endMarker_.pose().translation();
-    client.gui().drawArrow(translation(start), translation(end), config_.shaft_diam, config_.head_diam,
-                           config_.head_len, convert(config_.color));
-    bool changed = startMarker_.draw(client.gui().camera());
-    if(endMarker_.draw(client.gui().camera()) || changed)
+    gui_.drawArrow(translation(start), translation(end), config_.shaft_diam, config_.head_diam, config_.head_len,
+                   convert(config_.color));
+    bool changed = startMarker_.draw(gui_.camera());
+    if(endMarker_.draw(gui_.camera()) || changed)
     {
       Eigen::Vector6d data;
       data << start, end;

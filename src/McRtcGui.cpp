@@ -10,9 +10,6 @@
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
 
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
-
 #include "assets/Robot_Regular_ttf.h"
 
 namespace mc_rtc::magnum
@@ -83,10 +80,6 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   {
     camera_.emplace(*this, scene_);
   }
-
-  std::string socket = fmt::format("ipc://{}", (bfs::temp_directory_path() / "mc_rtc_").string());
-  client_.connect(socket + "pub.ipc", socket + "rep.ipc");
-  client_.timeout(3.0);
 
   /** Grid */
   {
@@ -226,7 +219,7 @@ void McRtcGui::drawEvent()
   ImGuizmo::AllowAxisFlip(false);
   ImGuizmo::SetRect(0, 0, io.DisplaySize.x, io.DisplaySize.y);
 
-  client_.draw2D();
+  client_.draw2D({static_cast<float>(windowSize().x()), static_cast<float>(windowSize().y())});
 
   /* Update application cursor */
   imgui_.updateApplicationCursor(*this);

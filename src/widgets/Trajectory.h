@@ -8,7 +8,7 @@ namespace mc_rtc::magnum
 template<typename T>
 struct Trajectory : public Widget
 {
-  Trajectory(Client & client, const ElementId & id) : Widget(client, id) {}
+  Trajectory(Client & client, const ElementId & id, McRtcGui & gui) : Widget(client, id, gui) {}
 
   void data(const T & point, const mc_rtc::gui::LineConfig & config)
   {
@@ -33,7 +33,7 @@ struct Trajectory : public Widget
     {
       const auto & p0 = points_[i];
       const auto & p1 = points_[i + 1];
-      client.gui().drawLine(translation(p0), translation(p1), c);
+      gui_.drawLine(translation(p0), translation(p1), c);
     }
     if constexpr(std::is_same_v<T, sva::PTransformd>)
     {
@@ -41,21 +41,21 @@ struct Trajectory : public Widget
       {
         for(const auto & p : points_)
         {
-          client.gui().drawFrame(convert(p));
+          gui_.drawFrame(convert(p));
         }
       }
       else // Otherwise draw the start and end points
       {
-        client.gui().drawFrame(convert(points_[0]));
-        client.gui().drawFrame(convert(points_.back()));
+        gui_.drawFrame(convert(points_[0]));
+        gui_.drawFrame(convert(points_.back()));
       }
     }
     else
     {
-      client.gui().drawCube(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c);
+      gui_.drawCube(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c);
       if(!sphereMarker_)
       {
-        sphereMarker_ = client.gui().makeSphere(translation(points_.back()), 0.04f, c);
+        sphereMarker_ = gui_.makeSphere(translation(points_.back()), 0.04f, c);
       }
       sphereMarker_->center(translation(points_.back()));
     }
