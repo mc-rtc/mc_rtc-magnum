@@ -1,7 +1,7 @@
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
-set(arcball_DIR ${PROJECT_SOURCE_DIR}/ext/magnum-examples/src/arcball)
-set(arcball_SRC ${arcball_DIR}/ArcBall.cpp ${arcball_DIR}/ArcBallCamera.h ${arcball_DIR}/ArcBall.h)
+set(implot_DIR ${PROJECT_SOURCE_DIR}/ext/implot)
+set(implot_SRC ${implot_DIR}/implot.h ${implot_DIR}/implot.cpp ${implot_DIR}/implot_items.cpp ${implot_DIR}/implot_demo.cpp)
 
 set(ImGuizmo_DIR ${PROJECT_SOURCE_DIR}/ext/ImGuizmo)
 set(ImGuizmo_SRC ${ImGuizmo_DIR}/ImGuizmo.h ${ImGuizmo_DIR}/ImGuizmo.cpp)
@@ -39,9 +39,10 @@ set(project_SRC
   ${mc_rtc-imgui-HDR}
 )
 
-add_executable(${PROJECT_NAME} ${project_SRC} ${arcball_SRC} ${ImGuizmo_SRC})
+add_executable(${PROJECT_NAME} ${project_SRC} ${ImGuizmo_SRC} ${implot_SRC})
 
-target_include_directories(${PROJECT_NAME} PRIVATE SYSTEM ${arcball_DIR} ${ImGuizmo_DIR})
+target_compile_definitions(${PROJECT_NAME} PRIVATE -DMAGNUM_IMGUI_USER_CONFIG="custom_imconfig.h")
+target_include_directories(${PROJECT_NAME} PRIVATE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/imconfig ${ImGuizmo_DIR} ${implot_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE
     mc_rtc::mc_control
     mc_rtc::mc_control_client

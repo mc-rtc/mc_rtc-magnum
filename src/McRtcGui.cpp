@@ -12,6 +12,8 @@
 
 #include "assets/Robot_Regular_ttf.h"
 
+#include "implot.h"
+
 namespace mc_rtc::magnum
 {
 
@@ -43,6 +45,7 @@ McRtcGui::McRtcGui(const Arguments & arguments)
 {
   {
     ImGui::CreateContext();
+    ImPlot::CreateContext();
 
     ImGuiIO & io = ImGui::GetIO();
     ImFontConfig fontConfig;
