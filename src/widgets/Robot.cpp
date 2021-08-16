@@ -114,6 +114,8 @@ struct RobotImpl
   {
     if(!robots_ || robot().module().parameters() != params)
     {
+      visualObjects_.clear();
+      collisionObjects_.clear();
       robots_ = RobotCache::get_robot(params);
       const auto & rm = robots_->robot().module();
       using Objects = std::vector<std::shared_ptr<CommonDrawable>>;
