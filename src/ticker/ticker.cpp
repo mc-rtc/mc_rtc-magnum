@@ -74,11 +74,14 @@ int main()
       stepByStep = true;
     }
   };
+  bool ticker_sync = true;
   bool ticker_run = true;
   mc_rtc::gui::StateBuilder * gui = get_gui(controller);
   if(gui)
   {
     gui->addElement({"Ticker"}, mc_rtc::gui::Button("Stop", [&ticker_run]() { ticker_run = false; }),
+                    mc_rtc::gui::Checkbox(
+                        "Sync with real-time", [&]() { return ticker_sync; }, [&]() { ticker_sync = !ticker_sync; }),
                     mc_rtc::gui::Checkbox(
                         "Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
     auto dt = controller.timestep();
@@ -145,7 +148,10 @@ int main()
     {
       runController();
     }
-    std::this_thread::sleep_until(now + dt);
+    if(ticker_sync)
+    {
+      std::this_thread::sleep_until(now + dt);
+    }
   }
 
   return 0;
