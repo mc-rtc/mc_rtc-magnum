@@ -24,7 +24,7 @@ mc_rtc::gui::StateBuilder * get_gui(T & gc)
   }
 }
 
-int main()
+int main(int argc, char * argv[])
 {
   if(mc_rtc::MC_RTC_VERSION != mc_rtc::version())
   {
@@ -33,8 +33,8 @@ int main()
         "or unexpected crashes, please recompile mc-rtc-magnum-ticker",
         mc_rtc::MC_RTC_VERSION, mc_rtc::version());
   }
-
-  mc_control::MCGlobalController controller{};
+  std::string conf = argc > 1 ? argv[1] : "";
+  mc_control::MCGlobalController controller{conf};
 
   std::vector<double> q;
   {
