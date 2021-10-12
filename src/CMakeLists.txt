@@ -69,7 +69,9 @@ endif()
 # Make the executable a default target to build & run in Visual Studio
 set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME})
 
+find_package(Boost REQUIRED COMPONENTS program_options)
+
 add_executable(${PROJECT_NAME}-ticker ticker/ticker.cpp)
-target_link_libraries(${PROJECT_NAME}-ticker PUBLIC mc_rtc::mc_control)
+target_link_libraries(${PROJECT_NAME}-ticker PUBLIC mc_rtc::mc_control Boost::program_options Boost::disable_autolinking)
 
 install(TARGETS ${PROJECT_NAME} ${PROJECT_NAME}-ticker DESTINATION bin)

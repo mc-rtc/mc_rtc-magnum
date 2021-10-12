@@ -6,6 +6,9 @@
 #include <chrono>
 #include <iostream>
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 #ifndef MC_RTC_VERSION_MAJOR
 static constexpr int MC_RTC_VERSION_MAJOR = mc_rtc::MC_RTC_VERSION[0] - '0';
 #endif
@@ -33,7 +36,28 @@ int main(int argc, char * argv[])
         "or unexpected crashes, please recompile mc-rtc-magnum-ticker",
         mc_rtc::MC_RTC_VERSION, mc_rtc::version());
   }
-  std::string conf = argc > 1 ? argv[1] : "";
+  std::string conf;
+  bool stepByStep = false;
+  bool no_ticker_sync = false;
+  po::options_description desc("mc-rtc-magnum-ticker options");
+  po::positional_options_description p;
+  p.add("mc-config", 1);
+  // clang-format off
+  desc.add_options()
+    ("help", "Show this help message")
+    ("mc-config", po::value<std::string>(&conf), "Configuration given to mc_rtc")
+    ("step-by-step", po::bool_switch(&stepByStep), "Start the ticker in step-by-step mode")
+    ("no-sync", po::bool_switch(&no_ticker_sync), "Synchronize ticker time with real time");
+  // clang-format on
+  po::variables_map vm;
+  po::store(po::command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
+  po::notify(vm);
+  if(vm.count("help"))
+  {
+    std::cout << desc << "\n";
+    return 0;
+  }
+  bool ticker_sync = !no_ticker_sync;
   mc_control::MCGlobalController controller{conf};
 
   std::vector<double> q;
@@ -62,7 +86,6 @@ int main(int argc, char * argv[])
   controller.running = true;
 
   size_t nextStep = 0;
-  bool stepByStep = false;
   auto toogleStepByStep = [&]() {
     if(stepByStep)
     {
@@ -74,7 +97,6 @@ int main(int argc, char * argv[])
       stepByStep = true;
     }
   };
-  bool ticker_sync = true;
   bool ticker_run = true;
   mc_rtc::gui::StateBuilder * gui = get_gui(controller);
   if(gui)
