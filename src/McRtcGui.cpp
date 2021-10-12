@@ -344,6 +344,10 @@ void McRtcGui::drawArrow(Vector3 start, Vector3 end, float shaft_diam, float hea
     head_len = height;
   }
   float shaft_len = height - head_len;
+  if(std::isnan(normal.x() * normal.y() * normal.z()))
+  {
+    return;
+  }
   auto theta = angle(normal, {0.0f, 1.0f, 0.0f});
   auto axis = cross(normal, {0.0f, 1.0f, 0.0f});
   if(axis.length() == 0.0f)
