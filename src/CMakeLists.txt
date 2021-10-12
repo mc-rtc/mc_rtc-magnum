@@ -41,7 +41,7 @@ set(project_SRC
 
 add_executable(${PROJECT_NAME} ${project_SRC} ${ImGuizmo_SRC} ${implot_SRC})
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE -DMAGNUM_IMGUI_USER_CONFIG="custom_imconfig.h")
+target_compile_definitions(${PROJECT_NAME} PRIVATE -DMAGNUM_IMGUIINTEGRATION_USER_CONFIG="custom_imconfig.h")
 target_include_directories(${PROJECT_NAME} PRIVATE SYSTEM ${CMAKE_CURRENT_LIST_DIR}/imconfig ${ImGuizmo_DIR} ${implot_DIR})
 target_link_libraries(${PROJECT_NAME} PRIVATE
     mc_rtc::mc_control
