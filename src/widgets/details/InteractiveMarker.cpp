@@ -6,6 +6,8 @@
 
 #include "../utils.h"
 
+#include <Magnum/Math/Algorithms/GramSchmidt.h>
+
 namespace mc_rtc::magnum
 {
 
@@ -70,7 +72,14 @@ bool InteractiveMarker::draw(const Camera & camera)
   active_ = ImGuizmo::IsUsing();
   if(changed)
   {
-    pose_ = convert(Magnum::Matrix4::from(m));
+    auto npose = Magnum::Matrix4::from(m);
+    auto t = npose.translation();
+    Eigen::Vector3f t_map = Eigen::Map<Eigen::Vector3f>(t.data());
+    pose_.translation() = t_map.cast<double>();
+    Magnum::Math::Algorithms::gramSchmidtOrthonormalizeInPlace(npose);
+    auto rot = npose.rotation().transposed();
+    Eigen::Matrix3f rot_map = Eigen::Map<Eigen::Matrix3f>(rot.data());
+    pose_.rotation() = rot_map.cast<double>();
   }
   return changed;
 }
