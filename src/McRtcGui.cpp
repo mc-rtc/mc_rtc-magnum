@@ -10,7 +10,8 @@
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
 
-#include "assets/Robot_Regular_ttf.h"
+#include "assets/Roboto_Bold_ttf.h"
+#include "assets/Roboto_Regular_ttf.h"
 
 #include "implot.h"
 
@@ -51,6 +52,7 @@ McRtcGui::McRtcGui(const Arguments & arguments)
     ImFontConfig fontConfig;
     fontConfig.FontDataOwnedByAtlas = false;
     io.FontDefault = io.Fonts->AddFontFromMemoryTTF(Roboto_Regular_ttf, Roboto_Regular_ttf_len, 18.0f, &fontConfig);
+    client_.set_bold_font(io.Fonts->AddFontFromMemoryTTF(Roboto_Bold_ttf, Roboto_Bold_ttf_len, 18.0f, &fontConfig));
 
     ImGui::StyleColorsLight();
     auto & style = ImGui::GetStyle();
