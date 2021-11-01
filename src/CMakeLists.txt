@@ -82,6 +82,10 @@ if(MC_RTC_MAGNUM_BUILD_TICKER)
   add_executable(${PROJECT_NAME}-ticker ticker/ticker.cpp)
   target_link_libraries(${PROJECT_NAME}-ticker PUBLIC mc_rtc::mc_control Boost::program_options Boost::disable_autolinking)
 
+  if(NOT Boost_USE_STATIC_LIBS)
+    target_link_libraries(${PROJECT_NAME}-ticker PUBLIC Boost::dynamic_linking)
+  endif()
+
   install(TARGETS ${PROJECT_NAME}-ticker DESTINATION bin)
 
 endif()
