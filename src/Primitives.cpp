@@ -53,6 +53,7 @@ ColoredDrawable::ColoredDrawable(Object3D * object,
   {
     colorWithAmbient(color_);
   }
+  ambient_.a() = 0.0f;
 }
 
 void ColoredDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera)
