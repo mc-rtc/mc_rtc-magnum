@@ -39,6 +39,7 @@ int main(int argc, char * argv[])
   std::string conf;
   bool stepByStep = false;
   bool no_ticker_sync = false;
+  double run_for = std::numeric_limits<double>::infinity();
   po::options_description desc("mc-rtc-magnum-ticker options");
   po::positional_options_description p;
   p.add("mc-config", 1);
@@ -47,6 +48,7 @@ int main(int argc, char * argv[])
     ("help", "Show this help message")
     ("mc-config", po::value<std::string>(&conf), "Configuration given to mc_rtc")
     ("step-by-step", po::bool_switch(&stepByStep), "Start the ticker in step-by-step mode")
+    ("run-for", po::value<double>(&run_for), "Run for the specified time (seconds)")
     ("no-sync", po::bool_switch(&no_ticker_sync), "Synchronize ticker time with real time");
   // clang-format on
   po::variables_map vm;
@@ -119,6 +121,7 @@ int main(int argc, char * argv[])
                     mc_rtc::gui::Button(buttonText(100), [&]() { nextStep = 100; }));
   }
 
+  double run_time = 0.0;
   auto runController = [&]() {
     auto & mbc = controller.robot().mbc();
     const auto & rjo = controller.ref_joint_order();
@@ -138,6 +141,11 @@ int main(int argc, char * argv[])
     }
     controller.setEncoderValues(q);
     controller.run();
+    if(std::fabs(run_for - run_time) < 1e-6)
+    {
+      ticker_run = false;
+    }
+    run_time += controller.controller().solver().dt();
   };
   auto updateGUI = [&]() {
     controller.running = false;
