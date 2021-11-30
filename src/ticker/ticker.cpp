@@ -99,30 +99,41 @@ int main(int argc, char * argv[])
       stepByStep = true;
     }
   };
+  bool ticker_reset = false;
   bool ticker_run = true;
-  mc_rtc::gui::StateBuilder * gui = get_gui(controller);
-  if(gui)
-  {
-    gui->addElement({"Ticker"}, mc_rtc::gui::Button("Stop", [&ticker_run]() { ticker_run = false; }),
-                    mc_rtc::gui::Checkbox(
-                        "Sync with real-time", [&]() { return ticker_sync; }, [&]() { ticker_sync = !ticker_sync; }),
-                    mc_rtc::gui::Checkbox(
-                        "Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
-    auto dt = controller.timestep();
-    auto buttonText = [&](size_t n) {
-      size_t n_ms = std::ceil(n * 1000 * dt);
-      return "+" + std::to_string(n_ms) + "ms";
-    };
-    gui->addElement({"Ticker"}, mc_rtc::gui::ElementsStacking::Horizontal,
-                    mc_rtc::gui::Button(buttonText(1), [&]() { nextStep = 1; }),
-                    mc_rtc::gui::Button(buttonText(5), [&]() { nextStep = 5; }),
-                    mc_rtc::gui::Button(buttonText(10), [&]() { nextStep = 10; }),
-                    mc_rtc::gui::Button(buttonText(50), [&]() { nextStep = 20; }),
-                    mc_rtc::gui::Button(buttonText(100), [&]() { nextStep = 100; }));
-  }
+  auto reset_gui = [&]() {
+    mc_rtc::gui::StateBuilder * gui = get_gui(controller);
+    if(gui)
+    {
+      gui->addElement({"Ticker"}, mc_rtc::gui::Button("Stop", [&ticker_run]() { ticker_run = false; }),
+                      mc_rtc::gui::Button("Reset", [&ticker_reset]() { ticker_reset = true; }),
+                      mc_rtc::gui::Checkbox(
+                          "Sync with real-time", [&]() { return ticker_sync; }, [&]() { ticker_sync = !ticker_sync; }),
+                      mc_rtc::gui::Checkbox(
+                          "Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
+      auto dt = controller.timestep();
+      auto buttonText = [&](size_t n) {
+        size_t n_ms = std::ceil(n * 1000 * dt);
+        return "+" + std::to_string(n_ms) + "ms";
+      };
+      gui->addElement({"Ticker"}, mc_rtc::gui::ElementsStacking::Horizontal,
+                      mc_rtc::gui::Button(buttonText(1), [&]() { nextStep = 1; }),
+                      mc_rtc::gui::Button(buttonText(5), [&]() { nextStep = 5; }),
+                      mc_rtc::gui::Button(buttonText(10), [&]() { nextStep = 10; }),
+                      mc_rtc::gui::Button(buttonText(50), [&]() { nextStep = 20; }),
+                      mc_rtc::gui::Button(buttonText(100), [&]() { nextStep = 100; }));
+    }
+  };
+  reset_gui();
 
   double run_time = 0.0;
   auto runController = [&]() {
+    if(ticker_reset)
+    {
+      ticker_reset = false;
+      controller.reset();
+      reset_gui();
+    }
     auto & mbc = controller.robot().mbc();
     const auto & rjo = controller.ref_joint_order();
     q.resize(rjo.size());
