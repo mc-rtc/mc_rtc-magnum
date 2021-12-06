@@ -45,7 +45,14 @@ void Visual::draw3D()
   };
   auto handleBox = [&]() {
     const auto & box = boost::get<Geometry::Box>(visual_.geometry.data);
-    gui_.drawCube(translation(pos_), rotation(pos_), translation(box.size), color(visual_.material));
+    if(!object_)
+    {
+      object_ = gui_.makeBox(translation(pos_), rotation(pos_), translation(box.size), color(visual_.material));
+    }
+    auto & b = static_cast<Box &>(*object_);
+    b.pose(Matrix4::from(rotation(pos_), translation(pos_)));
+    b.size(translation(box.size));
+    b.color(color(visual_.material));
   };
   auto handleCylinder = [&]() {
     const auto & cyl = boost::get<Geometry::Cylinder>(visual_.geometry.data);

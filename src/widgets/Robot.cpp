@@ -132,12 +132,18 @@ struct RobotImpl
           object->setTransformation(convert(X_0_b) * Matrix4::scaling({scale, scale, scale}));
         });
       };
-      auto loadBoxCallback = [&](std::vector<std::function<void()>> & draws, size_t bIdx,
-                                 const rbd::parsers::Visual & visual) {
-        draws.push_back([this, bIdx, visual]() {
-          const auto & box = boost::get<rbd::parsers::Geometry::Box>(visual.geometry.data);
+      auto loadBoxCallback = [&](Objects & objects, std::vector<std::function<void()>> & draws, size_t bIdx,
+                                 const rbd::parsers::Visual & visual, bool hidden) {
+        const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
+        const auto & box = boost::get<rbd::parsers::Geometry::Box>(visual.geometry.data);
+        auto object =
+            gui().makeBox(translation(X_0_b), convert(X_0_b.rotation()), translation(box.size), color(visual.material));
+        object->hidden(hidden);
+        objects.push_back(object);
+        draws.push_back([this, bIdx, visual, object]() {
           const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-          gui().drawCube(translation(X_0_b), convert(X_0_b.rotation()), translation(box.size), color(visual.material));
+          auto & box = static_cast<Box &>(*object);
+          box.pose(convert(X_0_b));
         });
       };
       auto loadCylinderCallback = [&](std::vector<std::function<void()>> & draws, size_t bIdx,
@@ -173,7 +179,7 @@ struct RobotImpl
               loadMeshCallback(objects, draws, bIdx, visual, hidden);
               break;
             case Geometry::BOX:
-              loadBoxCallback(draws, bIdx, visual);
+              loadBoxCallback(objects, draws, bIdx, visual, hidden);
               break;
             case Geometry::CYLINDER:
               loadCylinderCallback(draws, bIdx, visual);

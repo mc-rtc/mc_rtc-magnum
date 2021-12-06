@@ -315,9 +315,9 @@ void McRtcGui::textInputEvent(TextInputEvent & event)
   if(imgui_.handleTextInputEvent(event)) return;
 }
 
-void McRtcGui::drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
+BoxPtr McRtcGui::makeBox(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
 {
-  draw(cubeMesh_, color, Matrix4::from(ori * Matrix3::fromDiagonal(size / 2.0), center));
+  return std::make_shared<Box>(&scene_, &drawables_, shader_, cubeMesh_, Matrix4::from(ori, center), size, color);
 }
 
 SpherePtr McRtcGui::makeSphere(Vector3 center, float radius, Color4 color)

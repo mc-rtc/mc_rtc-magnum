@@ -52,7 +52,11 @@ struct Trajectory : public Widget
     }
     else
     {
-      gui_.drawCube(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c);
+      if(!startMarker_)
+      {
+        startMarker_ = gui_.makeBox(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c);
+      }
+      startMarker_->pose(Matrix4::from(Matrix3{Math::IdentityInit}, translation(points_[0])));
       if(!sphereMarker_)
       {
         sphereMarker_ = gui_.makeSphere(translation(points_.back()), 0.04f, c);
@@ -64,6 +68,7 @@ struct Trajectory : public Widget
 private:
   std::vector<T> points_;
   mc_rtc::gui::LineConfig config_;
+  BoxPtr startMarker_;
   SpherePtr sphereMarker_;
 };
 

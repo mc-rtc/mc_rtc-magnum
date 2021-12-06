@@ -101,4 +101,21 @@ void Sphere::update() noexcept
   setTransformation(Matrix4::from(Matrix3{Math::IdentityInit, radius_}, center_));
 }
 
+Box::Box(Object3D * parent,
+         SceneGraph::DrawableGroup3D * group,
+         Shaders::Phong & shader,
+         GL::Mesh & mesh,
+         Matrix4 pose,
+         Vector3 size,
+         Color4 color)
+: ColoredDrawable(parent, group, shader, mesh, color), pose_(pose), size_(size)
+{
+  update();
+}
+
+void Box::update() noexcept
+{
+  setTransformation(pose_ * Matrix4::scaling(size_ / 2.0));
+}
+
 } // namespace mc_rtc::magnum

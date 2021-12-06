@@ -128,4 +128,35 @@ private:
 
 using SpherePtr = std::shared_ptr<Sphere>;
 
+class Box : public ColoredDrawable
+{
+public:
+  explicit Box(Object3D * parent,
+               SceneGraph::DrawableGroup3D * group,
+               Shaders::Phong & shader,
+               GL::Mesh & mesh,
+               Matrix4 pose,
+               Vector3 size,
+               Color4 color);
+
+  inline void pose(const Matrix4 & pose) noexcept
+  {
+    pose_ = pose;
+    update();
+  }
+
+  inline void size(const Vector3 & size) noexcept
+  {
+    size_ = size;
+    update();
+  }
+
+private:
+  Matrix4 pose_;
+  Vector3 size_;
+  void update() noexcept;
+};
+
+using BoxPtr = std::shared_ptr<Box>;
+
 } // namespace mc_rtc::magnum

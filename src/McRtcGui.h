@@ -30,7 +30,7 @@ struct McRtcGui : public Platform::Application
 
   std::shared_ptr<Mesh> loadMesh(const std::string & path, Color4 color);
 
-  void drawCube(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
+  BoxPtr makeBox(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
 
   SpherePtr makeSphere(Vector3 center, float radius, Color4 color);
 
