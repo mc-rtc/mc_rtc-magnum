@@ -15,6 +15,9 @@
 
 #include "implot.h"
 
+#include <boost/program_options.hpp>
+namespace po = boost::program_options;
+
 namespace mc_rtc::magnum
 {
 
@@ -44,6 +47,26 @@ McRtcGui::McRtcGui(const Arguments & arguments)
                                                        | Configuration::WindowFlag::Maximized)},
   client_(*this)
 {
+  {
+    std::string host;
+    po::options_description desc("mc-rtc-magnum options");
+    // clang-format off
+    desc.add_options()
+      ("help", "Show this help message")
+      ("tcp", po::value<std::string>(&host), "Connect to the given host with TCP");
+    // clang-format on
+    po::variables_map vm;
+    po::store(po::command_line_parser(arguments.argc, arguments.argv).options(desc).run(), vm);
+    po::notify(vm);
+    if(vm.count("help"))
+    {
+      std::cout << desc << "\n";
+    }
+    if(vm.count("tcp"))
+    {
+      client_.connect(fmt::format("tcp://{}:4242", host), fmt::format("tcp://{}:4343", host));
+    }
+  }
   {
     ImGui::CreateContext();
     ImPlot::CreateContext();

@@ -1,3 +1,5 @@
+find_package(Boost REQUIRED COMPONENTS program_options)
+
 if(MC_RTC_MAGNUM_BUILD_INTERFACE)
 
   set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
@@ -61,6 +63,8 @@ if(MC_RTC_MAGNUM_BUILD_INTERFACE)
       MagnumPlugins::AssimpImporter
       MagnumPlugins::StbImageImporter
       Magnum::ObjImporter
+      Boost::program_options
+      Boost::disable_autolinking
   )
 
   if(TARGET mc_rtc::mc_rtc_ros)
@@ -76,8 +80,6 @@ if(MC_RTC_MAGNUM_BUILD_INTERFACE)
 endif() # if(MC_RTC_MAGNUM_BUILD_INTERFACE)
 
 if(MC_RTC_MAGNUM_BUILD_TICKER)
-
-  find_package(Boost REQUIRED COMPONENTS program_options)
 
   add_executable(${PROJECT_NAME}-ticker ticker/ticker.cpp)
   target_link_libraries(${PROJECT_NAME}-ticker PUBLIC mc_rtc::mc_control Boost::program_options Boost::disable_autolinking)
