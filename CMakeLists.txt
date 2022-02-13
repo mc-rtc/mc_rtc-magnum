@@ -11,9 +11,6 @@ OPTION(MC_RTC_MAGNUM_BUILD_INTERFACE "Build the Magnum interface" ON)
 option(MC_RTC_MAGNUM_BUILD_TICKER "Build the ticker" ON)
 
 if(MC_RTC_MAGNUM_BUILD_INTERFACE)
-  add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
-  add_subdirectory(ext/corrade EXCLUDE_FROM_ALL)
-
   # Magnum options
   set(BUILD_STATIC ON CACHE BOOL "" FORCE)
   set(BUILD_PLUGINS_STATIC ON CACHE BOOL "" FORCE)
@@ -21,6 +18,10 @@ if(MC_RTC_MAGNUM_BUILD_INTERFACE)
   set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
   set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
   set(WITH_OBJIMPORTER ON CACHE BOOL "" FORCE)
+
+  add_subdirectory(ext/glfw EXCLUDE_FROM_ALL)
+  add_subdirectory(ext/corrade EXCLUDE_FROM_ALL)
+
   add_subdirectory(ext/magnum EXCLUDE_FROM_ALL)
 
   set(WITH_ASSIMPIMPORTER ON CACHE BOOL "" FORCE)
