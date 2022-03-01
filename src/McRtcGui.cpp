@@ -36,7 +36,7 @@ struct Grid : public SceneGraph::Drawable3D
   }
 
 private:
-  Shaders::Flat3D shader_;
+  Shaders::FlatGL3D shader_;
   GL::Mesh mesh_;
 };
 
@@ -96,8 +96,8 @@ McRtcGui::McRtcGui(const Arguments & arguments)
                                  GL::Renderer::BlendFunction::OneMinusSourceAlpha);
   Color4ub bg = 0xd3d7cfff_rgba;
   GL::Renderer::setClearColor(bg.toSrgbAlpha());
-  colorShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0xffffff00_rgbaf).setShininess(80.0f);
-  textureShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0x11111100_rgbaf).setShininess(80.0f);
+  colorShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0xffffff_rgbf).setShininess(80.0f);
+  textureShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0x111111_rgbf).setShininess(80.0f);
 
   /** Plugin */
   importer_ = manager_.loadAndInstantiate("AssimpImporter");
@@ -136,7 +136,7 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   for(UnsignedInt i = 0; i < importer_->textureCount(); ++i)
   {
     Containers::Optional<Trade::TextureData> textureData = importer_->texture(i);
-    if(!textureData || textureData->type() != Trade::TextureData::Type::Texture2D)
+    if(!textureData || textureData->type() != Trade::TextureType::Texture2D)
     {
       Warning{} << "Cannot load texture properties, skipping";
       continue;
@@ -200,14 +200,6 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
     if(!out.scene_)
     {
       Error{} << "Cannot load scene from " << path.c_str();
-    }
-    else
-    {
-      out.objects_ = Containers::Array<Containers::Pointer<Trade::ObjectData3D>>{importer_->object3DCount()};
-      for(UnsignedInt i = 0; i != importer_->object3DCount(); ++i)
-      {
-        out.objects_[i] = importer_->object3D(i);
-      }
     }
   }
   return out;

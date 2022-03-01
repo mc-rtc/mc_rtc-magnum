@@ -18,11 +18,10 @@
 #include <Magnum/SceneGraph/Scene.h>
 #include <Magnum/Shaders/Flat.h>
 #include <Magnum/Shaders/Phong.h>
-#include <Magnum/Shaders/VertexColor.h>
+#include <Magnum/Shaders/VertexColorGL.h>
 #include <Magnum/Trade/AbstractImporter.h>
 #include <Magnum/Trade/ImageData.h>
 #include <Magnum/Trade/MeshData.h>
-#include <Magnum/Trade/MeshObjectData3D.h>
 #include <Magnum/Trade/PhongMaterialData.h>
 #include <Magnum/Trade/SceneData.h>
 #include <Magnum/Trade/TextureData.h>

@@ -59,8 +59,8 @@ private:
 
   PluginManager::Manager<Trade::AbstractImporter> manager_;
   Containers::Pointer<Trade::AbstractImporter> importer_;
-  Shaders::Phong colorShader_;
-  Shaders::Phong textureShader_{Shaders::Phong::Flag::DiffuseTexture};
+  Shaders::PhongGL colorShader_;
+  Shaders::PhongGL textureShader_{Shaders::PhongGL::Flag::DiffuseTexture};
 
   std::unordered_map<std::string, ImportedMesh> importedData_;
 
@@ -69,8 +69,8 @@ private:
   GL::Mesh cubeMesh_;
   GL::Mesh sphereMesh_;
   GL::Mesh axisMesh_;
-  Shaders::Phong shader_;
-  Shaders::VertexColor3D vertexShader_;
+  Shaders::PhongGL shader_;
+  Shaders::VertexColorGL3D vertexShader_;
 
   MagnumClient client_;
 

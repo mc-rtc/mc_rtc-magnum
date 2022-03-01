@@ -42,7 +42,7 @@ class ColoredDrawable : public CommonDrawable
 public:
   explicit ColoredDrawable(Object3D * parent,
                            SceneGraph::DrawableGroup3D * group,
-                           Shaders::Phong & shader,
+                           Shaders::PhongGL & shader,
                            GL::Mesh & mesh,
                            const Color4 & color,
                            const Containers::Optional<Color4> & ambient = Containers::NullOpt);
@@ -74,7 +74,7 @@ public:
 protected:
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
 
-  Shaders::Phong & shader_;
+  Shaders::PhongGL & shader_;
   GL::Mesh & mesh_;
   Color4 color_;
   Color4 ambient_;
@@ -85,14 +85,14 @@ class TexturedDrawable : public CommonDrawable
 public:
   explicit TexturedDrawable(Object3D * object,
                             SceneGraph::DrawableGroup3D * group,
-                            Shaders::Phong & shader,
+                            Shaders::PhongGL & shader,
                             GL::Mesh & mesh,
                             GL::Texture2D & texture);
 
 private:
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
 
-  Shaders::Phong & shader_;
+  Shaders::PhongGL & shader_;
   GL::Mesh & mesh_;
   GL::Texture2D & texture_;
 };
@@ -102,7 +102,7 @@ class Sphere : public ColoredDrawable
 public:
   explicit Sphere(Object3D * parent,
                   SceneGraph::DrawableGroup3D * group,
-                  Shaders::Phong & shader,
+                  Shaders::PhongGL & shader,
                   GL::Mesh & mesh,
                   Vector3 center,
                   float radius,
@@ -133,7 +133,7 @@ class Box : public ColoredDrawable
 public:
   explicit Box(Object3D * parent,
                SceneGraph::DrawableGroup3D * group,
-               Shaders::Phong & shader,
+               Shaders::PhongGL & shader,
                GL::Mesh & mesh,
                Matrix4 pose,
                Vector3 size,

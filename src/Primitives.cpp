@@ -39,7 +39,7 @@ void CommonDrawable::hidden(bool hidden) noexcept
 
 ColoredDrawable::ColoredDrawable(Object3D * object,
                                  SceneGraph::DrawableGroup3D * group,
-                                 Shaders::Phong & shader,
+                                 Shaders::PhongGL & shader,
                                  GL::Mesh & mesh,
                                  const Color4 & color,
                                  const Containers::Optional<Color4> & ambient)
@@ -68,7 +68,7 @@ void ColoredDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::Ca
 
 TexturedDrawable::TexturedDrawable(Object3D * object,
                                    SceneGraph::DrawableGroup3D * group,
-                                   Shaders::Phong & shader,
+                                   Shaders::PhongGL & shader,
                                    GL::Mesh & mesh,
                                    GL::Texture2D & texture)
 : CommonDrawable{object, group}, shader_(shader), mesh_(mesh), texture_(texture)
@@ -86,7 +86,7 @@ void TexturedDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::C
 
 Sphere::Sphere(Object3D * parent,
                SceneGraph::DrawableGroup3D * group,
-               Shaders::Phong & shader,
+               Shaders::PhongGL & shader,
                GL::Mesh & mesh,
                Vector3 center,
                float radius,
@@ -103,7 +103,7 @@ void Sphere::update() noexcept
 
 Box::Box(Object3D * parent,
          SceneGraph::DrawableGroup3D * group,
-         Shaders::Phong & shader,
+         Shaders::PhongGL & shader,
          GL::Mesh & mesh,
          Matrix4 pose,
          Vector3 size,
