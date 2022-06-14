@@ -64,7 +64,7 @@ struct RobotCache
       use_cnt_[params] = 1;
       robots_[params] = mc_rbdyn::loadRobot(*fromParams(params));
     }
-    auto out = std::shared_ptr<mc_rbdyn::Robots>(new mc_rbdyn::Robots(), [](mc_rbdyn::Robots * robots) {
+    auto out = mc_rbdyn::Robots::make([](mc_rbdyn::Robots * robots) {
       remove_robot(robots->robot().module().parameters());
       delete robots;
     });
