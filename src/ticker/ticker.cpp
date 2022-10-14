@@ -70,9 +70,18 @@ int main(int argc, char * argv[])
     {
       if(controller.robot().hasJoint(jn))
       {
-        for(auto & qj : mbc.q[controller.robot().jointIndexByName(jn)])
+        const auto & qi = mbc.q[controller.robot().jointIndexByName(jn)];
+        if(qi.size())
         {
-          q.push_back(qj);
+          for(auto & qj : qi)
+          {
+            q.push_back(qj);
+          }
+        }
+        else
+        {
+          // FIXME This assumes filtered locked joints are of size 1
+          q.push_back(0);
         }
       }
       else
@@ -143,11 +152,23 @@ int main(int argc, char * argv[])
       const auto & jn = rjo[i];
       if(controller.robot().hasJoint(jn))
       {
-        for(auto & qj : mbc.q[controller.robot().jointIndexByName(jn)])
+        const auto & qi = mbc.q[controller.robot().jointIndexByName(jn)];
+        if(qi.size() == 0)
         {
-          q[index] = qj;
           index++;
         }
+        else
+        {
+          for(auto & qj : qi)
+          {
+            q[index] = qj;
+            index++;
+          }
+        }
+      }
+      else
+      {
+        index++;
       }
     }
     controller.setEncoderValues(q);
