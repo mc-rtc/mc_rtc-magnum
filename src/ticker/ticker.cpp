@@ -9,22 +9,11 @@
 #include <boost/program_options.hpp>
 namespace po = boost::program_options;
 
-#ifndef MC_RTC_VERSION_MAJOR
-static constexpr int MC_RTC_VERSION_MAJOR = mc_rtc::MC_RTC_VERSION[0] - '0';
-#endif
-
 template<typename T>
 mc_rtc::gui::StateBuilder * get_gui(T & gc)
 {
   static_assert(std::is_same_v<T, mc_control::MCGlobalController>);
-  if constexpr(MC_RTC_VERSION_MAJOR >= 2)
-  {
-    return &gc.controller().gui();
-  }
-  else
-  {
-    return gc.controller().gui().get();
-  }
+  return gc.controller().gui().get();
 }
 
 int main(int argc, char * argv[])

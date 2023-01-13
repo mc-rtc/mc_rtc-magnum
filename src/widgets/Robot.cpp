@@ -11,22 +11,11 @@ namespace mc_rtc::magnum
 namespace details
 {
 
-#ifndef MC_RTC_VERSION_MAJOR
-static constexpr int MC_RTC_VERSION_MAJOR = mc_rtc::MC_RTC_VERSION[0] - '0';
-#endif
-
 template<typename T>
 void setConfiguration(T & robot, const std::vector<std::vector<double>> & q)
 {
   static_assert(std::is_same_v<T, mc_rbdyn::Robot>);
-  if constexpr(MC_RTC_VERSION_MAJOR > 1)
-  {
-    robot.q()->set(rbd::paramToVector(robot.mb(), q));
-  }
-  else
-  {
-    robot.mbc().q = q;
-  }
+  robot.mbc().q = q;
 }
 
 inline mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p)
