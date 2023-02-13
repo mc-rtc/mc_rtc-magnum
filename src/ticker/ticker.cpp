@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
   // clang-format off
   desc.add_options()
     ("help", "Show this help message")
-    ("mc-config", po::value<std::string>(&conf), "Configuration given to mc_rtc")
+    ("mc-config,f", po::value<std::string>(&conf), "Configuration given to mc_rtc")
     ("step-by-step", po::bool_switch(&stepByStep), "Start the ticker in step-by-step mode")
     ("run-for", po::value<double>(&run_for), "Run for the specified time (seconds)")
     ("no-sync", po::bool_switch(&no_ticker_sync), "Synchronize ticker time with real time");
