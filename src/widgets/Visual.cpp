@@ -71,6 +71,27 @@ void Visual::draw3D()
     s.radius(static_cast<float>(sphere.radius));
     s.color(color(visual_.material));
   };
+  auto handleSuperellipsoid = [&]() {
+    const auto & se = boost::get<rbd::parsers::Geometry::Superellipsoid>(visual_.geometry.data);
+    if(se.epsilon1 != 1.0 || se.epsilon2 != 1.0)
+    {
+      static bool warned_once = false;
+      if(!warned_once)
+      {
+        mc_rtc::log::error("mc-rtc-magnum only support ellipsoid display");
+        warned_once = true;
+      }
+      return;
+    }
+    if(!object_)
+    {
+      object_ = gui_.makeEllipsoid(translation(pos_), rotation(pos_), translation(se.size), color(visual_.material));
+    }
+    auto & e = static_cast<Ellipsoid &>(*object_);
+    e.pose(Matrix4::from(rotation(pos_), translation(pos_)));
+    e.size(translation(se.size));
+    e.color(color(visual_.material));
+  };
   if(object_ && typeChanged_)
   {
     object_.reset();
@@ -89,6 +110,9 @@ void Visual::draw3D()
       break;
     case Type::SPHERE:
       handleSphere();
+      break;
+    case Type::SUPERELLIPSOID:
+      handleSuperellipsoid();
       break;
     default:
       break;

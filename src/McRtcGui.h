@@ -34,6 +34,8 @@ struct McRtcGui : public Platform::Application
 
   SpherePtr makeSphere(Vector3 center, float radius, Color4 color);
 
+  EllipsoidPtr makeEllipsoid(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
+
   void drawFrame(Matrix4 pos, float scale = 0.15);
 
   void drawLine(Vector3 start, Vector3 end, Color4 color, float thickness = 1.0);

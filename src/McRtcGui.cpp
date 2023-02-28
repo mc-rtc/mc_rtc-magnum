@@ -340,6 +340,12 @@ SpherePtr McRtcGui::makeSphere(Vector3 center, float radius, Color4 color)
   return std::make_shared<Sphere>(&scene_, &drawables_, shader_, sphereMesh_, center, radius, color);
 }
 
+EllipsoidPtr McRtcGui::makeEllipsoid(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
+{
+  return std::make_shared<Ellipsoid>(&scene_, &drawables_, shader_, sphereMesh_, Matrix4::from(ori, center), size,
+                                     color);
+}
+
 void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickness*/)
 {
   // FIXME Write a shader to handle nice line drawing

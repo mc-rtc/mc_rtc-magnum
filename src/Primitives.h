@@ -159,4 +159,7 @@ private:
 
 using BoxPtr = std::shared_ptr<Box>;
 
+using Ellipsoid = Box;
+using EllipsoidPtr = std::shared_ptr<Ellipsoid>;
+
 } // namespace mc_rtc::magnum
