@@ -356,12 +356,16 @@ void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickn
 void McRtcGui::drawArrow(Vector3 start, Vector3 end, float shaft_diam, float head_diam, float head_len, Color4 color)
 {
   Vector3 normal = end - start;
-  float height = normal.length();
-  if(height == 0.0f)
+  if(normal.length() == 0.0f)
   {
     return;
   }
-  normal /= height;
+  while(normal.normalized().length() < 1.0f)
+  {
+    normal *= 10;
+  }
+  float height = normal.length();
+  normal = normal.normalized();
   if(head_len >= height)
   {
     head_len = height;
