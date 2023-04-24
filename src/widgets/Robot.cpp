@@ -211,6 +211,7 @@ struct RobotImpl
     {
       return;
     }
+    ImGui::Columns(2);
     if(ImGui::Checkbox(self_.label(fmt::format("Draw {} visual model", self_.id.name)).c_str(), &drawVisualModel_))
     {
       for(auto & o : visualObjects_)
@@ -218,8 +219,9 @@ struct RobotImpl
         o->hidden(!drawVisualModel_);
       }
     }
-    ImGui::SameLine();
+    ImGui::NextColumn();
     ImGui::SliderFloat(self_.label("Alpha##Visual", self_.id.name).c_str(), &drawVisualModelAlpha_, 0.0, 1.0);
+    ImGui::NextColumn();
     if(ImGui::Checkbox(self_.label(fmt::format("Draw {} collision model", self_.id.name)).c_str(),
                        &drawCollisionModel_))
     {
@@ -228,8 +230,9 @@ struct RobotImpl
         o->hidden(!drawCollisionModel_);
       }
     }
-    ImGui::SameLine();
+    ImGui::NextColumn();
     ImGui::SliderFloat(self_.label("Alpha##Collision", self_.id.name).c_str(), &drawCollisionModelAlpha_, 0.0, 1.0);
+    ImGui::Columns(1);
   }
 
   void draw3D()
