@@ -219,10 +219,20 @@ void McRtcGui::drawEvent()
   client_.update();
 
   imgui_.newFrame();
+  ImGui::ShowDemoWindow();
   ImGuizmo::BeginFrame();
 
   drawFrame({}, 0.1);
-  camera_->camera()->draw(drawables_);
+  std::vector<std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>> drawableTransformations =
+      camera_->camera()->drawableTransformations(drawables_);
+
+  std::sort(drawableTransformations.begin(), drawableTransformations.end(),
+            [](const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4> & a,
+               const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4> & b) {
+              return a.second.translation().z() < b.second.translation().z();
+            });
+
+  camera_->camera()->draw(drawableTransformations);
   client_.draw3D();
 
   /* Enable text input, if needed */
