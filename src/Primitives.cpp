@@ -58,7 +58,7 @@ ColoredDrawable::ColoredDrawable(Object3D * object,
 
 void ColoredDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera)
 {
-  shader_.setDiffuseColor(color_)
+  shader_.setDiffuseColor(Color4(color_))
       .setAmbientColor(ambient_)
       .setTransformationMatrix(transformationMatrix)
       .setNormalMatrix(transformationMatrix.normalMatrix())
@@ -81,6 +81,7 @@ void TexturedDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::C
       .setNormalMatrix(transformationMatrix.normalMatrix())
       .setProjectionMatrix(camera.projectionMatrix())
       .bindDiffuseTexture(texture_)
+      .setDiffuseColor(Color4(1.0, 1.0, 1.0, alpha_))
       .draw(mesh_);
 }
 

@@ -62,7 +62,7 @@ private:
   PluginManager::Manager<Trade::AbstractImporter> manager_;
   Containers::Pointer<Trade::AbstractImporter> importer_;
   Shaders::PhongGL colorShader_;
-  Shaders::PhongGL textureShader_{Shaders::PhongGL::Flag::DiffuseTexture};
+  Shaders::PhongGL textureShader_{Shaders::PhongGL::Configuration{}.setFlags(Shaders::PhongGL::Flag::DiffuseTexture)};
 
   std::unordered_map<std::string, ImportedMesh> importedData_;
 

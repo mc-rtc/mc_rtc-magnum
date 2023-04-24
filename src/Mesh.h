@@ -24,6 +24,14 @@ struct Mesh : public CommonDrawable
        Shaders::PhongGL & textureShader,
        Color4 color);
 
+  inline void alpha(float alpha) noexcept override
+  {
+    for(auto & d : drawables_)
+    {
+      d->alpha(alpha);
+    }
+  }
+
 private:
   std::vector<CommonDrawable *> drawables_;
 

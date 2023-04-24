@@ -96,8 +96,8 @@ McRtcGui::McRtcGui(const Arguments & arguments)
                                  GL::Renderer::BlendFunction::OneMinusSourceAlpha);
   Color4ub bg = 0xd3d7cfff_rgba;
   GL::Renderer::setClearColor(bg.toSrgbAlpha());
-  colorShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0xffffff_rgbf).setShininess(80.0f);
-  textureShader_.setAmbientColor(0x111111_rgbf).setSpecularColor(0x111111_rgbf).setShininess(80.0f);
+  colorShader_.setAmbientColor(0x11111100_rgbaf).setSpecularColor(0xffffff00_rgbaf).setShininess(80.0f);
+  textureShader_.setAmbientColor(0x11111100_rgbaf).setSpecularColor(0xffffff00_rgbaf).setShininess(80.0f);
 
   /** Plugin */
   importer_ = manager_.loadAndInstantiate("AssimpImporter");

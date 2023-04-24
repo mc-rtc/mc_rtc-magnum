@@ -24,6 +24,8 @@ public:
 
   virtual void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) = 0;
 
+  virtual void alpha(float alpha) noexcept = 0;
+
 private:
   SceneGraph::DrawableGroup3D * group_;
   bool hidden_ = false;
@@ -55,6 +57,7 @@ public:
   inline void ambient(const Color4 & ambient) noexcept
   {
     ambient_ = ambient;
+    ambient_.a() = 0.0;
   }
 
   inline void colorWithAmbient(const Color4 & color) noexcept
@@ -63,12 +66,18 @@ public:
     if(color_.r() == color_.g() && color_.g() == color_.a())
     {
       ambient_ = 0x000000ff_rgbaf;
-      ambient_.a() = color_.a();
+      ambient_.a() = 0.0f;
     }
     else
     {
-      ambient_ = Color4::fromHsv({color_.hue(), 1.0f, 0.3f}, color_.a());
+      ambient_ = Color4::fromHsv({color_.hue(), 1.0f, 0.3f}, 0.0f);
     }
+  }
+
+  inline void alpha(float alpha) noexcept override
+  {
+    color_.a() = alpha;
+    ambient_.a() = 0.0f;
   }
 
 protected:
@@ -89,12 +98,18 @@ public:
                             GL::Mesh & mesh,
                             GL::Texture2D & texture);
 
+  inline void alpha(float alpha) noexcept final
+  {
+    alpha_ = alpha;
+  }
+
 private:
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
 
   Shaders::PhongGL & shader_;
   GL::Mesh & mesh_;
   GL::Texture2D & texture_;
+  float alpha_ = 1.0f;
 };
 
 class Sphere : public ColoredDrawable

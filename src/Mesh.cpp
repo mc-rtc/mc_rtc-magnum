@@ -74,7 +74,7 @@ Mesh::Mesh(Object3D * parent,
       }
     }
   }
-  else if(!data.meshes_.empty() && data.meshes_[0])
+  else if(!data.meshes_.isEmpty() && data.meshes_[0])
   {
     drawables_.push_back(new ColoredDrawable(this, group, colorShader, *data.meshes_[0], color));
   }
