@@ -28,13 +28,30 @@ struct McRtcGui : public Platform::Application
   void mouseScrollEvent(MouseScrollEvent & event) override;
   void textInputEvent(TextInputEvent & event) override;
 
-  std::shared_ptr<Mesh> loadMesh(const std::string & path, Color4 color);
+  std::shared_ptr<Mesh> loadMesh(const std::string & path,
+                                 Color4 color,
+                                 Object3D * parent = nullptr,
+                                 SceneGraph::DrawableGroup3D * group = nullptr);
 
-  BoxPtr makeBox(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
+  BoxPtr makeBox(Vector3 center,
+                 Matrix3 ori,
+                 Vector3 size,
+                 Color4 color,
+                 Object3D * parent = nullptr,
+                 SceneGraph::DrawableGroup3D * group = nullptr);
 
-  SpherePtr makeSphere(Vector3 center, float radius, Color4 color);
+  SpherePtr makeSphere(Vector3 center,
+                       float radius,
+                       Color4 color,
+                       Object3D * parent = nullptr,
+                       SceneGraph::DrawableGroup3D * group = nullptr);
 
-  EllipsoidPtr makeEllipsoid(Vector3 center, Matrix3 ori, Vector3 size, Color4 color);
+  EllipsoidPtr makeEllipsoid(Vector3 center,
+                             Matrix3 ori,
+                             Vector3 size,
+                             Color4 color,
+                             Object3D * parent = nullptr,
+                             SceneGraph::DrawableGroup3D * group = nullptr);
 
   void drawFrame(Matrix4 pos, float scale = 0.15);
 
@@ -50,6 +67,11 @@ struct McRtcGui : public Platform::Application
   inline Scene3D & scene() noexcept
   {
     return scene_;
+  }
+
+  inline SceneGraph::DrawableGroup3D & drawables() noexcept
+  {
+    return drawables_;
   }
 
 private:

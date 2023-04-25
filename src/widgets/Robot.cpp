@@ -77,14 +77,171 @@ private:
   inline static std::map<std::vector<std::string>, size_t> use_cnt_ = {};
 };
 
+struct RobotBody : public Object3D, public SceneGraph::Drawable3D
+{
+  RobotBody(Object3D * parent, SceneGraph::DrawableGroup3D * group)
+  : Object3D{parent}, SceneGraph::Drawable3D{*this, group}, group_(group)
+  {
+  }
+
+  inline void loadVisual(McRtcGui & gui, const std::string & rm_path, const rbd::parsers::Visual & visual)
+  {
+    std::shared_ptr<CommonDrawable> object;
+    using Geometry = rbd::parsers::Geometry;
+    switch(visual.geometry.type)
+    {
+      case Geometry::MESH:
+      {
+        const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
+        auto path = convertURI(mesh.filename, rm_path);
+        object = gui.loadMesh(path.string(), color(visual.material), this, group_);
+        // FIXME Bake scale in mesh?
+        auto scale = mesh.scaleV;
+        object->setTransformation(convert(visual.origin) * Matrix4::scaling(translation(scale)));
+        break;
+      }
+      case Geometry::BOX:
+      {
+        const auto & box = boost::get<rbd::parsers::Geometry::Box>(visual.geometry.data);
+        object = gui.makeBox(translation(visual.origin.translation()), convert(visual.origin.rotation()),
+                             translation(box.size), color(visual.material), this, group_);
+        break;
+      }
+      case Geometry::CYLINDER:
+      {
+        // FIXME Need to make Cylinder proper objects
+        // const auto & cylinder = boost::get<rbd::parsers::Geometry::Cylinder>(visual.geometry.data);
+        // const auto & start = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, -cylinder.length / 2}) * visual.origin
+        //                     * robot().mbc().bodyPosW[bIdx];
+        // const auto & end = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, cylinder.length}) * start;
+        // gui().drawArrow(translation(start), translation(end), 2 * cylinder.radius, 0.0f, 0.0f,
+        //                Color4(color(visual.material).rgb(), alpha));
+        break;
+      }
+      case Geometry::SPHERE:
+      {
+        const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual.geometry.data);
+        object = gui.makeSphere(translation(visual.origin), static_cast<float>(sphere.radius), color(visual.material),
+                                this, group_);
+        break;
+      }
+      default:
+        break;
+    }
+    if(object)
+    {
+      objects_.push_back(object);
+    }
+  }
+
+  inline void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) final
+  {
+    for(auto & o : objects_)
+    {
+      o->draw(transformationMatrix * o->transformation(), camera);
+    }
+  }
+
+  inline void alpha(float alpha) noexcept
+  {
+    for(auto & o : objects_)
+    {
+      o->alpha(alpha);
+    }
+  }
+
+  SceneGraph::DrawableGroup3D * group_;
+  std::vector<std::shared_ptr<CommonDrawable>> objects_;
+};
+
+struct RobotObject : public Object3D, public SceneGraph::Drawable3D
+{
+  RobotObject(Scene3D & scene, SceneGraph::DrawableGroup3D & group)
+  : Object3D(&scene), SceneGraph::Drawable3D{*this, &group}, parent_group_(&group)
+  {
+  }
+
+  inline void update(const mc_rbdyn::Robot & robot) noexcept
+  {
+    auto posW = robot.posW();
+    setTransformation(convert(posW));
+    for(size_t i = 0; i < robot.mb().bodies().size(); ++i)
+    {
+      bodies_[i]->setTransformation(convert(robot.mbc().bodyPosW[i] * posW.inv()));
+    }
+  }
+
+  inline void loadBody(McRtcGui & gui, const std::string & rm_path, const std::vector<rbd::parsers::Visual> & visuals)
+  {
+    bodies_.push_back(std::make_shared<RobotBody>(this, &group_));
+    for(const auto & v : visuals)
+    {
+      bodies_.back()->loadVisual(gui, rm_path, v);
+    }
+  }
+
+  inline void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) final
+  {
+    if(visible_)
+    {
+      for(auto & b : bodies_)
+      {
+        b->draw(transformationMatrix * b->transformation(), camera);
+      }
+    }
+  }
+
+  inline bool visible() const noexcept
+  {
+    return visible_;
+  }
+
+  void visible(bool v) noexcept
+  {
+    if(v)
+    {
+      parent_group_->add(*this);
+    }
+    else
+    {
+      parent_group_->remove(*this);
+    }
+    visible_ = v;
+  }
+
+  inline void alpha(float alpha) noexcept
+  {
+    alpha_ = alpha;
+    for(auto & b : bodies_)
+    {
+      b->alpha(alpha);
+    }
+  }
+
+  inline float alpha() const noexcept
+  {
+    return alpha_;
+  }
+
+  inline void clear() noexcept
+  {
+    bodies_.clear();
+  }
+
+  SceneGraph::DrawableGroup3D * parent_group_;
+  SceneGraph::DrawableGroup3D group_;
+  std::vector<std::shared_ptr<RobotBody>> bodies_;
+  bool visible_ = true;
+  float alpha_ = 1.0f;
+};
+
 struct RobotImpl
 {
-  RobotImpl(Robot & robot) : self_(robot)
+  RobotImpl(Robot & robot, Scene3D & scene, SceneGraph::DrawableGroup3D & group)
+  : self_(robot), visualRobot_(scene, group), collisionRobot_(scene, group)
   {
-    if(self_.id.category.size() > 1)
-    {
-      drawVisualModel_ = false;
-    }
+    collisionRobot_.visible(false);
+    visualRobot_.visible(self_.id.category.size() <= 1);
   }
 
   inline mc_rbdyn::Robot & robot()
@@ -103,103 +260,23 @@ struct RobotImpl
   {
     if(!robots_ || robot().module().parameters() != params)
     {
-      visualObjects_.clear();
-      collisionObjects_.clear();
+      visualRobot_.clear();
+      collisionRobot_.clear();
       robots_ = RobotCache::get_robot(params);
       const auto & rm = robots_->robot().module();
-      using Objects = std::vector<std::shared_ptr<CommonDrawable>>;
-      auto loadMeshCallback = [&](Objects & objects, std::vector<std::function<void(float)>> & draws, size_t bIdx,
-                                  const rbd::parsers::Visual & visual, bool hidden) {
-        const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
-        auto path = convertURI(mesh.filename, rm.path);
-        auto object = gui().loadMesh(path.string(), color(visual.material));
-        auto scale = static_cast<float>(mesh.scale);
-        object->hidden(hidden);
-        objects.push_back(object);
-        draws.push_back([this, bIdx, visual, object, scale](float alpha) {
-          const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-          object->alpha(alpha);
-          object->setTransformation(convert(X_0_b) * Matrix4::scaling({scale, scale, scale}));
-        });
+      const auto & bodies = robot().mb().bodies();
+      auto loadVisuals = [this, &rm](auto & object, const auto & visuals, const std::string & name) {
+        auto it = visuals.find(name);
+        object.loadBody(gui(), rm.path, it != visuals.end() ? it->second : std::vector<rbd::parsers::Visual>{});
       };
-      auto loadBoxCallback = [&](Objects & objects, std::vector<std::function<void(float)>> & draws, size_t bIdx,
-                                 const rbd::parsers::Visual & visual, bool hidden) {
-        const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-        const auto & box = boost::get<rbd::parsers::Geometry::Box>(visual.geometry.data);
-        auto object =
-            gui().makeBox(translation(X_0_b), convert(X_0_b.rotation()), translation(box.size), color(visual.material));
-        object->hidden(hidden);
-        objects.push_back(object);
-        draws.push_back([this, bIdx, visual, object](float alpha) {
-          const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-          auto & box = static_cast<Box &>(*object);
-          box.alpha(alpha);
-          box.pose(convert(X_0_b));
-        });
-      };
-      auto loadCylinderCallback = [&](std::vector<std::function<void(float)>> & draws, size_t bIdx,
-                                      const rbd::parsers::Visual & visual) {
-        draws.push_back([this, bIdx, visual](float alpha) {
-          const auto & cylinder = boost::get<rbd::parsers::Geometry::Cylinder>(visual.geometry.data);
-          const auto & start = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, -cylinder.length / 2}) * visual.origin
-                               * robot().mbc().bodyPosW[bIdx];
-          const auto & end = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, cylinder.length}) * start;
-          gui().drawArrow(translation(start), translation(end), 2 * cylinder.radius, 0.0f, 0.0f,
-                          Color4(color(visual.material).rgb(), alpha));
-        });
-      };
-      auto loadSphereCallback = [&](Objects & objects, std::vector<std::function<void(float)>> & draws, size_t bIdx,
-                                    const rbd::parsers::Visual & visual, bool hidden) {
-        const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual.geometry.data);
-        auto s = gui().makeSphere({}, static_cast<float>(sphere.radius), color(visual.material));
-        s->hidden(hidden);
-        objects.push_back(s);
-        draws.push_back([this, bIdx, visual, s](float alpha) {
-          const auto & X_0_b = visual.origin * robot().mbc().bodyPosW[bIdx];
-          s->alpha(alpha);
-          s->center(translation(X_0_b));
-        });
-      };
-      auto loadBodyCallbacks = [&](Objects & objects, std::vector<std::function<void(float)>> & draws, size_t bIdx,
-                                   const std::vector<rbd::parsers::Visual> & visuals, bool hidden) {
-        for(const auto & visual : visuals)
-        {
-          using Geometry = rbd::parsers::Geometry;
-          switch(visual.geometry.type)
-          {
-            case Geometry::MESH:
-              loadMeshCallback(objects, draws, bIdx, visual, hidden);
-              break;
-            case Geometry::BOX:
-              loadBoxCallback(objects, draws, bIdx, visual, hidden);
-              break;
-            case Geometry::CYLINDER:
-              loadCylinderCallback(draws, bIdx, visual);
-              break;
-            case Geometry::SPHERE:
-              loadSphereCallback(objects, draws, bIdx, visual, hidden);
-              break;
-            default:
-              break;
-          };
-        }
-      };
-      auto loadCallbacks = [&](Objects & objects, std::vector<std::function<void(float)>> & draws, const auto & visuals,
-                               bool hidden) {
-        draws.clear();
-        const auto & bodies = robot().mb().bodies();
-        for(size_t i = 0; i < bodies.size(); ++i)
-        {
-          const auto & b = bodies[i];
-          if(!visuals.count(b.name()))
-          {
-            continue;
-          }
-          loadBodyCallbacks(objects, draws, i, visuals.at(b.name()), hidden);
-        }
-      };
-      loadCallbacks(visualObjects_, drawVisual_, robot().module()._visual, !drawVisualModel_);
-      loadCallbacks(collisionObjects_, drawCollision_, robot().module()._collision, !drawCollisionModel_);
+      for(size_t i = 0; i < bodies.size(); ++i)
+      {
+        const auto & b = bodies[i];
+        loadVisuals(visualRobot_, rm._visual, b.name());
+        loadVisuals(collisionRobot_, rm._collision, b.name());
+      }
+      visualRobot_.alpha(1.0f);
+      collisionRobot_.alpha(1.0f);
     }
     setConfiguration(robot(), q);
     robot().posW(posW);
@@ -212,26 +289,29 @@ struct RobotImpl
       return;
     }
     ImGui::Columns(2);
-    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} visual model", self_.id.name)).c_str(), &drawVisualModel_))
+    bool visible = visualRobot_.visible();
+    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} visual model", self_.id.name)).c_str(), &visible))
     {
-      for(auto & o : visualObjects_)
-      {
-        o->hidden(!drawVisualModel_);
-      }
+      visualRobot_.visible(visible);
     }
     ImGui::NextColumn();
-    ImGui::SliderFloat(self_.label("Alpha##Visual", self_.id.name).c_str(), &drawVisualModelAlpha_, 0.0, 1.0);
-    ImGui::NextColumn();
-    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} collision model", self_.id.name)).c_str(),
-                       &drawCollisionModel_))
+    float alpha = visualRobot_.alpha();
+    if(ImGui::SliderFloat(self_.label("Alpha##Visual", self_.id.name).c_str(), &alpha, 0.0, 1.0))
     {
-      for(auto & o : collisionObjects_)
-      {
-        o->hidden(!drawCollisionModel_);
-      }
+      visualRobot_.alpha(alpha);
     }
     ImGui::NextColumn();
-    ImGui::SliderFloat(self_.label("Alpha##Collision", self_.id.name).c_str(), &drawCollisionModelAlpha_, 0.0, 1.0);
+    visible = collisionRobot_.visible();
+    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} collision model", self_.id.name)).c_str(), &visible))
+    {
+      collisionRobot_.visible(visible);
+    }
+    ImGui::NextColumn();
+    alpha = collisionRobot_.alpha();
+    if(ImGui::SliderFloat(self_.label("Alpha##Collision", self_.id.name).c_str(), &alpha, 0.0, 1.0))
+    {
+      collisionRobot_.alpha(alpha);
+    }
     ImGui::Columns(1);
   }
 
@@ -241,39 +321,21 @@ struct RobotImpl
     {
       return;
     }
-    if(drawVisualModel_)
-    {
-      for(const auto & d : drawVisual_)
-      {
-        d(drawVisualModelAlpha_);
-      }
-    }
-    if(drawCollisionModel_)
-    {
-      for(const auto & d : drawCollision_)
-      {
-        d(drawCollisionModelAlpha_);
-      }
-    }
+    visualRobot_.update(robot());
+    collisionRobot_.update(robot());
   }
 
 private:
   Robot & self_;
   std::shared_ptr<mc_rbdyn::Robots> robots_;
-  bool drawVisualModel_ = true;
-  float drawVisualModelAlpha_ = 1.0;
-  bool drawCollisionModel_ = false;
-  float drawCollisionModelAlpha_ = 1.0;
-  std::vector<std::shared_ptr<CommonDrawable>> visualObjects_;
-  std::vector<std::function<void(float alpha)>> drawVisual_;
-  std::vector<std::shared_ptr<CommonDrawable>> collisionObjects_;
-  std::vector<std::function<void(float alpha)>> drawCollision_;
+  RobotObject visualRobot_;
+  RobotObject collisionRobot_;
 };
 
 } // namespace details
 
 Robot::Robot(Client & client, const ElementId & id, McRtcGui & gui)
-: Widget(client, id, gui), impl_(new details::RobotImpl{*this})
+: Widget(client, id, gui), impl_(new details::RobotImpl{*this, gui.scene(), gui.drawables()})
 {
 }
 

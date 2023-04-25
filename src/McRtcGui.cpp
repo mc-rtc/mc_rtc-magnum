@@ -205,10 +205,14 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   return out;
 }
 
-std::shared_ptr<Mesh> McRtcGui::loadMesh(const std::string & path, Color4 color)
+std::shared_ptr<Mesh> McRtcGui::loadMesh(const std::string & path,
+                                         Color4 color,
+                                         Object3D * parent,
+                                         SceneGraph::DrawableGroup3D * group)
 {
   auto & data = importData(path);
-  return std::make_shared<Mesh>(&scene_, &drawables_, data, colorShader_, textureShader_, color);
+  return std::make_shared<Mesh>(parent ? parent : &scene_, group ? group : &drawables_, data, colorShader_,
+                                textureShader_, color);
 }
 
 void McRtcGui::drawEvent()
@@ -219,7 +223,6 @@ void McRtcGui::drawEvent()
   client_.update();
 
   imgui_.newFrame();
-  ImGui::ShowDemoWindow();
   ImGuizmo::BeginFrame();
 
   drawFrame({}, 0.1);
@@ -340,20 +343,36 @@ void McRtcGui::textInputEvent(TextInputEvent & event)
   if(imgui_.handleTextInputEvent(event)) return;
 }
 
-BoxPtr McRtcGui::makeBox(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
+BoxPtr McRtcGui::makeBox(Vector3 center,
+                         Matrix3 ori,
+                         Vector3 size,
+                         Color4 color,
+                         Object3D * parent,
+                         SceneGraph::DrawableGroup3D * group)
 {
-  return std::make_shared<Box>(&scene_, &drawables_, shader_, cubeMesh_, Matrix4::from(ori, center), size, color);
+  return std::make_shared<Box>(parent ? parent : &scene_, group ? group : &drawables_, shader_, cubeMesh_,
+                               Matrix4::from(ori, center), size, color);
 }
 
-SpherePtr McRtcGui::makeSphere(Vector3 center, float radius, Color4 color)
+SpherePtr McRtcGui::makeSphere(Vector3 center,
+                               float radius,
+                               Color4 color,
+                               Object3D * parent,
+                               SceneGraph::DrawableGroup3D * group)
 {
-  return std::make_shared<Sphere>(&scene_, &drawables_, shader_, sphereMesh_, center, radius, color);
+  return std::make_shared<Sphere>(parent ? parent : &scene_, group ? group : &drawables_, shader_, sphereMesh_, center,
+                                  radius, color);
 }
 
-EllipsoidPtr McRtcGui::makeEllipsoid(Vector3 center, Matrix3 ori, Vector3 size, Color4 color)
+EllipsoidPtr McRtcGui::makeEllipsoid(Vector3 center,
+                                     Matrix3 ori,
+                                     Vector3 size,
+                                     Color4 color,
+                                     Object3D * parent,
+                                     SceneGraph::DrawableGroup3D * group)
 {
-  return std::make_shared<Ellipsoid>(&scene_, &drawables_, shader_, sphereMesh_, Matrix4::from(ori, center), size,
-                                     color);
+  return std::make_shared<Ellipsoid>(parent ? parent : &scene_, group ? group : &drawables_, shader_, sphereMesh_,
+                                     Matrix4::from(ori, center), size, color);
 }
 
 void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickness*/)

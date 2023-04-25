@@ -26,10 +26,6 @@ public:
 
   virtual void alpha(float alpha) noexcept = 0;
 
-private:
-  SceneGraph::DrawableGroup3D * group_;
-  bool hidden_ = false;
-
   inline void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) final
   {
     if(!hidden_)
@@ -37,6 +33,10 @@ private:
       draw_(transformationMatrix, camera);
     }
   }
+
+private:
+  SceneGraph::DrawableGroup3D * group_;
+  bool hidden_ = false;
 };
 
 class ColoredDrawable : public CommonDrawable
