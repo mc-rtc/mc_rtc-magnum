@@ -53,10 +53,12 @@ struct RobotCache
       use_cnt_[params] = 1;
       robots_[params] = mc_rbdyn::loadRobot(*fromParams(params));
     }
-    auto out = mc_rbdyn::Robots::make([](mc_rbdyn::Robots * robots) {
-      remove_robot(robots->robot().module().parameters());
-      delete robots;
-    });
+    auto out = mc_rbdyn::Robots::make(
+        [](mc_rbdyn::Robots * robots)
+        {
+          remove_robot(robots->robot().module().parameters());
+          delete robots;
+        });
     auto & robot = robots_[params]->robot();
     out->robotCopy(robot, robot.name());
     return out;
@@ -265,7 +267,8 @@ struct RobotImpl
       robots_ = RobotCache::get_robot(params);
       const auto & rm = robots_->robot().module();
       const auto & bodies = robot().mb().bodies();
-      auto loadVisuals = [this, &rm](auto & object, const auto & visuals, const std::string & name) {
+      auto loadVisuals = [this, &rm](auto & object, const auto & visuals, const std::string & name)
+      {
         auto it = visuals.find(name);
         object.loadBody(gui(), rm.path, it != visuals.end() ? it->second : std::vector<rbd::parsers::Visual>{});
       };
@@ -288,31 +291,28 @@ struct RobotImpl
     {
       return;
     }
-    ImGui::Columns(2);
-    bool visible = visualRobot_.visible();
-    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} visual model", self_.id.name)).c_str(), &visible))
+    auto drawRobotControl = [this](RobotObject & robot, const char * type)
     {
-      visualRobot_.visible(visible);
-    }
-    ImGui::NextColumn();
-    float alpha = visualRobot_.alpha();
-    if(ImGui::SliderFloat(self_.label("Alpha##Visual", self_.id.name).c_str(), &alpha, 0.0, 1.0))
-    {
-      visualRobot_.alpha(alpha);
-    }
-    ImGui::NextColumn();
-    visible = collisionRobot_.visible();
-    if(ImGui::Checkbox(self_.label(fmt::format("Draw {} collision model", self_.id.name)).c_str(), &visible))
-    {
-      collisionRobot_.visible(visible);
-    }
-    ImGui::NextColumn();
-    alpha = collisionRobot_.alpha();
-    if(ImGui::SliderFloat(self_.label("Alpha##Collision", self_.id.name).c_str(), &alpha, 0.0, 1.0))
-    {
-      collisionRobot_.alpha(alpha);
-    }
-    ImGui::Columns(1);
+      bool visible = robot.visible();
+      ImGui::BeginTable(self_.label(fmt::format("##Table{}", type), self_.id.name).c_str(), 2,
+                        ImGuiTableFlags_SizingStretchProp);
+      ImGui::TableNextColumn();
+      if(ImGui::Checkbox(self_.label(fmt::format("Draw {} {} model", self_.id.name, type)).c_str(), &visible))
+      {
+        robot.visible(visible);
+      }
+      ImGui::TableNextColumn();
+      ImGui::Text("Alpha");
+      ImGui::SameLine();
+      float alpha = robot.alpha();
+      if(ImGui::SliderFloat(self_.label(fmt::format("##Alpha{}", type), self_.id.name).c_str(), &alpha, 0.0, 1.0))
+      {
+        robot.alpha(alpha);
+      }
+      ImGui::EndTable();
+    };
+    drawRobotControl(visualRobot_, "visual");
+    drawRobotControl(collisionRobot_, "collision");
   }
 
   void draw3D()
