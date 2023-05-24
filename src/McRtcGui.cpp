@@ -26,7 +26,7 @@ struct Grid : public SceneGraph::Drawable3D
   Grid(Object3D & object, SceneGraph::DrawableGroup3D & drawables) : SceneGraph::Drawable3D(object, &drawables)
   {
     object.scale({5.0, 5.0, 5.0});
-    shader_.setColor(0xffffff55_rgbaf);
+    shader_.setColor(0x000000ff_rgbaf);
     mesh_ = MeshTools::compile(Primitives::grid3DWireframe({9, 9}));
   }
 

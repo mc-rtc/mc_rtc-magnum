@@ -62,6 +62,7 @@ bool InteractiveMarker::draw(const Camera & camera)
   }
   ImGuizmo::SetID(id_);
   ImGuizmo::SetOrthographic(camera.isOrthographic());
+  ImGuizmo::SetGizmoSizeWorldSpace(0.15f);
   auto view = camera.camera()->cameraMatrix();
   auto projection = camera.camera()->projectionMatrix();
   Magnum::Matrix4 mat = convert(pose_);
