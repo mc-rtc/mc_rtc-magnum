@@ -34,19 +34,21 @@ static inline ImGuizmo::OPERATION convert(ControlAxis mask)
   return out;
 }
 
-int InteractiveMarker::next_id_ = 0;
+int InteractiveMarkerImpl::next_id_ = 0;
 
-InteractiveMarker::InteractiveMarker(const sva::PTransformd & pose, ControlAxis mask) : pose_(pose), id_(next_id_++)
+InteractiveMarkerImpl::InteractiveMarkerImpl(const Camera & camera, const sva::PTransformd & pose, ControlAxis mask)
+: mc_rtc::imgui::InteractiveMarker(pose, mask), camera_(camera), id_(next_id_++)
 {
   this->mask(mask);
 }
 
-void InteractiveMarker::mask(ControlAxis mask)
+void InteractiveMarkerImpl::mask(ControlAxis mask)
 {
+  mask_ = mask;
   operation_ = convert(mask);
 }
 
-void InteractiveMarker::pose(const sva::PTransformd & pose)
+void InteractiveMarkerImpl::pose(const sva::PTransformd & pose)
 {
   if(!active_)
   {
@@ -54,7 +56,7 @@ void InteractiveMarker::pose(const sva::PTransformd & pose)
   }
 }
 
-bool InteractiveMarker::draw(const Camera & camera)
+bool InteractiveMarkerImpl::draw(const Camera & camera)
 {
   if(operation_ == 0)
   {

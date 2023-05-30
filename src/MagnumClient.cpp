@@ -16,6 +16,11 @@
 namespace mc_rtc::magnum
 {
 
+InteractiveMarkerPtr MagnumClient::make_marker(const sva::PTransformd & pose, ControlAxis mask)
+{
+  return std::make_unique<InteractiveMarkerImpl>(gui_.camera(), pose, mask);
+}
+
 void MagnumClient::point3d(const ElementId & id,
                            const ElementId & requestId,
                            bool ro,

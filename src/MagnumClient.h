@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mc_rtc-imgui/Client.h"
+#include "widgets/details/InteractiveMarker.h"
 
 namespace mc_rtc::magnum
 {
@@ -13,6 +14,9 @@ struct McRtcGui;
 struct MagnumClient : public mc_rtc::imgui::Client
 {
   MagnumClient(McRtcGui & gui) : mc_rtc::imgui::Client(), gui_(gui) {}
+
+  InteractiveMarkerPtr make_marker(const sva::PTransformd & pose = sva::PTransformd::Identity(),
+                                   ControlAxis mask = ControlAxis::NONE) override;
 
 private:
   McRtcGui & gui_;

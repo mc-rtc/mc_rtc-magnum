@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Widget.h"
-#include "InteractiveMarker.h"
 
 namespace mc_rtc::magnum
 {
@@ -10,7 +9,8 @@ template<ControlAxis ctl>
 struct TransformBase : public Widget
 {
   TransformBase(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & requestId)
-  : Widget(client, id, gui), requestId_(requestId), marker_(sva::PTransformd::Identity(), ControlAxis::NONE)
+  : Widget(client, id, gui), requestId_(requestId),
+    marker_(client.make_marker(sva::PTransformd::Identity(), ControlAxis::NONE))
   {
   }
 
@@ -18,14 +18,14 @@ struct TransformBase : public Widget
 
   void data(bool ro, const sva::PTransformd & pos)
   {
-    marker_.mask(ro ? ControlAxis::NONE : ctl);
-    marker_.pose(pos);
+    marker_->mask(ro ? ControlAxis::NONE : ctl);
+    marker_->pose(pos);
   }
 
   void draw3D() override
   {
-    const auto & pos = marker_.pose();
-    if(marker_.draw(gui_.camera()))
+    const auto & pos = marker_->pose();
+    if(marker_->draw())
     {
       if constexpr(ctl == ControlAxis::TRANSLATION)
       {
@@ -56,7 +56,7 @@ struct TransformBase : public Widget
 
 protected:
   ElementId requestId_;
-  InteractiveMarker marker_;
+  InteractiveMarkerPtr marker_;
 };
 
 } // namespace mc_rtc::magnum

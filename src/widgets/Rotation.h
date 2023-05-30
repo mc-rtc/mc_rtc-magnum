@@ -15,7 +15,7 @@ struct Rotation : public TransformBase<ControlAxis::ROTATION>
   void draw3D() override
   {
     TransformBase::draw3D();
-    gui_.drawFrame(convert(marker_.pose()));
+    gui_.drawFrame(convert(marker_->pose()));
   }
 };
 

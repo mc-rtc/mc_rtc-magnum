@@ -4,35 +4,41 @@
 
 #include <SpaceVecAlg/SpaceVecAlg>
 
+#include "../../mc_rtc-imgui/InteractiveMarker.h"
+
 #include "../../Camera.h"
-#include "ControlAxis.h"
 
 namespace mc_rtc::magnum
 {
 
-struct InteractiveMarker
+using ControlAxis = mc_rtc::imgui::ControlAxis;
+using InteractiveMarkerPtr = mc_rtc::imgui::InteractiveMarkerPtr;
+
+struct InteractiveMarkerImpl : public mc_rtc::imgui::InteractiveMarker
 {
-  InteractiveMarker(const sva::PTransformd & pose = sva::PTransformd::Identity(), ControlAxis mask = ControlAxis::NONE);
+  InteractiveMarkerImpl(const Camera & camera,
+                        const sva::PTransformd & pose = sva::PTransformd::Identity(),
+                        ControlAxis mask = ControlAxis::NONE);
 
-  void mask(ControlAxis mask);
+  ~InteractiveMarkerImpl() override{};
 
-  void pose(const sva::PTransformd & pose);
+  void mask(ControlAxis mask) override;
 
-  inline const sva::PTransformd & pose() const noexcept
+  void pose(const sva::PTransformd & pose) override;
+
+  inline bool draw() override
   {
-    return pose_;
+    return draw(camera_);
   }
 
-  bool draw(const Camera & camera);
-
 private:
-  sva::PTransformd pose_;
+  const Camera & camera_;
   int operation_;
   bool active_ = false;
   int id_;
   static int next_id_;
-};
 
-using InteractiveMarkerPtr = std::unique_ptr<InteractiveMarker>;
+  bool draw(const Camera & camera);
+};
 
 } // namespace mc_rtc::magnum

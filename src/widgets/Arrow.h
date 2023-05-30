@@ -10,7 +10,7 @@ namespace mc_rtc::magnum
 struct Arrow : public Widget
 {
   Arrow(Client & client, const ElementId & id, McRtcGui & gui, const ElementId & reqId)
-  : Widget(client, id, gui), requestId_(reqId)
+  : Widget(client, id, gui), requestId_(reqId), startMarker_(client.make_marker()), endMarker_(client.make_marker())
   {
   }
 
@@ -19,21 +19,21 @@ struct Arrow : public Widget
             const mc_rtc::gui::ArrowConfig & config,
             bool ro)
   {
-    startMarker_.mask(ro ? ControlAxis::NONE : ControlAxis::TRANSLATION);
-    startMarker_.pose(start);
-    endMarker_.mask(ro ? ControlAxis::NONE : ControlAxis::TRANSLATION);
-    endMarker_.pose(end);
+    startMarker_->mask(ro ? ControlAxis::NONE : ControlAxis::TRANSLATION);
+    startMarker_->pose(start);
+    endMarker_->mask(ro ? ControlAxis::NONE : ControlAxis::TRANSLATION);
+    endMarker_->pose(end);
     config_ = config;
   }
 
   void draw3D() override
   {
-    const auto & start = startMarker_.pose().translation();
-    const auto & end = endMarker_.pose().translation();
+    const auto & start = startMarker_->pose().translation();
+    const auto & end = endMarker_->pose().translation();
     gui_.drawArrow(translation(start), translation(end), config_.shaft_diam, config_.head_diam, config_.head_len,
                    convert(config_.color));
-    bool changed = startMarker_.draw(gui_.camera());
-    if(endMarker_.draw(gui_.camera()) || changed)
+    bool changed = startMarker_->draw();
+    if(endMarker_->draw() || changed)
     {
       Eigen::Vector6d data;
       data << start, end;
@@ -44,8 +44,8 @@ struct Arrow : public Widget
 private:
   ElementId requestId_;
   mc_rtc::gui::ArrowConfig config_;
-  InteractiveMarker startMarker_;
-  InteractiveMarker endMarker_;
+  InteractiveMarkerPtr startMarker_;
+  InteractiveMarkerPtr endMarker_;
 };
 
 } // namespace mc_rtc::magnum
