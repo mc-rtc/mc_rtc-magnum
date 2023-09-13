@@ -241,7 +241,7 @@ struct RobotImpl
   : self_(robot), visualRobot_(scene, group), collisionRobot_(scene, group)
   {
     collisionRobot_.visible(false);
-    visualRobot_.visible(self_.id.category.size() <= 1);
+    visualRobot_.visible(self_.id.category.size() <= 1 || self_.id.category[0] != "Robots");
   }
 
   inline mc_rbdyn::Robot & robot()
