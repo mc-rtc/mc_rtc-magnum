@@ -58,14 +58,8 @@ McRtcGui::McRtcGui(const Arguments & arguments)
     po::variables_map vm;
     po::store(po::command_line_parser(arguments.argc, arguments.argv).options(desc).run(), vm);
     po::notify(vm);
-    if(vm.count("help"))
-    {
-      std::cout << desc << "\n";
-    }
-    if(vm.count("tcp"))
-    {
-      client_.connect(fmt::format("tcp://{}:4242", host), fmt::format("tcp://{}:4343", host));
-    }
+    if(vm.count("help")) { std::cout << desc << "\n"; }
+    if(vm.count("tcp")) { client_.connect(fmt::format("tcp://{}:4242", host), fmt::format("tcp://{}:4343", host)); }
   }
   {
     ImGui::CreateContext();
@@ -123,15 +117,9 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
 {
   auto it = importedData_.find(path);
   // FIXME Check the file hash to detect online changes
-  if(it != importedData_.end())
-  {
-    return it->second;
-  }
+  if(it != importedData_.end()) { return it->second; }
   auto & out = importedData_[path];
-  if(!importer_->openFile(path))
-  {
-    return out;
-  }
+  if(!importer_->openFile(path)) { return out; }
   out.textures_ = Containers::Array<Containers::Optional<GL::Texture2D>>{importer_->textureCount()};
   for(UnsignedInt i = 0; i < importer_->textureCount(); ++i)
   {
@@ -197,10 +185,7 @@ auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
   if(importer_->defaultScene() != -1)
   {
     out.scene_ = importer_->scene(importer_->defaultScene());
-    if(!out.scene_)
-    {
-      Error{} << "Cannot load scene from " << path.c_str();
-    }
+    if(!out.scene_) { Error{} << "Cannot load scene from " << path.c_str(); }
   }
   return out;
 }
@@ -231,22 +216,15 @@ void McRtcGui::drawEvent()
 
   std::sort(drawableTransformations.begin(), drawableTransformations.end(),
             [](const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4> & a,
-               const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4> & b) {
-              return a.second.translation().z() < b.second.translation().z();
-            });
+               const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4> & b)
+            { return a.second.translation().z() < b.second.translation().z(); });
 
   camera_->camera()->draw(drawableTransformations);
   client_.draw3D();
 
   /* Enable text input, if needed */
-  if(ImGui::GetIO().WantTextInput && !isTextInputActive())
-  {
-    startTextInput();
-  }
-  else if(!ImGui::GetIO().WantTextInput && isTextInputActive())
-  {
-    stopTextInput();
-  }
+  if(ImGui::GetIO().WantTextInput && !isTextInputActive()) { startTextInput(); }
+  else if(!ImGui::GetIO().WantTextInput && isTextInputActive()) { stopTextInput(); }
 
   ImGuiIO & io = ImGui::GetIO();
   ImGuizmo::AllowAxisFlip(false);
@@ -281,18 +259,12 @@ void McRtcGui::viewportEvent(ViewportEvent & event)
 
   imgui_.relayout(Vector2{event.windowSize()} / event.dpiScaling(), event.windowSize(), event.framebufferSize());
 
-  if(camera_)
-  {
-    camera_->viewportEvent(event);
-  }
+  if(camera_) { camera_->viewportEvent(event); }
 }
 
 void McRtcGui::keyPressEvent(KeyEvent & event)
 {
-  if(imgui_.handleKeyPressEvent(event))
-  {
-    return;
-  }
+  if(imgui_.handleKeyPressEvent(event)) { return; }
   camera_->keyPressEvent(*this, event);
 }
 
@@ -303,27 +275,18 @@ void McRtcGui::keyReleaseEvent(KeyEvent & event)
 
 void McRtcGui::mousePressEvent(MouseEvent & event)
 {
-  if(imgui_.handleMousePressEvent(event))
-  {
-    return;
-  }
+  if(imgui_.handleMousePressEvent(event)) { return; }
   camera_->mousePressEvent(*this, event);
 }
 
 void McRtcGui::mouseReleaseEvent(MouseEvent & event)
 {
-  if(imgui_.handleMouseReleaseEvent(event))
-  {
-    return;
-  }
+  if(imgui_.handleMouseReleaseEvent(event)) { return; }
 }
 
 void McRtcGui::mouseMoveEvent(MouseMoveEvent & event)
 {
-  if(imgui_.handleMouseMoveEvent(event))
-  {
-    return;
-  }
+  if(imgui_.handleMouseMoveEvent(event)) { return; }
   camera_->mouseMoveEvent(*this, event);
 }
 
@@ -386,26 +349,14 @@ void McRtcGui::drawArrow(Vector3 start, Vector3 end, float shaft_diam, float hea
 {
   Vector3 normal = end - start;
   float height = normal.length();
-  if(height < 1e-7f)
-  {
-    return;
-  }
+  if(height < 1e-7f) { return; }
   normal = normal.normalized();
-  if(head_len >= height)
-  {
-    head_len = height;
-  }
+  if(head_len >= height) { head_len = height; }
   float shaft_len = height - head_len;
-  if(std::isnan(normal.x() * normal.y() * normal.z()))
-  {
-    return;
-  }
+  if(std::isnan(normal.x() * normal.y() * normal.z())) { return; }
   auto theta = angle(normal, {0.0f, 1.0f, 0.0f});
   auto axis = cross(normal, {0.0f, 1.0f, 0.0f});
-  if(axis.length() == 0.0f)
-  {
-    axis = {1, 0, 0};
-  }
+  if(axis.length() == 0.0f) { axis = {1, 0, 0}; }
   axis = axis.normalized();
   if(shaft_len != 0 && shaft_diam != 0)
   {

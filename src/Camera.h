@@ -54,15 +54,9 @@ struct Camera
 
   Camera(Platform::Application & app, Scene3D & scene);
 
-  inline SceneGraph::Camera3D * camera() const noexcept
-  {
-    return camera_;
-  }
+  inline SceneGraph::Camera3D * camera() const noexcept { return camera_; }
 
-  inline bool isOrthographic() const noexcept
-  {
-    return orthographic_;
-  }
+  inline bool isOrthographic() const noexcept { return orthographic_; }
 
   bool keyPressEvent(Platform::Application & app, KeyEvent & event);
   bool keyReleaseEvent(Platform::Application & app, KeyEvent & event);

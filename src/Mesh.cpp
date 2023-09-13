@@ -17,20 +17,14 @@ Mesh::Mesh(Object3D * parent,
   {
     Containers::Array<Object3D *> objects{std::size_t(data.scene_->mappingBound())};
     Containers::Array<Containers::Pair<UnsignedInt, Int>> parents = data.scene_->parentsAsArray();
-    for(const Containers::Pair<UnsignedInt, Int> & parent : parents)
-    {
-      objects[parent.first()] = new Object3D{};
-    }
+    for(const Containers::Pair<UnsignedInt, Int> & parent : parents) { objects[parent.first()] = new Object3D{}; }
     for(const Containers::Pair<UnsignedInt, Int> & parent : parents)
     {
       objects[parent.first()]->setParent(parent.second() == -1 ? this : objects[parent.second()]);
     }
     for(const Containers::Pair<UnsignedInt, Matrix4> & transformation : data.scene_->transformations3DAsArray())
     {
-      if(Object3D * object = objects[transformation.first()])
-      {
-        object->setTransformation(transformation.second());
-      }
+      if(Object3D * object = objects[transformation.first()]) { object->setTransformation(transformation.second()); }
     }
     for(const Containers::Pair<UnsignedInt, Containers::Pair<UnsignedInt, Int>> & meshMaterial :
         data.scene_->meshesMaterialsAsArray())
@@ -61,10 +55,7 @@ Mesh::Mesh(Object3D * parent,
         if(data.materials_[materialId]->hasAttribute(Trade::MaterialAttribute::DiffuseColor))
         {
           diffuse = data.materials_[materialId]->diffuseColor();
-          if(diffuse == 0xffffffff_rgbaf)
-          {
-            diffuse = color;
-          }
+          if(diffuse == 0xffffffff_rgbaf) { diffuse = color; }
         }
         if(data.materials_[materialId]->hasAttribute(Trade::MaterialAttribute::AmbientColor))
         {
@@ -82,10 +73,7 @@ Mesh::Mesh(Object3D * parent,
 
 void Mesh::draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera)
 {
-  for(auto & d : drawables_)
-  {
-    d->draw_(transformationMatrix, camera);
-  }
+  for(auto & d : drawables_) { d->draw_(transformationMatrix, camera); }
 }
 
 } // namespace mc_rtc::magnum

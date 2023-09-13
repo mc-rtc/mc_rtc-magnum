@@ -24,10 +24,7 @@ struct Trajectory : public Widget
 
   void draw3D() override
   {
-    if(points_.size() < 2)
-    {
-      return;
-    }
+    if(points_.size() < 2) { return; }
     auto c = convert(config_.color);
     for(size_t i = 0; i < points_.size() - 1; ++i)
     {
@@ -39,10 +36,7 @@ struct Trajectory : public Widget
     {
       if(points_.size() < 10) // For "small" trajectories, display all points
       {
-        for(const auto & p : points_)
-        {
-          gui_.drawFrame(convert(p));
-        }
+        for(const auto & p : points_) { gui_.drawFrame(convert(p)); }
       }
       else // Otherwise draw the start and end points
       {
@@ -52,15 +46,9 @@ struct Trajectory : public Widget
     }
     else
     {
-      if(!startMarker_)
-      {
-        startMarker_ = gui_.makeBox(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c);
-      }
+      if(!startMarker_) { startMarker_ = gui_.makeBox(translation(points_[0]), {}, {0.04, 0.04, 0.04}, c); }
       startMarker_->pose(Matrix4::from(Matrix3{Math::IdentityInit}, translation(points_[0])));
-      if(!sphereMarker_)
-      {
-        sphereMarker_ = gui_.makeSphere(translation(points_.back()), 0.04f, c);
-      }
+      if(!sphereMarker_) { sphereMarker_ = gui_.makeSphere(translation(points_.back()), 0.04f, c); }
       sphereMarker_->center(translation(points_.back()));
     }
   }

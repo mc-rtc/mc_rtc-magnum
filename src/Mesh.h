@@ -26,10 +26,7 @@ struct Mesh : public CommonDrawable
 
   inline void alpha(float alpha) noexcept override
   {
-    for(auto & d : drawables_)
-    {
-      d->alpha(alpha);
-    }
+    for(auto & d : drawables_) { d->alpha(alpha); }
   }
 
 private:

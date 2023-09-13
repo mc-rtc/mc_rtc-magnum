@@ -27,18 +27,9 @@ struct TransformBase : public Widget
     const auto & pos = marker_->pose();
     if(marker_->draw())
     {
-      if constexpr(ctl == ControlAxis::TRANSLATION)
-      {
-        client.send_request(requestId_, pos.translation());
-      }
-      else if constexpr(ctl == ControlAxis::ROTATION)
-      {
-        client.send_request(requestId_, pos.rotation());
-      }
-      else if constexpr(ctl == ControlAxis::ALL)
-      {
-        client.send_request(requestId_, pos);
-      }
+      if constexpr(ctl == ControlAxis::TRANSLATION) { client.send_request(requestId_, pos.translation()); }
+      else if constexpr(ctl == ControlAxis::ROTATION) { client.send_request(requestId_, pos.rotation()); }
+      else if constexpr(ctl == ControlAxis::ALL) { client.send_request(requestId_, pos); }
       else if constexpr(ctl == ControlAxis::XYTHETA || ctl == ControlAxis::XYZTHETA)
       {
         Eigen::VectorXd data = Eigen::VectorXd::Zero(4);

@@ -26,10 +26,7 @@ struct InteractiveMarkerImpl : public mc_rtc::imgui::InteractiveMarker
 
   void pose(const sva::PTransformd & pose) override;
 
-  inline bool draw() override
-  {
-    return draw(camera_);
-  }
+  inline bool draw() override { return draw(camera_); }
 
 private:
   const Camera & camera_;

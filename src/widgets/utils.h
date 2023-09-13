@@ -82,22 +82,13 @@ inline bfs::path convertURI(const std::string & uri, [[maybe_unused]] std::strin
 #ifndef __EMSCRIPTEN__
 #  ifndef MC_RTC_HAS_ROS_SUPPORT
     // FIXME Prompt the user for unknown packages
-    if(pkg == "jvrc_description")
-    {
-      pkg = (MC_ENV_DESCRIPTION_PATH / ".." / "jvrc_description").string();
-    }
-    else if(pkg == "mc_env_description")
-    {
-      pkg = MC_ENV_DESCRIPTION_PATH.string();
-    }
+    if(pkg == "jvrc_description") { pkg = (MC_ENV_DESCRIPTION_PATH / ".." / "jvrc_description").string(); }
+    else if(pkg == "mc_env_description") { pkg = MC_ENV_DESCRIPTION_PATH.string(); }
     else if(pkg == "mc_int_obj_description")
     {
       pkg = (MC_ENV_DESCRIPTION_PATH / ".." / "mc_int_obj_description").string();
     }
-    else
-    {
-      pkg = default_dir;
-    }
+    else { pkg = default_dir; }
 #  else
     pkg = ros::package::getPath(pkg);
 #  endif
@@ -107,10 +98,7 @@ inline bfs::path convertURI(const std::string & uri, [[maybe_unused]] std::strin
     return pkg / leaf;
   }
   const std::string file = "file://";
-  if(uri.size() >= file.size() && uri.find(file) == 0)
-  {
-    return bfs::path(uri.substr(file.size()));
-  }
+  if(uri.size() >= file.size() && uri.find(file) == 0) { return bfs::path(uri.substr(file.size())); }
   return uri;
 }
 

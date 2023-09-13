@@ -25,10 +25,7 @@ struct Robot : public Widget
 
   void draw3D() override;
 
-  inline McRtcGui & gui() noexcept
-  {
-    return gui_;
-  }
+  inline McRtcGui & gui() noexcept { return gui_; }
 
 private:
   std::unique_ptr<details::RobotImpl> impl_;

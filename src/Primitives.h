@@ -15,10 +15,7 @@ public:
   {
   }
 
-  inline bool hidden() const noexcept
-  {
-    return hidden_;
-  }
+  inline bool hidden() const noexcept { return hidden_; }
 
   void hidden(bool hidden) noexcept;
 
@@ -28,10 +25,7 @@ public:
 
   inline void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) final
   {
-    if(!hidden_)
-    {
-      draw_(transformationMatrix, camera);
-    }
+    if(!hidden_) { draw_(transformationMatrix, camera); }
   }
 
 private:
@@ -49,10 +43,7 @@ public:
                            const Color4 & color,
                            const Containers::Optional<Color4> & ambient = Containers::NullOpt);
 
-  inline void color(const Color4 & color) noexcept
-  {
-    color_ = color;
-  }
+  inline void color(const Color4 & color) noexcept { color_ = color; }
 
   inline void ambient(const Color4 & ambient) noexcept
   {
@@ -68,10 +59,7 @@ public:
       ambient_ = 0x000000ff_rgbaf;
       ambient_.a() = 0.0f;
     }
-    else
-    {
-      ambient_ = Color4::fromHsv({color_.hue(), 1.0f, 0.3f}, 0.0f);
-    }
+    else { ambient_ = Color4::fromHsv({color_.hue(), 1.0f, 0.3f}, 0.0f); }
   }
 
   inline void alpha(float alpha) noexcept override
@@ -98,10 +86,7 @@ public:
                             GL::Mesh & mesh,
                             GL::Texture2D & texture);
 
-  inline void alpha(float alpha) noexcept final
-  {
-    alpha_ = alpha;
-  }
+  inline void alpha(float alpha) noexcept final { alpha_ = alpha; }
 
 private:
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;

@@ -11,17 +11,15 @@ struct Polygon : public Widget
 
   void data(const std::vector<std::vector<Eigen::Vector3d>> & points, const mc_rtc::gui::LineConfig & config)
   {
-    if(points_ != points)
-    {
-      points_ = points;
-    }
+    if(points_ != points) { points_ = points; }
     config_ = config;
   }
 
   void draw3D() override
   {
     Color4 c = convert(config_.color);
-    auto drawPoly = [this, &c](const std::vector<Eigen::Vector3d> & points) {
+    auto drawPoly = [this, &c](const std::vector<Eigen::Vector3d> & points)
+    {
       for(size_t i = 0; i < points.size(); ++i)
       {
         const auto & p0 = points[i];
@@ -29,10 +27,7 @@ struct Polygon : public Widget
         gui_.drawLine(translation(p0), translation(p1), c);
       }
     };
-    for(const auto & p : points_)
-    {
-      drawPoly(p);
-    }
+    for(const auto & p : points_) { drawPoly(p); }
   }
 
 private:

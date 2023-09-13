@@ -21,18 +21,9 @@ void setConfiguration(T & robot, const std::vector<std::vector<double>> & q)
 inline mc_rbdyn::RobotModulePtr fromParams(const std::vector<std::string> & p)
 {
   mc_rbdyn::RobotModulePtr rm{nullptr};
-  if(p.size() == 1)
-  {
-    rm = mc_rbdyn::RobotLoader::get_robot_module(p[0]);
-  }
-  if(p.size() == 2)
-  {
-    rm = mc_rbdyn::RobotLoader::get_robot_module(p[0], p[1]);
-  }
-  if(p.size() == 3)
-  {
-    rm = mc_rbdyn::RobotLoader::get_robot_module(p[0], p[1], p[2]);
-  }
+  if(p.size() == 1) { rm = mc_rbdyn::RobotLoader::get_robot_module(p[0]); }
+  if(p.size() == 2) { rm = mc_rbdyn::RobotLoader::get_robot_module(p[0], p[1]); }
+  if(p.size() == 3) { rm = mc_rbdyn::RobotLoader::get_robot_module(p[0], p[1], p[2]); }
   if(p.size() > 3)
   {
     mc_rtc::log::warning("Too many parameters provided to load the robot, complain to the developpers of this package");
@@ -44,19 +35,18 @@ struct RobotCache
 {
   inline static std::shared_ptr<mc_rbdyn::Robots> get_robot(const std::vector<std::string> & params)
   {
-    if(robots_.count(params))
-    {
-      use_cnt_[params] += 1;
-    }
+    if(robots_.count(params)) { use_cnt_[params] += 1; }
     else
     {
       use_cnt_[params] = 1;
       robots_[params] = mc_rbdyn::loadRobot(*fromParams(params));
     }
-    auto out = mc_rbdyn::Robots::make([](mc_rbdyn::Robots * robots) {
-      remove_robot(robots->robot().module().parameters());
-      delete robots;
-    });
+    auto out = mc_rbdyn::Robots::make(
+        [](mc_rbdyn::Robots * robots)
+        {
+          remove_robot(robots->robot().module().parameters());
+          delete robots;
+        });
     auto & robot = robots_[params]->robot();
     out->robotCopy(robot, robot.name());
     return out;
@@ -128,26 +118,17 @@ struct RobotBody : public Object3D, public SceneGraph::Drawable3D
       default:
         break;
     }
-    if(object)
-    {
-      objects_.push_back(object);
-    }
+    if(object) { objects_.push_back(object); }
   }
 
   inline void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) final
   {
-    for(auto & o : objects_)
-    {
-      o->draw(transformationMatrix * o->transformation(), camera);
-    }
+    for(auto & o : objects_) { o->draw(transformationMatrix * o->transformation(), camera); }
   }
 
   inline void alpha(float alpha) noexcept
   {
-    for(auto & o : objects_)
-    {
-      o->alpha(alpha);
-    }
+    for(auto & o : objects_) { o->alpha(alpha); }
   }
 
   SceneGraph::DrawableGroup3D * group_;
@@ -174,59 +155,35 @@ struct RobotObject : public Object3D, public SceneGraph::Drawable3D
   inline void loadBody(McRtcGui & gui, const std::string & rm_path, const std::vector<rbd::parsers::Visual> & visuals)
   {
     bodies_.push_back(std::make_shared<RobotBody>(this, &group_));
-    for(const auto & v : visuals)
-    {
-      bodies_.back()->loadVisual(gui, rm_path, v);
-    }
+    for(const auto & v : visuals) { bodies_.back()->loadVisual(gui, rm_path, v); }
   }
 
   inline void draw(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) final
   {
     if(visible_)
     {
-      for(auto & b : bodies_)
-      {
-        b->draw(transformationMatrix * b->transformation(), camera);
-      }
+      for(auto & b : bodies_) { b->draw(transformationMatrix * b->transformation(), camera); }
     }
   }
 
-  inline bool visible() const noexcept
-  {
-    return visible_;
-  }
+  inline bool visible() const noexcept { return visible_; }
 
   void visible(bool v) noexcept
   {
-    if(v)
-    {
-      parent_group_->add(*this);
-    }
-    else
-    {
-      parent_group_->remove(*this);
-    }
+    if(v) { parent_group_->add(*this); }
+    else { parent_group_->remove(*this); }
     visible_ = v;
   }
 
   inline void alpha(float alpha) noexcept
   {
     alpha_ = alpha;
-    for(auto & b : bodies_)
-    {
-      b->alpha(alpha);
-    }
+    for(auto & b : bodies_) { b->alpha(alpha); }
   }
 
-  inline float alpha() const noexcept
-  {
-    return alpha_;
-  }
+  inline float alpha() const noexcept { return alpha_; }
 
-  inline void clear() noexcept
-  {
-    bodies_.clear();
-  }
+  inline void clear() noexcept { bodies_.clear(); }
 
   SceneGraph::DrawableGroup3D * parent_group_;
   SceneGraph::DrawableGroup3D group_;
@@ -244,15 +201,9 @@ struct RobotImpl
     visualRobot_.visible(self_.id.category.size() <= 1 || self_.id.category[0] != "Robots");
   }
 
-  inline mc_rbdyn::Robot & robot()
-  {
-    return robots_->robot();
-  }
+  inline mc_rbdyn::Robot & robot() { return robots_->robot(); }
 
-  inline McRtcGui & gui()
-  {
-    return self_.gui();
-  }
+  inline McRtcGui & gui() { return self_.gui(); }
 
   void data(const std::vector<std::string> & params,
             const std::vector<std::vector<double>> & q,
@@ -265,7 +216,8 @@ struct RobotImpl
       robots_ = RobotCache::get_robot(params);
       const auto & rm = robots_->robot().module();
       const auto & bodies = robot().mb().bodies();
-      auto loadVisuals = [this, &rm](auto & object, const auto & visuals, const std::string & name) {
+      auto loadVisuals = [this, &rm](auto & object, const auto & visuals, const std::string & name)
+      {
         auto it = visuals.find(name);
         object.loadBody(gui(), rm.path, it != visuals.end() ? it->second : std::vector<rbd::parsers::Visual>{});
       };
@@ -284,11 +236,9 @@ struct RobotImpl
 
   void draw2D()
   {
-    if(!robots_)
+    if(!robots_) { return; }
+    auto drawRobotControl = [this](RobotObject & robot, const char * type)
     {
-      return;
-    }
-    auto drawRobotControl = [this](RobotObject & robot, const char * type) {
       bool visible = robot.visible();
       ImGui::BeginTable(self_.label(fmt::format("##Table{}", type), self_.id.name).c_str(), 2,
                         ImGuiTableFlags_SizingStretchProp);
@@ -313,10 +263,7 @@ struct RobotImpl
 
   void draw3D()
   {
-    if(!robots_)
-    {
-      return;
-    }
+    if(!robots_) { return; }
     visualRobot_.update(robot());
     collisionRobot_.update(robot());
   }

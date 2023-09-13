@@ -20,10 +20,7 @@ static inline ImGuizmo::OPERATION convert(ControlAxis mask)
 {
   ImGuizmo::OPERATION out = static_cast<ImGuizmo::OPERATION>(0);
 #define HANDLE(CA, OP) \
-  if(has(mask, CA))    \
-  {                    \
-    out = out | OP;    \
-  }
+  if(has(mask, CA)) { out = out | OP; }
   HANDLE(ControlAxis::TX, ImGuizmo::OPERATION::TRANSLATE_X)
   HANDLE(ControlAxis::TY, ImGuizmo::OPERATION::TRANSLATE_Y)
   HANDLE(ControlAxis::TZ, ImGuizmo::OPERATION::TRANSLATE_Z)
@@ -50,18 +47,12 @@ void InteractiveMarkerImpl::mask(ControlAxis mask)
 
 void InteractiveMarkerImpl::pose(const sva::PTransformd & pose)
 {
-  if(!active_)
-  {
-    pose_ = pose;
-  }
+  if(!active_) { pose_ = pose; }
 }
 
 bool InteractiveMarkerImpl::draw(const Camera & camera)
 {
-  if(operation_ == 0)
-  {
-    return false;
-  }
+  if(operation_ == 0) { return false; }
   ImGuizmo::SetID(id_);
   ImGuizmo::SetOrthographic(camera.isOrthographic());
   ImGuizmo::SetGizmoSizeWorldSpace(0.15f);

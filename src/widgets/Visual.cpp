@@ -7,10 +7,7 @@ Visual::Visual(Client & client, const ElementId & id, McRtcGui & gui) : Widget(c
 
 void Visual::data(const rbd::parsers::Visual & visual, const sva::PTransformd & pos)
 {
-  if(visual_.geometry.type != visual.geometry.type)
-  {
-    typeChanged_ = true;
-  }
+  if(visual_.geometry.type != visual.geometry.type) { typeChanged_ = true; }
   visual_ = visual;
   // Bake the visual origin in the position
   pos_ = visual.origin * pos;
@@ -21,10 +18,7 @@ void Visual::draw2D()
   if(object_)
   {
     bool show = !object_->hidden();
-    if(ImGui::Checkbox(label(fmt::format("Show {}", id.name)).c_str(), &show))
-    {
-      object_->hidden(!show);
-    }
+    if(ImGui::Checkbox(label(fmt::format("Show {}", id.name)).c_str(), &show)) { object_->hidden(!show); }
   }
 }
 
@@ -32,7 +26,8 @@ void Visual::draw3D()
 {
   using Geometry = rbd::parsers::Geometry;
   using Type = rbd::parsers::Geometry::Type;
-  auto handleMesh = [&]() {
+  auto handleMesh = [&]()
+  {
     const auto & in = boost::get<Geometry::Mesh>(visual_.geometry.data);
     auto path = convertURI(in.filename, "");
     if(path != mesh_)
@@ -43,7 +38,8 @@ void Visual::draw3D()
     auto scale = static_cast<float>(in.scale);
     object_->setTransformation(convert(pos_) * Matrix4::scaling({scale, scale, scale}));
   };
-  auto handleBox = [&]() {
+  auto handleBox = [&]()
+  {
     const auto & box = boost::get<Geometry::Box>(visual_.geometry.data);
     if(!object_)
     {
@@ -54,13 +50,15 @@ void Visual::draw3D()
     b.size(translation(box.size));
     b.color(color(visual_.material));
   };
-  auto handleCylinder = [&]() {
+  auto handleCylinder = [&]()
+  {
     const auto & cyl = boost::get<Geometry::Cylinder>(visual_.geometry.data);
     const auto & start = sva::PTransformd{Eigen::Vector3d{0, 0, -cyl.length / 2}} * pos_;
     const auto & end = sva::PTransformd{Eigen::Vector3d{0, 0, cyl.length / 2}} * pos_;
     gui_.drawArrow(translation(start), translation(end), 2 * cyl.radius, 0.0f, 0.0f, color(visual_.material));
   };
-  auto handleSphere = [&]() {
+  auto handleSphere = [&]()
+  {
     const auto & sphere = boost::get<rbd::parsers::Geometry::Sphere>(visual_.geometry.data);
     if(!object_)
     {
@@ -71,7 +69,8 @@ void Visual::draw3D()
     s.radius(static_cast<float>(sphere.radius));
     s.color(color(visual_.material));
   };
-  auto handleSuperellipsoid = [&]() {
+  auto handleSuperellipsoid = [&]()
+  {
     const auto & se = boost::get<rbd::parsers::Geometry::Superellipsoid>(visual_.geometry.data);
     if(se.epsilon1 != 1.0 || se.epsilon2 != 1.0)
     {
@@ -92,10 +91,7 @@ void Visual::draw3D()
     e.size(translation(se.size));
     e.color(color(visual_.material));
   };
-  if(object_ && typeChanged_)
-  {
-    object_.reset();
-  }
+  if(object_ && typeChanged_) { object_.reset(); }
   typeChanged_ = false;
   switch(visual_.geometry.type)
   {

@@ -62,10 +62,7 @@ int main(int argc, char * argv[])
         const auto & qi = mbc.q[controller.robot().jointIndexByName(jn)];
         if(qi.size())
         {
-          for(auto & qj : qi)
-          {
-            q.push_back(qj);
-          }
+          for(auto & qj : qi) { q.push_back(qj); }
         }
         else
         {
@@ -86,11 +83,9 @@ int main(int argc, char * argv[])
   controller.running = true;
 
   size_t nextStep = 0;
-  auto toogleStepByStep = [&]() {
-    if(stepByStep)
-    {
-      stepByStep = false;
-    }
+  auto toogleStepByStep = [&]()
+  {
+    if(stepByStep) { stepByStep = false; }
     else
     {
       nextStep = 0;
@@ -99,7 +94,8 @@ int main(int argc, char * argv[])
   };
   bool ticker_reset = false;
   bool ticker_run = true;
-  auto reset_gui = [&]() {
+  auto reset_gui = [&]()
+  {
     mc_rtc::gui::StateBuilder * gui = get_gui(controller);
     if(gui)
     {
@@ -110,7 +106,8 @@ int main(int argc, char * argv[])
                       mc_rtc::gui::Checkbox(
                           "Step by step", [&]() { return stepByStep; }, [&]() { toogleStepByStep(); }));
       auto dt = controller.timestep();
-      auto buttonText = [&](size_t n) {
+      auto buttonText = [&](size_t n)
+      {
         size_t n_ms = std::ceil(n * 1000 * dt);
         return "+" + std::to_string(n_ms) + "ms";
       };
@@ -125,7 +122,8 @@ int main(int argc, char * argv[])
   reset_gui();
 
   double run_time = 0.0;
-  auto runController = [&]() {
+  auto runController = [&]()
+  {
     if(ticker_reset)
     {
       ticker_reset = false;
@@ -142,10 +140,7 @@ int main(int argc, char * argv[])
       if(controller.robot().hasJoint(jn))
       {
         const auto & qi = mbc.q[controller.robot().jointIndexByName(jn)];
-        if(qi.size() == 0)
-        {
-          index++;
-        }
+        if(qi.size() == 0) { index++; }
         else
         {
           for(auto & qj : qi)
@@ -155,20 +150,15 @@ int main(int argc, char * argv[])
           }
         }
       }
-      else
-      {
-        index++;
-      }
+      else { index++; }
     }
     controller.setEncoderValues(q);
     controller.run();
-    if(std::fabs(run_for - run_time) < 1e-6)
-    {
-      ticker_run = false;
-    }
+    if(std::fabs(run_for - run_time) < 1e-6) { ticker_run = false; }
     run_time += controller.controller().solver().dt();
   };
-  auto updateGUI = [&]() {
+  auto updateGUI = [&]()
+  {
     controller.running = false;
     controller.run();
     controller.running = true;
@@ -190,19 +180,10 @@ int main(int argc, char * argv[])
         nextStep--;
         runController();
       }
-      else
-      {
-        updateGUI();
-      }
+      else { updateGUI(); }
     }
-    else
-    {
-      runController();
-    }
-    if(ticker_sync)
-    {
-      std::this_thread::sleep_until(now + dt);
-    }
+    else { runController(); }
+    if(ticker_sync) { std::this_thread::sleep_until(now + dt); }
   }
 
   return 0;

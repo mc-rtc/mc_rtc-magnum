@@ -25,10 +25,7 @@ void Camera::resetTransform(Platform::Application & app)
 void Camera::setTransform(Platform::Application & app)
 {
   Vector3 up{0.0f, 0.0f, 1.0f};
-  if(cross(focusPoint_ - cameraPosition_, up).isZero())
-  {
-    up = {-1.0f, 0.0f, 0.0f};
-  }
+  if(cross(focusPoint_ - cameraPosition_, up).isZero()) { up = {-1.0f, 0.0f, 0.0f}; }
   object_->setTransformation(Matrix4::lookAt(cameraPosition_, focusPoint_, up));
   setProjection(app.windowSize());
 }
@@ -92,10 +89,7 @@ bool Camera::keyPressEvent(Platform::Application & app, KeyEvent & event)
       cameraPosition_ = {0.0f, multiplier * 5.0f, 1.0f};
       focusPoint_ = {0.0f, 0.0f, 1.0f};
     }
-    else
-    {
-      CORRADE_INTERNAL_ASSERT_UNREACHABLE();
-    }
+    else { CORRADE_INTERNAL_ASSERT_UNREACHABLE(); }
 
     setTransform(app);
     app.redraw();
@@ -120,17 +114,11 @@ bool Camera::mouseMoveEvent(Platform::Application & app, MouseMoveEvent & event)
   const Vector2i delta = event.position() - lastPosition_;
   lastPosition_ = event.position();
 
-  if(!event.buttons())
-  {
-    return false;
-  }
+  if(!event.buttons()) { return false; }
 
   Vector3 direction = (cameraPosition_ - focusPoint_).normalized();
   Vector3 right = Magnum::Math::cross(Vector3{0, 0, 1}, direction);
-  if(right.isZero())
-  {
-    right = Magnum::Math::cross(Vector3{-1.0, 0, 0}, direction);
-  }
+  if(right.isZero()) { right = Magnum::Math::cross(Vector3{-1.0, 0, 0}, direction); }
   Vector3 up = Magnum::Math::cross(direction, right);
   const Float scale = 0.005;
 
@@ -162,22 +150,13 @@ bool Camera::mouseMoveEvent(Platform::Application & app, MouseMoveEvent & event)
 bool Camera::mouseScrollEvent(Platform::Application & app, MouseScrollEvent & event)
 {
   const Float move = event.offset().y();
-  if(!move)
-  {
-    return false;
-  }
+  if(!move) { return false; }
 
   const Float scale = 0.1;
 
   Vector3 direction = (cameraPosition_ - focusPoint_);
-  if(move < 0)
-  {
-    cameraPosition_ += scale * direction;
-  }
-  else
-  {
-    cameraPosition_ -= scale * direction;
-  }
+  if(move < 0) { cameraPosition_ += scale * direction; }
+  else { cameraPosition_ -= scale * direction; }
   setTransform(app);
 
   event.setAccepted();

@@ -59,20 +59,11 @@ struct McRtcGui : public Platform::Application
 
   void drawArrow(Vector3 start, Vector3 end, float shaft_diam, float head_diam, float head_len, Color4 color);
 
-  inline const Camera & camera() const noexcept
-  {
-    return *camera_;
-  }
+  inline const Camera & camera() const noexcept { return *camera_; }
 
-  inline Scene3D & scene() noexcept
-  {
-    return scene_;
-  }
+  inline Scene3D & scene() noexcept { return scene_; }
 
-  inline SceneGraph::DrawableGroup3D & drawables() noexcept
-  {
-    return drawables_;
-  }
+  inline SceneGraph::DrawableGroup3D & drawables() noexcept { return drawables_; }
 
 private:
   ImGuiIntegration::Context imgui_{NoCreate};
