@@ -12,7 +12,11 @@
 namespace bfs = boost::filesystem;
 
 #ifdef MC_RTC_HAS_ROS_SUPPORT
-#  include <ros/package.h>
+#  ifdef MC_RTC_ROS_IS_ROS2
+#    include <ament_index_cpp/get_package_share_directory.hpp>
+#  else
+#    include <ros/package.h>
+#  endif
 #endif
 
 #include <RBDyn/parsers/common.h>
@@ -90,7 +94,11 @@ inline bfs::path convertURI(const std::string & uri, [[maybe_unused]] std::strin
     }
     else { pkg = default_dir; }
 #  else
+#    ifdef MC_RTC_ROS_IS_ROS2
+    pkg = ament_index_cpp::get_package_share_directory(pkg);
+#    else
     pkg = ros::package::getPath(pkg);
+#    endif
 #  endif
 #else
     pkg = "/assets/" + pkg;
