@@ -13,7 +13,6 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/ext/magnum-integration/modules/"
                       ${CMAKE_MODULE_PATH})
 
 option(MC_RTC_MAGNUM_BUILD_INTERFACE "Build the Magnum interface" ON)
-option(MC_RTC_MAGNUM_BUILD_TICKER "Build the ticker" ON)
 
 if(MC_RTC_MAGNUM_BUILD_INTERFACE)
   # Magnum options
