@@ -2,6 +2,8 @@
 
 #include "Camera.h"
 
+#include <Magnum/Shaders/MeshVisualizerGL.h>
+
 #include <mc_rtc/gui/types.h>
 
 #include <memory>
@@ -169,6 +171,9 @@ class PolyhedronDrawable : public CommonDrawable
 public:
   using CommonDrawable::CommonDrawable;
 
+  bool draw_wireframe() const noexcept { return draw_wireframe_; }
+  void draw_wireframe(bool b) noexcept { draw_wireframe_ = b; }
+
   void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
 
   void alpha(float alpha) noexcept override;
@@ -185,13 +190,17 @@ private:
     Vector3 normal;
     Color4 color;
   };
+  bool draw_wireframe_ = false;
   Containers::Array<Vertex> vertices_;
   Containers::Array<uint16_t> indices_;
   GL::Buffer vertices_buffer_;
   GL::Buffer indices_buffer_;
   GL::Mesh mesh_;
-  Shaders::PhongGL shader_ =
-      Shaders::PhongGL{Shaders::PhongGL::Configuration{}.setFlags(Shaders::PhongGL::Flag::VertexColor)};
+  Color4 default_color_;
+  Shaders::PhongGL shader_ = Shaders::PhongGL{Shaders::PhongGL::Configuration{}.setFlags(
+      Shaders::PhongGL::Flag::VertexColor | Shaders::PhongGL::Flag::DoubleSided)};
+  Shaders::MeshVisualizerGL3D mesh_shader_ = Shaders::MeshVisualizerGL3D{
+      Shaders::MeshVisualizerGL3D::Configuration{}.setFlags(Shaders::MeshVisualizerGL3D::Flag::Wireframe)};
 };
 
 using PolyhedronPtr = std::shared_ptr<PolyhedronDrawable>;

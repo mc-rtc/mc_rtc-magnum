@@ -105,11 +105,24 @@ void Box::update() noexcept
 void PolyhedronDrawable::draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera)
 {
   if(vertices_.isEmpty()) { return; }
-  shader_.setShininess(200.0f)
-      .setTransformationMatrix(transformationMatrix)
-      .setNormalMatrix(transformationMatrix.normalMatrix())
-      .setProjectionMatrix(camera.projectionMatrix())
-      .draw(mesh_);
+  if(draw_wireframe_)
+  {
+    mesh_shader_.setColor(default_color_)
+        .setWireframeColor(0x000000ff_rgbaf)
+        .setWireframeWidth(2.0f)
+        .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
+        .setTransformationMatrix(transformationMatrix)
+        .setProjectionMatrix(camera.projectionMatrix())
+        .draw(mesh_);
+  }
+  else
+  {
+    shader_.setShininess(200.0f)
+        .setTransformationMatrix(transformationMatrix)
+        .setNormalMatrix(transformationMatrix.normalMatrix())
+        .setProjectionMatrix(camera.projectionMatrix())
+        .draw(mesh_);
+  }
 }
 
 void PolyhedronDrawable::alpha(float) noexcept {}
@@ -120,6 +133,7 @@ void PolyhedronDrawable::update(const std::vector<Eigen::Vector3d> & vertices,
                                 const mc_rtc::gui::PolyhedronConfig & config)
 {
   Containers::arrayResize(vertices_, vertices.size());
+  default_color_ = convert(config.triangle_color);
   for(size_t i = 0; i < vertices.size(); ++i)
   {
     const auto & color = i < colors.size() ? colors[i] : config.triangle_color;

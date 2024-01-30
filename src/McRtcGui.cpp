@@ -220,6 +220,7 @@ void McRtcGui::drawEvent()
             { return a.second.translation().z() < b.second.translation().z(); });
 
   camera_->camera()->draw(drawableTransformations);
+  camera_->camera()->draw(polyhedrons_);
   client_.draw3D();
 
   /* Enable text input, if needed */
@@ -340,7 +341,7 @@ EllipsoidPtr McRtcGui::makeEllipsoid(Vector3 center,
 
 PolyhedronPtr McRtcGui::makePolyhedron()
 {
-  return std::make_shared<PolyhedronDrawable>(&scene_, &drawables_);
+  return std::make_shared<PolyhedronDrawable>(&scene_, &polyhedrons_);
 }
 
 void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickness*/)

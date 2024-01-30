@@ -72,6 +72,7 @@ private:
 
   Scene3D scene_;
   SceneGraph::DrawableGroup3D drawables_;
+  SceneGraph::DrawableGroup3D polyhedrons_;
   Containers::Optional<Camera> camera_;
 
   PluginManager::Manager<Trade::AbstractImporter> manager_;
