@@ -6,6 +6,7 @@
 #include "widgets/Force.h"
 #include "widgets/Point3D.h"
 #include "widgets/Polygon.h"
+#include "widgets/Polyhedron.h"
 #include "widgets/Robot.h"
 #include "widgets/Rotation.h"
 #include "widgets/Trajectory.h"
@@ -115,6 +116,15 @@ void MagnumClient::robot(const ElementId & id,
 void MagnumClient::visual(const ElementId & id, const rbd::parsers::Visual & visual, const sva::PTransformd & pos)
 {
   widget<Visual>(id, gui_).data(visual, pos);
+}
+
+void MagnumClient::polyhedron(const ElementId & id,
+                              const std::vector<Eigen::Vector3d> & vertices,
+                              const std::vector<std::array<size_t, 3>> & triangles,
+                              const std::vector<mc_rtc::gui::Color> & colors,
+                              const mc_rtc::gui::PolyhedronConfig & config)
+{
+  widget<Polyhedron>(id, gui_).data(vertices, triangles, colors, config);
 }
 
 } // namespace mc_rtc::magnum

@@ -53,6 +53,8 @@ struct McRtcGui : public Platform::Application
                              Object3D * parent = nullptr,
                              SceneGraph::DrawableGroup3D * group = nullptr);
 
+  PolyhedronPtr makePolyhedron();
+
   void drawFrame(Matrix4 pos, float scale = 0.15);
 
   void drawLine(Vector3 start, Vector3 end, Color4 color, float thickness = 1.0);

@@ -338,6 +338,11 @@ EllipsoidPtr McRtcGui::makeEllipsoid(Vector3 center,
                                      Matrix4::from(ori, center), size, color);
 }
 
+PolyhedronPtr McRtcGui::makePolyhedron()
+{
+  return std::make_shared<PolyhedronDrawable>(&scene_, &drawables_);
+}
+
 void McRtcGui::drawLine(Vector3 start, Vector3 end, Color4 color, float /*thickness*/)
 {
   // FIXME Write a shader to handle nice line drawing

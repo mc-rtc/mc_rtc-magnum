@@ -52,6 +52,12 @@ private:
     polygon(id, points, mc_rtc::gui::LineConfig(color));
   }
 
+  void polyhedron(const ElementId & id,
+                  const std::vector<Eigen::Vector3d> & vertices,
+                  const std::vector<std::array<size_t, 3>> & triangles,
+                  const std::vector<mc_rtc::gui::Color> & colors,
+                  const mc_rtc::gui::PolyhedronConfig & config) override;
+
   void force(const ElementId & id,
              const ElementId & requestId,
              const sva::ForceVecd & force,

@@ -2,6 +2,8 @@
 
 #include "Camera.h"
 
+#include <mc_rtc/gui/types.h>
+
 #include <memory>
 
 namespace mc_rtc::magnum
@@ -161,5 +163,37 @@ using BoxPtr = std::shared_ptr<Box>;
 
 using Ellipsoid = Box;
 using EllipsoidPtr = std::shared_ptr<Ellipsoid>;
+
+class PolyhedronDrawable : public CommonDrawable
+{
+public:
+  using CommonDrawable::CommonDrawable;
+
+  void draw_(const Matrix4 & transformationMatrix, SceneGraph::Camera3D & camera) override;
+
+  void alpha(float alpha) noexcept override;
+
+  void update(const std::vector<Eigen::Vector3d> & vertices,
+              const std::vector<std::array<size_t, 3>> & indices,
+              const std::vector<mc_rtc::gui::Color> & colors,
+              const mc_rtc::gui::PolyhedronConfig & config);
+
+private:
+  struct Vertex
+  {
+    Vector3 position;
+    Vector3 normal;
+    Color4 color;
+  };
+  Containers::Array<Vertex> vertices_;
+  Containers::Array<uint16_t> indices_;
+  GL::Buffer vertices_buffer_;
+  GL::Buffer indices_buffer_;
+  GL::Mesh mesh_;
+  Shaders::PhongGL shader_ =
+      Shaders::PhongGL{Shaders::PhongGL::Configuration{}.setFlags(Shaders::PhongGL::Flag::VertexColor)};
+};
+
+using PolyhedronPtr = std::shared_ptr<PolyhedronDrawable>;
 
 } // namespace mc_rtc::magnum
