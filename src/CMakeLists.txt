@@ -28,6 +28,8 @@ if(MC_RTC_MAGNUM_BUILD_INTERFACE)
       widgets/Force.h
       widgets/Point3D.cpp
       widgets/Point3D.h
+      widgets/Polygon.h
+      widgets/Polygon.cpp
       widgets/Polyhedron.cpp
       widgets/Polyhedron.h
       widgets/Robot.cpp
