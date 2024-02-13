@@ -143,9 +143,6 @@ void PolyhedronDrawable::update(const std::vector<Eigen::Vector3d> & vertices,
                                                                Containers::arraySize(vertices_), sizeof(Vertex));
   auto normals_view = Containers::StridedArrayView1D<Vector3>(vertices_, &vertices_[0].normal,
                                                               Containers::arraySize(vertices_), sizeof(Vertex));
-  MeshTools::generateSmoothNormalsInto(indices_, vertices_view, normals_view);
-  vertices_buffer_.setData(vertices_, GL::BufferUsage::DynamicDraw);
-
   Containers::arrayResize(indices_, 3 * indices.size());
   for(size_t i = 0; i < indices.size(); ++i)
   {
@@ -154,6 +151,9 @@ void PolyhedronDrawable::update(const std::vector<Eigen::Vector3d> & vertices,
     indices_[3 * i + 2] = static_cast<uint16_t>(indices[i][2]);
   }
   indices_buffer_.setData(indices_, GL::BufferUsage::DynamicDraw);
+
+  MeshTools::generateSmoothNormalsInto(indices_, vertices_view, normals_view);
+  vertices_buffer_.setData(vertices_, GL::BufferUsage::DynamicDraw);
 
   mesh_.setCount(Containers::arraySize(indices_));
   mesh_.addVertexBuffer(vertices_buffer_, 0, Shaders::PhongGL::Position{}, Shaders::PhongGL::Normal{},
