@@ -3,8 +3,6 @@
 #include <Magnum/GL/PixelFormat.h>
 #include <Magnum/Image.h>
 
-#include <iostream>
-
 namespace mc_rtc::magnum
 {
 
@@ -100,21 +98,16 @@ bool Camera::keyPressEvent(Platform::Application & app, KeyEvent & event)
 
 bool Camera::mousePressEvent(Platform::Application &, MouseEvent & event)
 {
-  /* Due to compatibility reasons, scroll is also reported as a press event,
-     so filter that out. Could be removed once MouseEvent::Button::Wheel is
-     gone from Magnum. */
-  if(event.button() != MouseEvent::Button::Left && event.button() != MouseEvent::Button::Middle) return false;
-
   lastPosition_ = event.position();
   return true;
 }
 
 bool Camera::mouseMoveEvent(Platform::Application & app, MouseMoveEvent & event)
 {
-  const Vector2i delta = event.position() - lastPosition_;
+  const Vector2 delta = event.position() - lastPosition_;
   lastPosition_ = event.position();
 
-  if(!event.buttons()) { return false; }
+  if(!event.pointers()) { return false; }
 
   Vector3 direction = (cameraPosition_ - focusPoint_).normalized();
   Vector3 right = Magnum::Math::cross(Vector3{0, 0, 1}, direction);
@@ -123,7 +116,9 @@ bool Camera::mouseMoveEvent(Platform::Application & app, MouseMoveEvent & event)
   const Float scale = 0.005;
 
   /* Translate */
-  if(event.modifiers() & MouseMoveEvent::Modifier::Shift || event.buttons() == MouseMoveEvent::Button::Middle)
+  if(event.modifiers()
+      & Platform::GlfwApplication::Modifier::Shift
+      || event.pointers() == Platform::Application::Pointer::MouseMiddle)
   {
     Vector3 diff = scale * (delta.y() * up - delta.x() * right);
     cameraPosition_ += diff;

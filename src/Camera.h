@@ -47,9 +47,9 @@ using Scene3D = SceneGraph::Scene<Transform3D>;
 struct Camera
 {
   using KeyEvent = Platform::Application::KeyEvent;
-  using MouseEvent = Platform::Application::MouseEvent;
-  using MouseMoveEvent = Platform::Application::MouseMoveEvent;
-  using MouseScrollEvent = Platform::Application::MouseScrollEvent;
+  using MouseEvent = Platform::Application::PointerEvent;
+  using MouseMoveEvent = Platform::Application::PointerMoveEvent;
+  using MouseScrollEvent = Platform::Application::ScrollEvent;
   using ViewportEvent = Platform::Application::ViewportEvent;
 
   Camera(Platform::Application & app, Scene3D & scene);
@@ -70,7 +70,7 @@ private:
   SceneGraph::Camera3D * camera_;
 
   bool orthographic_ = false;
-  Vector2i lastPosition_{-1};
+  Vector2 lastPosition_{-1};
   Vector3 cameraPosition_;
   Vector3 focusPoint_;
 

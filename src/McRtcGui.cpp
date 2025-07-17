@@ -274,26 +274,26 @@ void McRtcGui::keyReleaseEvent(KeyEvent & event)
   if(imgui_.handleKeyReleaseEvent(event)) return;
 }
 
-void McRtcGui::mousePressEvent(MouseEvent & event)
+void McRtcGui::pointerPressEvent(PointerEvent & event)
 {
-  if(imgui_.handleMousePressEvent(event)) { return; }
+  if(imgui_.handlePointerPressEvent(event)) { return; }
   camera_->mousePressEvent(*this, event);
 }
 
-void McRtcGui::mouseReleaseEvent(MouseEvent & event)
+void McRtcGui::pointerReleaseEvent(PointerEvent & event)
 {
-  if(imgui_.handleMouseReleaseEvent(event)) { return; }
+  if(imgui_.handlePointerReleaseEvent(event)) { return; }
 }
 
-void McRtcGui::mouseMoveEvent(MouseMoveEvent & event)
+void McRtcGui::pointerMoveEvent(PointerMoveEvent & event)
 {
-  if(imgui_.handleMouseMoveEvent(event)) { return; }
+  if(imgui_.handlePointerMoveEvent(event)) { return; }
   camera_->mouseMoveEvent(*this, event);
 }
 
-void McRtcGui::mouseScrollEvent(MouseScrollEvent & event)
+void McRtcGui::scrollEvent(ScrollEvent & event)
 {
-  if(imgui_.handleMouseScrollEvent(event))
+  if(imgui_.handleScrollEvent(event))
   {
     /* Prevent scrolling the page */
     event.setAccepted();
