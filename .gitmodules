@@ -15,7 +15,7 @@
 	url = https://github.com/mosra/magnum-integration.git
 [submodule "ext/ImGuizmo"]
 	path = ext/ImGuizmo
-	url = https://github.com/gergondet/ImGuizmo
+	url = https://github.com/arntanguy/ImGuizmo
 [submodule "ext/magnum-plugins"]
 	path = ext/magnum-plugins
 	url = https://github.com/mosra/magnum-plugins
