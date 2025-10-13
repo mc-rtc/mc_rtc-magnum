@@ -116,9 +116,8 @@ bool Camera::mouseMoveEvent(Platform::Application & app, MouseMoveEvent & event)
   const Float scale = 0.005;
 
   /* Translate */
-  if(event.modifiers()
-      & Platform::GlfwApplication::Modifier::Shift
-      || event.pointers() == Platform::Application::Pointer::MouseMiddle)
+  if(event.modifiers() & Platform::GlfwApplication::Modifier::Shift
+     || event.pointers() == Platform::Application::Pointer::MouseMiddle)
   {
     Vector3 diff = scale * (delta.y() * up - delta.x() * right);
     cameraPosition_ += diff;
