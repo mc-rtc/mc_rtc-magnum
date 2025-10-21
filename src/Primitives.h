@@ -101,6 +101,70 @@ private:
   float alpha_ = 1.0f;
 };
 
+class Cylinder : public ColoredDrawable
+{
+public:
+  explicit Cylinder(Object3D * parent,
+                    SceneGraph::DrawableGroup3D * group,
+                    Shaders::PhongGL & shader,
+                    GL::Mesh & mesh,
+                    Matrix4 pose,
+                    float radius,
+                    float length,
+                    Vector3 start,
+                    Vector3 end,
+                    Color4 color)
+  : ColoredDrawable(parent, group, shader, mesh, color), pose_(pose), radius_(radius), length_(length), start_(start),
+    end_(end)
+  {
+    Vector3 normal = end_ - start_;
+    float height = normal.length();
+    if(height < 1e-7f) { return; }
+    normal = normal.normalized();
+    if(std::isnan(normal.x() * normal.y() * normal.z())) { return; }
+    theta_ = angle(normal, {0.0f, 1.0f, 0.0f});
+    axis_ = cross(normal, {0.0f, 1.0f, 0.0f});
+    if(axis_.length() == 0.0f) { axis_ = {1, 0, 0}; }
+    axis_ = axis_.normalized();
+    update();
+  }
+
+  inline void pose(const Matrix4 & pose) noexcept
+  {
+    pose_ = pose;
+    update();
+  }
+
+  inline void radius(float radius) noexcept
+  {
+    radius_ = radius;
+    update();
+  }
+
+  inline void length(float length) noexcept
+  {
+    length_ = length;
+    update();
+  }
+
+private:
+  Matrix4 pose_;
+  float radius_;
+  float length_;
+  Vector3 start_;
+  Vector3 end_;
+
+  Rad theta_;
+  Vector3 axis_;
+
+  void update() noexcept
+  {
+    this->setTransformation(pose_ * Matrix4::rotation(-theta_, axis_) * Matrix4::scaling({radius_, length_, radius_}));
+  }
+};
+
+using CylinderPtr = std::shared_ptr<Cylinder>;
+
 class Sphere : public ColoredDrawable
 {
 public:

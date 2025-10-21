@@ -99,13 +99,15 @@ struct RobotBody : public Object3D, public SceneGraph::Drawable3D
       }
       case Geometry::CYLINDER:
       {
-        // FIXME Need to make Cylinder proper objects
-        // const auto & cylinder = boost::get<rbd::parsers::Geometry::Cylinder>(visual.geometry.data);
-        // const auto & start = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, -cylinder.length / 2}) * visual.origin
-        //                     * robot().mbc().bodyPosW[bIdx];
-        // const auto & end = sva::PTransformd(Eigen::Vector3d{0.0, 0.0, cylinder.length}) * start;
-        // gui().drawArrow(translation(start), translation(end), 2 * cylinder.radius, 0.0f, 0.0f,
-        //                Color4(color(visual.material).rgb(), alpha));
+        const auto & cylinder = boost::get<rbd::parsers::Geometry::Cylinder>(visual.geometry.data);
+        auto pos = visual.origin;
+        const auto & start = sva::PTransformd{Eigen::Vector3d{0, 0, -cylinder.length / 2}} * pos;
+        const auto & end = sva::PTransformd{Eigen::Vector3d{0, 0, cylinder.length / 2}} * pos;
+
+        // gui_.drawArrow(translation(start), translation(end), 2 * cyl.radius, 0.0f, 0.0f, color(visual_.material));
+        object = gui.makeCylinder(translation(visual.origin), convert(visual.origin.rotation()),
+                                  static_cast<float>(cylinder.radius), static_cast<float>(cylinder.length),
+                                  translation(start), translation(end), color(visual.material), this, group_);
         break;
       }
       case Geometry::SPHERE:

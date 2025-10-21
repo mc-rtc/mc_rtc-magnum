@@ -111,6 +111,7 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   axisMesh_ = MeshTools::compile(Primitives::axis3D());
   cubeMesh_ = MeshTools::compile(Primitives::cubeSolid());
   sphereMesh_ = MeshTools::compile(Primitives::icosphereSolid(2));
+  cylinderMesh_ = MeshTools::compile(Primitives::cylinderSolid(16, 32, 0.5, Primitives::CylinderFlag::CapEnds));
 }
 
 auto McRtcGui::importData(const std::string & path) -> ImportedMesh &
@@ -326,6 +327,21 @@ SpherePtr McRtcGui::makeSphere(Vector3 center,
 {
   return std::make_shared<Sphere>(parent ? parent : &scene_, group ? group : &drawables_, shader_, sphereMesh_, center,
                                   radius, color);
+}
+
+CylinderPtr McRtcGui::makeCylinder(Vector3 center,
+                                   Matrix3 ori,
+                                   float radius,
+                                   float length,
+                                   Vector3 start,
+                                   Vector3 end,
+                                   Color4 color,
+                                   Object3D * parent,
+                                   SceneGraph::DrawableGroup3D * group)
+{
+  Matrix4 pose = Matrix4::from(ori, center);
+  return std::make_shared<Cylinder>(parent ? parent : &scene_, group ? group : &drawables_, shader_, cylinderMesh_,
+                                    pose, radius, length, start, end, color);
 }
 
 EllipsoidPtr McRtcGui::makeEllipsoid(Vector3 center,

@@ -46,6 +46,16 @@ struct McRtcGui : public Platform::Application
                        Object3D * parent = nullptr,
                        SceneGraph::DrawableGroup3D * group = nullptr);
 
+  CylinderPtr makeCylinder(Vector3 center,
+                           Matrix3 ori,
+                           float radius,
+                           float length,
+                           Vector3 start,
+                           Vector3 end,
+                           Color4 color,
+                           Object3D * parent = nullptr,
+                           SceneGraph::DrawableGroup3D * group = nullptr);
+
   EllipsoidPtr makeEllipsoid(Vector3 center,
                              Matrix3 ori,
                              Vector3 size,
@@ -86,6 +96,7 @@ private:
 
   GL::Mesh cubeMesh_;
   GL::Mesh sphereMesh_;
+  GL::Mesh cylinderMesh_;
   GL::Mesh axisMesh_;
   Shaders::PhongGL shader_;
   Shaders::VertexColorGL3D vertexShader_;
