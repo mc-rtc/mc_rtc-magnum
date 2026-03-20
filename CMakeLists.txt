@@ -77,7 +77,11 @@ endif()
 # mc_rtc find_package(mc_rtc REQUIRED)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Boost REQUIRED COMPONENTS program_options) # todo use CLI11
+
 find_package(mc_rtc-imgui REQUIRED)
+# XXX: the official ImGuizmo does not provide cmake export we rely on a fork
+# with jrl-cmakemodules export
+find_package(ImGuizmo REQUIRED)
 
 find_package(
   Magnum REQUIRED

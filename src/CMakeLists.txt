@@ -4,9 +4,8 @@
 # #${implot_DIR}/implot.h ${implot_DIR}/implot.cpp # implot::implot target
 # ${implot_DIR}/implot_items.cpp ${implot_DIR}/implot_demo.cpp)
 
-# Not in nix
-set(ImGuizmo_DIR ${PROJECT_SOURCE_DIR}/ext/ImGuizmo)
-set(ImGuizmo_SRC ${ImGuizmo_DIR}/ImGuizmo.h ${ImGuizmo_DIR}/ImGuizmo.cpp)
+# Not in nix set(ImGuizmo_DIR ${PROJECT_SOURCE_DIR}/ext/ImGuizmo)
+# set(ImGuizmo_SRC ${ImGuizmo_DIR}/ImGuizmo.h ${ImGuizmo_DIR}/ImGuizmo.cpp)
 
 # add_subdirectory(mc_rtc-imgui)
 
@@ -44,7 +43,8 @@ set(project_SRC
     # already in mc_rtc-imgui target ${mc_rtc-imgui-SRC} ${mc_rtc-imgui-HDR}
 )
 
-add_executable(${PROJECT_NAME} ${project_SRC} ${ImGuizmo_SRC})
+# add_executable(${PROJECT_NAME} ${project_SRC} ${ImGuizmo_SRC})
+add_executable(${PROJECT_NAME} ${project_SRC})
 
 target_compile_definitions(
   ${PROJECT_NAME}
@@ -56,6 +56,7 @@ target_include_directories(
 target_link_libraries(
   ${PROJECT_NAME}
   PRIVATE mc_rtc-imgui::mc_rtc-imgui
+          ImGuizmo::ImGuizmo
           # provided by Findmagnum.cmake
           Magnum::Application
           Magnum::GL
