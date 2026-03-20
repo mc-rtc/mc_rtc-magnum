@@ -3,7 +3,7 @@
 /** Helper header to have all the stuff available in widgets */
 
 #include "../McRtcGui.h"
-#include "../mc_rtc-imgui/Widget.h"
+#include <mc_rtc-imgui/Widget.h>
 
 #include "utils.h"
 

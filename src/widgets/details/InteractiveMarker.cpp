@@ -55,6 +55,7 @@ bool InteractiveMarkerImpl::draw(const Camera & camera)
   if(operation_ == 0) { return false; }
   ImGuizmo::SetID(id_);
   ImGuizmo::SetOrthographic(camera.isOrthographic());
+  // XXX: added in our fork
   ImGuizmo::SetGizmoSizeWorldSpace(0.15f);
   auto view = camera.camera()->cameraMatrix();
   auto projection = camera.camera()->projectionMatrix();

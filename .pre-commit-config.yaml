@@ -1,7 +1,3 @@
-exclude: |
-  (?x)^(
-      ext/.*|
-  )$
 repos:
 - repo: meta
   hooks:
@@ -34,3 +30,7 @@ repos:
   rev: v0.6.13
   hooks:
   - id: cmake-format
+    exclude: |
+      (?x)^(
+          cmake/.*|
+      )$
