@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mc_rtc-imgui/Client.h"
 #include "widgets/details/InteractiveMarker.h"
+#include <mc_rtc-imgui/Client.h>
 
 namespace mc_rtc::magnum
 {

@@ -4,7 +4,7 @@
 
 #include <SpaceVecAlg/SpaceVecAlg>
 
-#include "../../mc_rtc-imgui/InteractiveMarker.h"
+#include <mc_rtc-imgui/InteractiveMarker.h>
 
 #include "../../Camera.h"
 

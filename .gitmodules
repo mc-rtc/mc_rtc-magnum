@@ -1,27 +1,3 @@
-[submodule "ext/corrade"]
-	path = ext/corrade
-	url = https://github.com/mosra/corrade.git
-[submodule "ext/magnum"]
-	path = ext/magnum
-	url = https://github.com/mosra/magnum.git
-[submodule "ext/glfw"]
-	path = ext/glfw
-	url = https://github.com/glfw/glfw.git
-[submodule "ext/imgui"]
-	path = ext/imgui
-	url = https://github.com/ocornut/imgui.git
-[submodule "ext/magnum-integration"]
-	path = ext/magnum-integration
-	url = https://github.com/mosra/magnum-integration.git
 [submodule "ext/ImGuizmo"]
 	path = ext/ImGuizmo
 	url = https://github.com/arntanguy/ImGuizmo
-[submodule "ext/magnum-plugins"]
-	path = ext/magnum-plugins
-	url = https://github.com/mosra/magnum-plugins
-[submodule "src/mc_rtc-imgui"]
-	path = src/mc_rtc-imgui
-	url = https://github.com/mc-rtc/mc_rtc-imgui.git
-[submodule "ext/implot"]
-	path = ext/implot
-	url = https://github.com/epezent/implot

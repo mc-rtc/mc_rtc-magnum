@@ -101,7 +101,11 @@ McRtcGui::McRtcGui(const Arguments & arguments)
   colorShader_.setAmbientColor(0x11111100_rgbaf).setSpecularColor(0xffffff00_rgbaf).setShininess(80.0f);
   textureShader_.setAmbientColor(0x11111100_rgbaf).setSpecularColor(0xffffff00_rgbaf).setShininess(80.0f);
 
-  /** Plugin */
+/** Plugin */
+#ifdef MAGNUM_WITH_PLUGIN_LIBDIR
+  mc_rtc::log::info("Setting magnum plugin directory from MAGNUM_WITH_PLUGIN_LIBDIR={}", MAGNUM_WITH_PLUGIN_LIBDIR);
+  manager_.setPluginDirectory(MAGNUM_WITH_PLUGIN_LIBDIR);
+#endif
   importer_ = manager_.loadAndInstantiate("AssimpImporter");
   importer_->configuration().setValue("ImportColladaIgnoreUpDirection", true);
   importer_->configuration().group("postprocess")->setValue("PreTransformVertices", true);
