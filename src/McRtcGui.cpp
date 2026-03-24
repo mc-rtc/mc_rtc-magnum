@@ -1,5 +1,6 @@
 #include "McRtcGui.h"
 
+#include <mc_control/mc_global_controller.h>
 #include <Corrade/Utility/ConfigurationGroup.h>
 #include <Magnum/MeshTools/Transform.h>
 #include <Magnum/Primitives/Axis.h>
@@ -47,13 +48,15 @@ McRtcGui::McRtcGui(const Arguments & arguments)
                                                        | Configuration::WindowFlag::Maximized)},
   client_(*this)
 {
+  auto confPath = std::string{};
   {
-    std::string host;
+    auto host = std::string{};
     po::options_description desc("mc-rtc-magnum options");
     // clang-format off
     desc.add_options()
       ("help", "Show this help message")
       ("tcp", po::value<std::string>(&host), "Connect to the given host with TCP");
+      ("config,-f", po::value<std::string>(&confPath), "Path to an mc_rtc.yaml configuration file (used to load paths to robot modules)");
     // clang-format on
     po::variables_map vm;
     po::store(po::command_line_parser(arguments.argc, arguments.argv).options(desc).run(), vm);
@@ -62,6 +65,11 @@ McRtcGui::McRtcGui(const Arguments & arguments)
     if(vm.count("tcp")) { client_.connect(fmt::format("tcp://{}:4242", host), fmt::format("tcp://{}:4343", host)); }
   }
   {
+    // Update runtime paths (robot modules, etc)
+    // This is required in nix to ensure that plugins installed in different store location are available
+    // e.g a robot module is installed in its own store prefix, and mc_rtc is made aware of it through RobotModulePaths
+    auto gconfig = mc_control::MCGlobalController::GlobalConfiguration{confPath};
+
     ImGui::CreateContext();
     ImPlot::CreateContext();
 
