@@ -1,7 +1,3 @@
-exclude: |
-  (?x)^(
-      ext/.*|
-  )$
 repos:
 - repo: meta
   hooks:
