@@ -21,6 +21,8 @@ struct MagnumClient : public mc_rtc::imgui::Client
 private:
   McRtcGui & gui_;
 
+  void init(const std::string host, const unsigned sub_port = 4242, const unsigned pub_port = 4343);
+
   void point3d(const ElementId & id,
                const ElementId & requestId,
                bool ro,
