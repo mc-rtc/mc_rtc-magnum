@@ -41,34 +41,44 @@ private:
   GL::Mesh mesh_;
 };
 
-McRtcGui::McRtcGui(const Arguments & arguments)
-: Platform::Application{arguments, Configuration{}
-                                       .setTitle("mc_rtc - Magnum based GUI")
-                                       .setWindowFlags(Configuration::WindowFlag::Resizable
-                                                       | Configuration::WindowFlag::Maximized)},
-  client_(*this)
+McRtcGui::McRtcGui(const McRtcGui::McRtcGuiConfiguration & config, const Arguments & arguments)
+: Platform::Application{
+    arguments, Configuration{}
+                   .setTitle("mc_rtc - Magnum based GUI")
+                   .setWindowFlags(Configuration::WindowFlag::Resizable | Configuration::WindowFlag::Maximized)},
+
+    client_(*this)
 {
-  auto confPath = std::string{};
   {
-    auto host = std::string{};
-    po::options_description desc("mc-rtc-magnum options");
-    // clang-format off
-    desc.add_options()
-      ("help", "Show this help message")
-      ("tcp", po::value<std::string>(&host), "Connect to the given host with TCP");
-      ("config,-f", po::value<std::string>(&confPath), "Path to an mc_rtc.yaml configuration file (used to load paths to robot modules)");
-    // clang-format on
-    po::variables_map vm;
-    po::store(po::command_line_parser(arguments.argc, arguments.argv).options(desc).run(), vm);
-    po::notify(vm);
-    if(vm.count("help")) { std::cout << desc << "\n"; }
-    if(vm.count("tcp")) { client_.connect(fmt::format("tcp://{}:4242", host), fmt::format("tcp://{}:4343", host)); }
+    const auto & c = config;
+    if(c.ipcConfig.use_icp && c.tcpConfig.use_tcp)
+    {
+      std::cerr << "Cannot use both TCP and IPC, please choose one of the two communication protocols" << std::endl;
+      this->exit(1);
+      return;
+    }
+    else if(!c.ipcConfig.use_icp && !c.tcpConfig.use_tcp)
+    {
+      std::cerr << "No communication protocol specified, please choose one of TCP or IPC" << std::endl;
+      this->exit(1);
+      return;
+    }
+
+    if(c.ipcConfig.use_icp)
+    {
+      client_.connect(c.ipcConfig.sub_uri, c.ipcConfig.pub_uri);
+    }
+    else if(c.tcpConfig.use_tcp)
+    {
+      client_.connect(fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.sub_port),
+                       fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.pub_port));
+    }
   }
   {
     // Update runtime paths (robot modules, etc)
     // This is required in nix to ensure that plugins installed in different store location are available
     // e.g a robot module is installed in its own store prefix, and mc_rtc is made aware of it through RobotModulePaths
-    auto gconfig = mc_control::MCGlobalController::GlobalConfiguration{confPath};
+    auto gconfig = mc_control::MCGlobalController::GlobalConfiguration{config.confPath};
 
     ImGui::CreateContext();
     ImPlot::CreateContext();
@@ -436,4 +446,63 @@ void McRtcGui::draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & world
 
 } // namespace mc_rtc::magnum
 
-MAGNUM_APPLICATION_MAIN(mc_rtc::magnum::McRtcGui)
+
+void loadFromArgs(int argc, char ** argv)
+{
+}
+
+int main(int argc, char ** argv)
+{
+  using McRtcGui = mc_rtc::magnum::McRtcGui;
+  auto c = McRtcGui::McRtcGuiConfiguration{};
+  po::options_description desc("mc-rtc-magnum options");
+  // clang-format off
+  desc.add_options()
+    ("help", "Show this help message")
+    ("config,f", po::value<std::string>(&c.confPath), "Path to an mc_rtc.yaml configuration file (used to load paths to robot modules)")
+    // TCP
+    ("use-tcp", po::bool_switch(&c.tcpConfig.use_tcp)->default_value(c.tcpConfig.use_tcp), "Use TCP protocol")
+    ("tcp-host", po::value<std::string>(&c.tcpConfig.host)->default_value(c.tcpConfig.host), "Connect to the given host with TCP")
+    ("tcp-sub-port", po::value<unsigned>(&c.tcpConfig.sub_port)->default_value(c.tcpConfig.sub_port), "TCP subscription port")
+    ("tcp-pub-port", po::value<unsigned>(&c.tcpConfig.pub_port)->default_value(c.tcpConfig.pub_port), "TCP publishing port")
+    ("tcp", po::value<std::string>(&c.tcpConfig.host), "Connect to the given host with TCP (deprecated, use --use-tcp --tcp-host <hostname>)")
+    // IPC
+    ("ipc-sub-uri", po::value<std::string>(&c.ipcConfig.sub_uri)->default_value(c.ipcConfig.sub_uri), "IPC subscription URI")
+    ("ipc-pub-uri", po::value<std::string>(&c.ipcConfig.pub_uri)->default_value(c.ipcConfig.pub_uri), "IPC publishing URI")
+    ;
+  // clang-format on
+
+  po::variables_map vm;
+  po::store(po::command_line_parser(argc, argv).options(desc).run(), vm);
+  po::notify(vm);
+  if(vm.count("tcp"))
+  {
+    c.tcpConfig.use_tcp = true;
+    c.ipcConfig.use_icp = false;
+    c.tcpConfig.host = vm["tcp"].as<std::string>();
+    std::cout << "Warning use of '--tcp' option is deprecated, use '--use-tcp --tcp-host <hostname>' instead" << std::endl;
+  }
+  if(vm.count("use-tcp"))
+  {
+    c.tcpConfig.use_tcp = true;
+    c.ipcConfig.use_icp = false;
+  }
+  if(vm.count("help"))
+  {
+    std::cout << R"(mc-rtc-magnum - A Magnum-based GUI for mc_rtc
+
+  This application connects to an mc_rtc controller and provides a 3D GUI.
+  It may be used as a lightweight standalone (ros-free) replacement for rviz.
+
+  Examples:
+    mc-rtc-magnum  # connects with IPC to /tmp/mc_rtc_[sub|pub].ipc
+    mc-rtc-magnum --use-tcp --tcp-host 127.0.0.1
+    mc-rtc-magnum --ipc-sub-uri ipc:///tmp/mc_rtc_sub.ipc --ipc-pub-uri ipc:///tmp/mc_rtc_pub.ipc
+
+  )" << desc << "\n";
+    exit(0);
+  }
+  
+  auto app = McRtcGui{c, {argc, argv}};
+  return app.exec();
+}
