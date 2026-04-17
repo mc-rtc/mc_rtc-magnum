@@ -11,9 +11,28 @@ using ElementId = mc_rtc::imgui::ElementId;
 
 struct McRtcGui;
 
+// Todo convert into an mc_rtc::Schema loadable from a config.yaml
+struct McRtcGuiConfiguration
+{
+  struct TcpConfig
+  {
+    bool use_tcp = false;
+    std::string host = "localhost";
+    unsigned sub_port = 4242;
+    unsigned pub_port = 4343;
+  } tcpConfig;
+  struct IpcConfig
+  {
+    bool use_ipc = true;
+    std::string sub_uri = "ipc:///tmp/mc_rtc_rep.ipc";
+    std::string pub_uri = "ipc:///tmp/mc_rtc_pub.ipc";
+  } ipcConfig;
+  std::string confPath = "";
+};
+
 struct MagnumClient : public mc_rtc::imgui::Client
 {
-  MagnumClient(McRtcGui & gui) : mc_rtc::imgui::Client(), gui_(gui) {}
+  MagnumClient(McRtcGui & gui, const McRtcGuiConfiguration & config);
 
   InteractiveMarkerPtr make_marker(const sva::PTransformd & pose = sva::PTransformd::Identity(),
                                    ControlAxis mask = ControlAxis::NONE) override;
