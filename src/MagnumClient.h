@@ -24,7 +24,7 @@ struct McRtcGuiConfiguration
   struct IpcConfig
   {
     bool use_ipc = true;
-    std::string sub_uri = "ipc:///tmp/mc_rtc_sub.ipc";
+    std::string sub_uri = "ipc:///tmp/mc_rtc_rep.ipc";
     std::string pub_uri = "ipc:///tmp/mc_rtc_pub.ipc";
   } ipcConfig;
   std::string confPath = "";
