@@ -29,16 +29,16 @@ inline static std::pair<std::string, std::string> get_endpoints(const McRtcGuiCo
     mc_rtc::log::error_and_throw("No communication protocol specified, please choose one of TCP or IPC");
   }
 
-  if(c.ipcConfig.use_ipc) { return {c.ipcConfig.sub_uri, c.ipcConfig.pub_uri}; }
+  if(c.ipcConfig.use_ipc) { return {c.ipcConfig.pub_uri, c.ipcConfig.sub_uri}; }
   else // c.tcpConfig.use_tcp
   {
-    return {fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.sub_port),
-            fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.pub_port)};
+    return {fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.pub_port),
+            fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.sub_port)};
   }
 }
 
 MagnumClient::MagnumClient(McRtcGui & gui, const McRtcGuiConfiguration & config)
-: mc_rtc::imgui::Client(get_endpoints(config).first, get_endpoints(config).second), gui_(gui)
+: mc_rtc::imgui::Client(get_endpoints(config).first, get_endpoints(config).second, 3.0), gui_(gui)
 {
 }
 

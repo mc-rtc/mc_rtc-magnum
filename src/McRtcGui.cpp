@@ -48,7 +48,6 @@ McRtcGui::McRtcGui(const mc_rtc::magnum::McRtcGuiConfiguration & config, const A
                                                        | Configuration::WindowFlag::Maximized)},
   client_(*this, config)
 {
-
   {
     // Update runtime paths (robot modules, etc)
     // This is required in nix to ensure that plugins installed in different store location are available
