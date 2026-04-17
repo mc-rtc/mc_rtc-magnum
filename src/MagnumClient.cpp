@@ -17,6 +17,31 @@
 namespace mc_rtc::magnum
 {
 
+inline static std::pair<std::string, std::string> get_endpoints(const McRtcGuiConfiguration & config)
+{
+  const auto & c = config;
+  if(c.ipcConfig.use_ipc && c.tcpConfig.use_tcp)
+  {
+    mc_rtc::log::error_and_throw("Cannot use both TCP and IPC, please choose one of the two communication protocols");
+  }
+  else if(!c.ipcConfig.use_ipc && !c.tcpConfig.use_tcp)
+  {
+    mc_rtc::log::error_and_throw("No communication protocol specified, please choose one of TCP or IPC");
+  }
+
+  if(c.ipcConfig.use_ipc) { return {c.ipcConfig.sub_uri, c.ipcConfig.pub_uri}; }
+  else // c.tcpConfig.use_tcp
+  {
+    return {fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.sub_port),
+            fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.pub_port)};
+  }
+}
+
+MagnumClient::MagnumClient(McRtcGui & gui, const McRtcGuiConfiguration & config)
+: mc_rtc::imgui::Client(get_endpoints(config).first, get_endpoints(config).second), gui_(gui)
+{
+}
+
 InteractiveMarkerPtr MagnumClient::make_marker(const sva::PTransformd & pose, ControlAxis mask)
 {
   return std::make_unique<InteractiveMarkerImpl>(gui_.camera(), pose, mask);

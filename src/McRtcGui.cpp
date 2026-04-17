@@ -41,39 +41,14 @@ private:
   GL::Mesh mesh_;
 };
 
-McRtcGui::McRtcGui(const McRtcGui::McRtcGuiConfiguration & config, const Arguments & arguments)
-: Platform::Application{
-    arguments, Configuration{}
-                   .setTitle("mc_rtc - Magnum based GUI")
-                   .setWindowFlags(Configuration::WindowFlag::Resizable | Configuration::WindowFlag::Maximized)},
-
-    client_(*this)
+McRtcGui::McRtcGui(const mc_rtc::magnum::McRtcGuiConfiguration & config, const Arguments & arguments)
+: Platform::Application{arguments, Configuration{}
+                                       .setTitle("mc_rtc - Magnum based GUI")
+                                       .setWindowFlags(Configuration::WindowFlag::Resizable
+                                                       | Configuration::WindowFlag::Maximized)},
+  client_(*this, config)
 {
-  {
-    const auto & c = config;
-    if(c.ipcConfig.use_icp && c.tcpConfig.use_tcp)
-    {
-      std::cerr << "Cannot use both TCP and IPC, please choose one of the two communication protocols" << std::endl;
-      this->exit(1);
-      return;
-    }
-    else if(!c.ipcConfig.use_icp && !c.tcpConfig.use_tcp)
-    {
-      std::cerr << "No communication protocol specified, please choose one of TCP or IPC" << std::endl;
-      this->exit(1);
-      return;
-    }
 
-    if(c.ipcConfig.use_icp)
-    {
-      client_.connect(c.ipcConfig.sub_uri, c.ipcConfig.pub_uri);
-    }
-    else if(c.tcpConfig.use_tcp)
-    {
-      client_.connect(fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.sub_port),
-                       fmt::format("tcp://{}:{}", c.tcpConfig.host, c.tcpConfig.pub_port));
-    }
-  }
   {
     // Update runtime paths (robot modules, etc)
     // This is required in nix to ensure that plugins installed in different store location are available
@@ -446,15 +421,12 @@ void McRtcGui::draw(GL::Mesh & mesh, const Color4 & color, const Matrix4 & world
 
 } // namespace mc_rtc::magnum
 
-
-void loadFromArgs(int argc, char ** argv)
-{
-}
+void loadFromArgs(int argc, char ** argv) {}
 
 int main(int argc, char ** argv)
 {
   using McRtcGui = mc_rtc::magnum::McRtcGui;
-  auto c = McRtcGui::McRtcGuiConfiguration{};
+  auto c = mc_rtc::magnum::McRtcGuiConfiguration{};
   po::options_description desc("mc-rtc-magnum options");
   // clang-format off
   desc.add_options()
@@ -477,15 +449,18 @@ int main(int argc, char ** argv)
   po::notify(vm);
   if(vm.count("tcp"))
   {
+    mc_rtc::log::warning("--tcp");
     c.tcpConfig.use_tcp = true;
-    c.ipcConfig.use_icp = false;
+    c.ipcConfig.use_ipc = false;
     c.tcpConfig.host = vm["tcp"].as<std::string>();
-    std::cout << "Warning use of '--tcp' option is deprecated, use '--use-tcp --tcp-host <hostname>' instead" << std::endl;
+    std::cout << "Warning use of '--tcp' option is deprecated, use '--use-tcp --tcp-host <hostname>' instead"
+              << std::endl;
   }
-  if(vm.count("use-tcp"))
+  if(vm["use-tcp"].as<bool>())
   {
+    mc_rtc::log::warning("--use-tcp");
     c.tcpConfig.use_tcp = true;
-    c.ipcConfig.use_icp = false;
+    c.ipcConfig.use_ipc = false;
   }
   if(vm.count("help"))
   {
@@ -502,7 +477,7 @@ int main(int argc, char ** argv)
   )" << desc << "\n";
     exit(0);
   }
-  
+
   auto app = McRtcGui{c, {argc, argv}};
   return app.exec();
 }

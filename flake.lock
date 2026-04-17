@@ -312,6 +312,23 @@
         "type": "github"
       }
     },
+    "mc-rtc-imgui": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776429276,
+        "narHash": "sha256-KmcF5e0O2bQheTArjxaDeBQlxf3cywaFtNlxleHYsL8=",
+        "owner": "mc-rtc",
+        "repo": "mc_rtc-imgui",
+        "rev": "3e6c1617a5e622795019b2bccd2ba259df18026f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "mc-rtc",
+        "ref": "nix",
+        "repo": "mc_rtc-imgui",
+        "type": "github"
+      }
+    },
     "mc-rtc-nix": {
       "inputs": {
         "flake-parts": [
@@ -542,6 +559,7 @@
     },
     "root": {
       "inputs": {
+        "mc-rtc-imgui": "mc-rtc-imgui",
         "mc-rtc-nix": "mc-rtc-nix"
       }
     },
