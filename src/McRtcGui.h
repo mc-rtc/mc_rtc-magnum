@@ -16,26 +16,6 @@ struct MagnumClient;
 
 struct McRtcGui : public Platform::Application
 {
-  // Todo convert into an mc_rtc::Schema loadable from a config.yaml
-  struct McRtcGuiConfiguration
-  {
-    struct TcpConfig
-    {
-      bool use_tcp = false;
-      std::string host = "localhost";
-      unsigned sub_port = 4242;
-      unsigned pub_port = 4343;
-    } tcpConfig;
-    struct IpcConfig
-    {
-      bool use_icp = true;
-      std::string sub_uri = "ipc:///tmp/mc_rtc_sub.ipc";
-      std::string pub_uri = "ipc:///tmp/mc_rtc_pub.ipc";
-    } ipcConfig;
-    std::string confPath = "";
-
-  };
-
   explicit McRtcGui(const McRtcGuiConfiguration & config, const Arguments & arguments);
 
   void drawEvent() override;

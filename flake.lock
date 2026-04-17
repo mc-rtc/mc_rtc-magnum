@@ -620,6 +620,7 @@
         "type": "github"
       }
     },
+<<<<<<< HEAD
     "jrl-cmakemodulesv2_2": {
       "inputs": {
         "flake-parts": "flake-parts_6",
@@ -650,12 +651,26 @@
         "owner": "mc-rtc",
         "repo": "mc_rtc-magnum",
         "rev": "3b84be641cbde9253ff26a912f339db2e0a58dd7",
+=======
+    "mc-rtc-imgui": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1776429276,
+        "narHash": "sha256-KmcF5e0O2bQheTArjxaDeBQlxf3cywaFtNlxleHYsL8=",
+        "owner": "mc-rtc",
+        "repo": "mc_rtc-imgui",
+        "rev": "3e6c1617a5e622795019b2bccd2ba259df18026f",
+>>>>>>> 72ad992 (fix(options): fix connection options)
         "type": "github"
       },
       "original": {
         "owner": "mc-rtc",
         "ref": "nix",
+<<<<<<< HEAD
         "repo": "mc_rtc-magnum",
+=======
+        "repo": "mc_rtc-imgui",
+>>>>>>> 72ad992 (fix(options): fix connection options)
         "type": "github"
       }
     },
@@ -1127,8 +1142,13 @@
     },
     "root": {
       "inputs": {
+<<<<<<< HEAD
         "mc-rtc-magnum-standalone": "mc-rtc-magnum-standalone",
         "mc-rtc-nix": "mc-rtc-nix_2"
+=======
+        "mc-rtc-imgui": "mc-rtc-imgui",
+        "mc-rtc-nix": "mc-rtc-nix"
+>>>>>>> 72ad992 (fix(options): fix connection options)
       }
     },
     "system-manager": {
