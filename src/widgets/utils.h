@@ -8,8 +8,8 @@
 #include <Magnum/Math/Matrix3.h>
 #include <Magnum/Math/Matrix4.h>
 
-#include <boost/filesystem.hpp>
-namespace bfs = boost::filesystem;
+#include <filesystem>
+namespace fs = std::filesystem;
 
 #ifdef MC_RTC_HAS_ROS_SUPPORT
 #  ifdef MC_RTC_ROS_IS_ROS2
@@ -74,15 +74,15 @@ inline sva::PTransformd convert(const Magnum::Matrix4 & m)
   return {r_map.cast<double>(), t_map.cast<double>()};
 }
 
-inline bfs::path convertURI(const std::string & uri, [[maybe_unused]] std::string_view default_dir = "")
+inline fs::path convertURI(const std::string & uri, [[maybe_unused]] std::string_view default_dir = "")
 {
   const std::string package = "package://";
   if(uri.size() >= package.size() && uri.find(package) == 0)
   {
     size_t split = uri.find('/', package.size());
     std::string pkg = uri.substr(package.size(), split - package.size());
-    auto leaf = bfs::path(uri.substr(split + 1));
-    bfs::path MC_ENV_DESCRIPTION_PATH(mc_rtc::MC_ENV_DESCRIPTION_PATH);
+    auto leaf = fs::path(uri.substr(split + 1));
+    fs::path MC_ENV_DESCRIPTION_PATH(mc_rtc::MC_ENV_DESCRIPTION_PATH);
 #ifndef __EMSCRIPTEN__
 #  ifndef MC_RTC_HAS_ROS_SUPPORT
     // FIXME Prompt the user for unknown packages
@@ -106,7 +106,7 @@ inline bfs::path convertURI(const std::string & uri, [[maybe_unused]] std::strin
     return pkg / leaf;
   }
   const std::string file = "file://";
-  if(uri.size() >= file.size() && uri.find(file) == 0) { return bfs::path(uri.substr(file.size())); }
+  if(uri.size() >= file.size() && uri.find(file) == 0) { return fs::path(uri.substr(file.size())); }
   return uri;
 }
 
