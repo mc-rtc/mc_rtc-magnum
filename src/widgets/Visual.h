@@ -20,7 +20,7 @@ private:
   bool typeChanged_ = false;
   sva::PTransformd pos_;
   std::shared_ptr<CommonDrawable> object_;
-  bfs::path mesh_;
+  fs::path mesh_;
 };
 
 } // namespace mc_rtc::magnum
