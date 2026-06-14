@@ -2,7 +2,6 @@
   description = "mc-rtc-magnum standalone gui visualization";
 
   inputs.mc-rtc-nix.url = "github:mc-rtc/nixpkgs";
-  inputs.mc-rtc.url = "github:jrl-umi3218/mc_rtc/pull/525/head";
 
   inputs.mc-rtc-imgui.url = "github:mc-rtc/mc_rtc-imgui/nix";
   inputs.mc-rtc-imgui.flake = false;
@@ -31,11 +30,6 @@
           })
         ];
         # } end fmt version extensions
-
-        # temporarely override mc_rtc to test pr #525
-        overrideAttrs.mc-rtc = {
-          src = inputs.mc-rtc;
-        };
 
         overrideAttrs.mc-rtc-imgui = {
           src = inputs.mc-rtc-imgui;
