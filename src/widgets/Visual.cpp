@@ -1,4 +1,5 @@
 #include "Visual.h"
+#include <mc_rtc/path.h>
 
 namespace mc_rtc::magnum
 {
@@ -29,7 +30,7 @@ void Visual::draw3D()
   auto handleMesh = [&]()
   {
     const auto & in = boost::get<Geometry::Mesh>(visual_.geometry.data);
-    auto path = convertURI(in.filename, "");
+    auto path = mc_rtc::convertURI(in.filename, "");
     if(path != mesh_)
     {
       mesh_ = path;

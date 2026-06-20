@@ -2,6 +2,7 @@
 
 #include <mc_rbdyn/RobotLoader.h>
 #include <mc_rbdyn/Robots.h>
+#include <mc_rtc/path.h>
 
 #include <mc_rtc/version.h>
 
@@ -83,7 +84,7 @@ struct RobotBody : public Object3D, public SceneGraph::Drawable3D
       case Geometry::MESH:
       {
         const auto & mesh = boost::get<rbd::parsers::Geometry::Mesh>(visual.geometry.data);
-        auto path = convertURI(mesh.filename, rm_path);
+        auto path = mc_rtc::convertURI(mesh.filename, rm_path);
         object = gui.loadMesh(path.string(), color(visual.material), this, group_);
         // FIXME Bake scale in mesh?
         auto scale = mesh.scaleV;
