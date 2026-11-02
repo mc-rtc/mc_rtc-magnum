@@ -52,10 +52,6 @@ target_link_libraries(
           Magnum::MeshTools
           Magnum::SceneGraph
           MagnumIntegration::ImGui
-          Magnum::AnyImageImporter
-          Magnum::AnySceneImporter
-          MagnumPlugins::AssimpImporter
-          MagnumPlugins::StbImageImporter
           Boost::program_options
           Boost::disable_autolinking)
 
