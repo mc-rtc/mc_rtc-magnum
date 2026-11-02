@@ -3,6 +3,7 @@
 #include "Camera.h"
 
 #include <Magnum/Shaders/MeshVisualizerGL.h>
+#include <Magnum/Shaders/PhongGL.h>
 
 #include <mc_rtc/gui/types.h>
 
