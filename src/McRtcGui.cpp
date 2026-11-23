@@ -44,8 +44,7 @@ private:
 McRtcGui::McRtcGui(const mc_rtc::magnum::McRtcGuiConfiguration & config, const Arguments & arguments)
 : Platform::Application{arguments, Configuration{}
                                        .setTitle("mc_rtc - Magnum based GUI")
-                                       .setWindowFlags(Configuration::WindowFlag::Resizable
-                                                       | Configuration::WindowFlag::Maximized)},
+                                       .setWindowFlags(WindowFlag::Resizable | WindowFlag::Maximized)},
   client_(*this, config)
 {
   {

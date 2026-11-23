@@ -52,37 +52,37 @@ void Camera::setProjection(const Vector2i & windowSize)
 bool Camera::keyPressEvent(Platform::Application & app, KeyEvent & event)
 {
   /* Reset the transformation to the original view */
-  if(event.key() == KeyEvent::Key::NumZero)
+  if(event.key() == Platform::Application::Key::NumZero)
   {
     resetTransform(app);
     app.redraw();
     return true;
   }
   /** Switch between orthographic and perspective projection */
-  else if(event.key() == KeyEvent::Key::NumFive)
+  else if(event.key() == Platform::Application::Key::NumFive)
   {
     swapProjectionType(app);
     app.redraw();
     return true;
   }
   /* Axis-aligned view */
-  else if(event.key() == KeyEvent::Key::NumOne || event.key() == KeyEvent::Key::NumThree
-          || event.key() == KeyEvent::Key::NumSeven)
+  else if(event.key() == Platform::Application::Key::NumOne || event.key() == Platform::Application::Key::NumThree
+          || event.key() == Platform::Application::Key::NumSeven)
   {
     /* Front/back */
-    const Float multiplier = event.modifiers() & KeyEvent::Modifier::Ctrl ? -1.0f : 1.0f;
+    const Float multiplier = event.modifiers() & Platform::Application::Modifier::Ctrl ? -1.0f : 1.0f;
 
-    if(event.key() == KeyEvent::Key::NumSeven) /* Top/bottom */
+    if(event.key() == Platform::Application::Key::NumSeven) /* Top/bottom */
     {
       cameraPosition_ = {0.0f, 0.0f, multiplier * 5.0f};
       focusPoint_ = {0.0f, 0.0f, 0.0f};
     }
-    else if(event.key() == KeyEvent::Key::NumOne) /* Front/back */
+    else if(event.key() == Platform::Application::Key::NumOne) /* Front/back */
     {
       cameraPosition_ = {multiplier * 5.0f, 0.0f, 1.0f};
       focusPoint_ = {0.0f, 0.0f, 1.0f};
     }
-    else if(event.key() == KeyEvent::Key::NumThree) /* Right/left */
+    else if(event.key() == Platform::Application::Key::NumThree) /* Right/left */
     {
       cameraPosition_ = {0.0f, multiplier * 5.0f, 1.0f};
       focusPoint_ = {0.0f, 0.0f, 1.0f};
